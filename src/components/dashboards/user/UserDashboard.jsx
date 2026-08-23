@@ -37,7 +37,7 @@ export default function UserDashboard({
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row">
       
       {/* SIDEBAR COMPONENT */}
       <UserSidebar 
@@ -50,16 +50,18 @@ export default function UserDashboard({
       {/* MAIN CONTAINER */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
         
-        {/* HEADER COMPONENT */}
-        <UserHeader 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
-          setActiveNav={setActiveNav} 
-          onReturnToPublic={onReturnToPublic} 
-        />
+        {/* HEADER COMPONENT — desktop only */}
+        <div className="hidden md:block">
+          <UserHeader 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            setActiveNav={setActiveNav} 
+            onReturnToPublic={onReturnToPublic} 
+          />
+        </div>
 
         {/* BODY PAGE CONTAINER */}
-        <main className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="pt-16 md:pt-0 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
           
           {activeNav === 'dashboard' && (
             <UserOverviewPage 

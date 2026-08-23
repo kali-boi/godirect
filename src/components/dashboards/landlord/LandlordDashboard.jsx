@@ -50,7 +50,7 @@ export default function LandlordDashboard({
   const pendingRequestsCount = requests.filter(r => r.status === 'pending').length;
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row pb-20 md:pb-0">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row">
       
       {/* SIDEBAR COMPONENT */}
       <LandlordSidebar 
@@ -65,16 +65,18 @@ export default function LandlordDashboard({
       {/* MAIN CONTENT */}
       <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
         
-        {/* HEADER COMPONENT */}
-        <LandlordHeader 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
-          setActiveNav={setActiveNav} 
-          onReturnToPublic={onReturnToPublic} 
-        />
+        {/* HEADER COMPONENT — desktop only */}
+        <div className="hidden md:block">
+          <LandlordHeader 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery} 
+            setActiveNav={setActiveNav} 
+            onReturnToPublic={onReturnToPublic} 
+          />
+        </div>
 
         {/* BODY PAGES */}
-        <main className="p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="pt-16 md:pt-0 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
           
           {activeNav === 'dashboard' && (
             <LandlordOverviewPage 
