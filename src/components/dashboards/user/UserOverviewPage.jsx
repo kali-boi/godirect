@@ -34,9 +34,12 @@ export default function UserOverviewPage({
   return (
     <div className="space-y-8 animate-fade-in">
       <div>
-        <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-          Welcome back, admin
+        <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          Welcome back, Alexander
         </h1>
+        <p className="text-xs text-slate-500 mt-1">
+          Track your luxury reservations, escrow payments, saved properties, and host inquiries.
+        </p>
       </div>
 
       {/* 5-COLUMN METRIC CARDS ROW */}
@@ -45,19 +48,19 @@ export default function UserOverviewPage({
         <div onClick={() => setActiveNav('saved')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-slate-700">Saved Properties</span>
-            <Heart className="w-4 h-4 text-slate-500" />
+            <Heart className="w-4 h-4 text-rose-500" />
           </div>
           <div className="text-3xl font-black text-slate-900">{wishlistProperties.length > 0 ? wishlistProperties.length : 1}</div>
           <p className="text-[11px] text-slate-400 font-medium">Properties you've saved</p>
         </div>
 
-        <div onClick={() => setActiveNav('properties')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
+        <div onClick={() => setActiveNav('bookings')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-700">Listed Properties</span>
-            <Home className="w-4 h-4 text-slate-500" />
+            <span className="text-xs font-bold text-slate-700">Active Bookings</span>
+            <Home className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-3xl font-black text-slate-900">3</div>
-          <p className="text-[11px] text-slate-400 font-medium">Properties you've listed</p>
+          <div className="text-3xl font-black text-slate-900">2</div>
+          <p className="text-[11px] text-slate-400 font-medium">Upcoming verified stays</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">

@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import UserSidebar from './UserSidebar';
 import UserHeader from './UserHeader';
 import UserOverviewPage from './UserOverviewPage';
+import UserBookingsPage from './pages/UserBookingsPage';
+import UserEscrowPage from './pages/UserEscrowPage';
+import UserReviewsPage from './pages/UserReviewsPage';
+import UserDisputePage from './pages/UserDisputePage';
+import UserDocumentsPage from './pages/UserDocumentsPage';
+import UserSupportPage from './pages/UserSupportPage';
+import UserVerificationPage from './pages/UserVerificationPage';
 
 export default function UserDashboard({ 
   wishlistProperties = [], 
@@ -37,7 +44,7 @@ export default function UserDashboard({
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row pb-20 md:pb-0">
       
       {/* SIDEBAR COMPONENT */}
       <UserSidebar 
@@ -61,7 +68,7 @@ export default function UserDashboard({
         </div>
 
         {/* BODY PAGE CONTAINER */}
-        <main className="pt-16 md:pt-0 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="p-4 sm:p-6 lg:p-8 pb-28 md:pb-8 space-y-6 max-w-7xl mx-auto w-full">
           
           {activeNav === 'dashboard' && (
             <UserOverviewPage 
@@ -210,6 +217,16 @@ export default function UserDashboard({
               </div>
             </div>
           )}
+
+
+          {/* ── NEW PAGES ── */}
+          {activeNav === 'bookings' && <UserBookingsPage onOpenChatWithHost={onOpenChatWithHost} />}
+          {activeNav === 'escrow' && <UserEscrowPage />}
+          {activeNav === 'reviews' && <UserReviewsPage />}
+          {activeNav === 'disputes' && <UserDisputePage />}
+          {activeNav === 'documents' && <UserDocumentsPage />}
+          {activeNav === 'support' && <UserSupportPage />}
+          {activeNav === 'verification' && <UserVerificationPage />}
 
         </main>
 

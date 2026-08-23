@@ -2,6 +2,12 @@ import React, { useState } from 'react';
 import LandlordSidebar from './LandlordSidebar';
 import LandlordHeader from './LandlordHeader';
 import LandlordOverviewPage from './LandlordOverviewPage';
+import LandlordAnalyticsPage from './pages/LandlordAnalyticsPage';
+import LandlordReviewsPage from './pages/LandlordReviewsPage';
+import LandlordGuestsPage from './pages/LandlordGuestsPage';
+import LandlordMaintenancePage from './pages/LandlordMaintenancePage';
+import LandlordDocumentsPage from './pages/LandlordDocumentsPage';
+import LandlordTaxPage from './pages/LandlordTaxPage';
 import { PlusCircle } from 'lucide-react';
 
 export default function LandlordDashboard({ 
@@ -210,6 +216,15 @@ export default function LandlordDashboard({
               </div>
             </div>
           )}
+
+
+          {/* NEW PAGES */}
+          {activeNav === 'analytics' && <LandlordAnalyticsPage properties={properties} />}
+          {activeNav === 'reviews' && <LandlordReviewsPage />}
+          {activeNav === 'guests' && <LandlordGuestsPage />}
+          {activeNav === 'maintenance' && <LandlordMaintenancePage />}
+          {activeNav === 'documents' && <LandlordDocumentsPage />}
+          {activeNav === 'tax' && <LandlordTaxPage />}
 
         </main>
 
