@@ -68,10 +68,8 @@ export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificat
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {/* Logo Header */}
-        <div className="flex items-center gap-3 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
-          <div className="w-10 h-10 rounded-xl bg-slate-900 text-white flex items-center justify-center font-black text-sm tracking-tighter shadow-sm">
-            GD
-          </div>
+        <div className="flex items-center gap-2.5 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
+          <img src="/images/logo.png" alt="GoDirect" className="h-9 w-auto object-contain" />
           <div>
             <h1 className="font-black text-base tracking-tight text-slate-900 leading-none">GODIRECT</h1>
             <span className="text-[11px] text-slate-400 font-medium">Admin Portal</span>
@@ -143,13 +141,11 @@ export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificat
       {/* ─── MOBILE: Top bar with hamburger ─── */}
       <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200 shadow-sm px-4 py-3 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2.5" onClick={onReturnToPublic}>
-          <div className="w-8 h-8 rounded-lg bg-slate-900 text-white flex items-center justify-center font-black text-xs">
-            GD
-          </div>
+        <div className="flex items-center gap-2" onClick={onReturnToPublic}>
+          <img src="/images/logo.png" alt="GoDirect" className="h-7 w-auto object-contain" />
           <div>
-            <p className="font-black text-sm text-slate-900 leading-none">GODIRECT</p>
-            <p className="text-[10px] text-slate-400">Admin Portal</p>
+            <p className="font-black text-xs text-slate-900 leading-none">GODIRECT</p>
+            <p className="text-[9px] text-slate-400">Admin Portal</p>
           </div>
         </div>
 

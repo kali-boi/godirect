@@ -155,7 +155,7 @@ export default function App() {
             activeView={activeView}
             setActiveView={(view) => {
               setActiveView(view);
-              if (view === 'public') setCurrentPortal('public');
+              setCurrentPortal('public');
             }}
             wishlistCount={wishlist.length}
             unreadCount={1}
@@ -238,16 +238,25 @@ export default function App() {
                   <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                     <div>
                       <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)]">
-                        Explore Marketplace & Shortlets
+                        {stayTypeFilter === 'short-let'
+                          ? 'Verified Short-Let Suites & Vacation Stays'
+                          : stayTypeFilter === 'rentals'
+                          ? 'Direct Landlord Rentals & Sales'
+                          : 'Explore Marketplace & Shortlets'}
                       </h2>
                       <p className="text-sm text-[var(--text-secondary)] mt-1">
-                        Browse top-rated short-let suites or direct landlord long-term leases & sales.
+                        {stayTypeFilter === 'short-let'
+                          ? 'Browse top-rated luxury short-let apartments and vacation villas with daily pricing.'
+                          : stayTypeFilter === 'rentals'
+                          ? 'Long-term residential leases, luxury penthouses, and estates directly from landlords.'
+                          : 'Browse top-rated short-let suites or direct landlord long-term leases & sales.'}
                       </p>
                     </div>
 
                     <button
                       onClick={() => {
                         setStayTypeFilter('all');
+                        setActiveView('public');
                         setSelectedCategory('all');
                         setSearchQuery('');
                       }}

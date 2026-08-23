@@ -1,19 +1,12 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   MapPin,
   Building,
-  Film,
-  Volume2,
-  VolumeX,
-  Play,
-  Pause,
-  ChevronDown,
-  Sparkles,
-  Home,
-  SlidersHorizontal,
+  ChevronLeft,
+  ChevronRight,
   BedDouble,
-  DollarSign
+  ShieldCheck
 } from 'lucide-react';
 import { POPULAR_DESTINATIONS } from '../data/mockData';
 
@@ -22,34 +15,61 @@ export default function HeroSearch({
   setSearchQuery,
   stayTypeFilter,
   setStayTypeFilter,
-  onPerformSearch,
-  onOpenVideoTour
+  onPerformSearch
 }) {
   const [selectedCity, setSelectedCity] = useState('');
-  const [priceRange, setPriceRange] = useState('any');
   const [roomCount, setRoomCount] = useState('any');
-  const [propertyType, setPropertyType] = useState('any');
-  
-  const [isVideoPlaying, setIsVideoPlaying] = useState(true);
-  const [isMuted, setIsMuted] = useState(true);
-  const videoRef = useRef(null);
 
-  const toggleVideoPlayback = () => {
-    if (videoRef.current) {
-      if (isVideoPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsVideoPlaying(!isVideoPlaying);
+  // Hero Carousel Slides
+  const heroSlides = [
+    {
+      id: 'slide-1',
+      title: 'The Skyview Horizon Penthouse',
+      location: 'Mayfair, London, UK',
+      price: '$850 / night',
+      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=85'
+    },
+    {
+      id: 'slide-2',
+      title: 'The Azure Waterfront Villa',
+      location: 'Jersey, Channel Islands',
+      price: '$1,470 / night',
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2000&q=85'
+    },
+    {
+      id: 'slide-3',
+      title: 'Eiffel View Executive Suite',
+      location: '7th Arrondissement, Paris, France',
+      price: '$680 / night',
+      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=2000&q=85'
+    },
+    {
+      id: 'slide-4',
+      title: 'Downtown Dubai Sky Palace',
+      location: 'Downtown Dubai, UAE',
+      price: '$1,850 / night',
+      image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=2000&q=85'
     }
+  ];
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+
+  // Autoplay timer
+  useEffect(() => {
+    if (!isAutoPlaying) return;
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [isAutoPlaying, heroSlides.length]);
+
+  const handleNextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   };
 
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
-    }
+  const handlePrevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
   const handleSearchSubmit = (e) => {
@@ -58,236 +78,184 @@ export default function HeroSearch({
   };
 
   return (
-    <section className="relative min-h-[85vh] flex flex-col justify-between pt-8 pb-12 overflow-hidden bg-slate-950 text-white">
-
-      {/* Hero Architectural Visual Background */}
+    <section 
+      className="relative min-h-[85vh] flex flex-col justify-between pt-28 sm:pt-32 pb-12 overflow-hidden bg-slate-950 text-white"
+      onMouseEnter={() => setIsAutoPlaying(false)}
+      onMouseLeave={() => setIsAutoPlaying(true)}
+    >
+      {/* ─── CAROUSEL IMAGE SLIDES ─── */}
       <div className="absolute inset-0 w-full h-full overflow-hidden z-0">
-        <video
-          ref={videoRef}
-          autoPlay
-          loop
-          muted={isMuted}
-          playsInline
-          className="w-full h-full object-cover scale-105 filter brightness-105 contrast-105 transition-opacity duration-700 opacity-75"
-        >
-          <source src="/video/Initial_Scene_-_2026-08-22_202608230019.mp4" type="video/mp4" />
-        </video>
+        {heroSlides.map((slide, idx) => {
+          const isActive = idx === currentSlide;
+          return (
+            <div
+              key={slide.id}
+              className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                isActive ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'
+              }`}
+            >
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className={`w-full h-full object-cover transform transition-transform duration-[7000ms] ease-out ${
+                  isActive ? 'scale-105' : 'scale-100'
+                }`}
+              />
+            </div>
+          );
+        })}
 
-        {/* Fallback Image Backdrop */}
-        <img
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1800&q=80"
-          alt="Architectural Residence"
-          className="absolute inset-0 w-full h-full object-cover -z-10 opacity-40"
-        />
-
-        {/* Gradient Vignette Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-slate-950/90 z-10 pointer-events-none" />
+        {/* Crisp Gradient Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-slate-950/40 to-slate-950/90 z-20 pointer-events-none" />
       </div>
 
-      {/* Floating Video Controls */}
-      <div className="absolute top-6 right-6 z-30 flex items-center gap-3">
-        <button
-          onClick={onOpenVideoTour}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/60 hover:bg-black/90 text-white text-xs font-bold backdrop-blur-xl border border-white/20 shadow-xl transition-all hover:scale-105"
-        >
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-          <Film className="w-3.5 h-3.5 text-amber-300" />
-          <span>4K Walkthrough Active</span>
-        </button>
-
-        <button
-          onClick={toggleMute}
-          className="p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-xl border border-white/20 shadow-xl transition-all"
-          title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
-        >
-          {isMuted ? <VolumeX className="w-4 h-4 text-amber-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
-        </button>
-
-        <button
-          onClick={toggleVideoPlayback}
-          className="p-2.5 rounded-full bg-black/60 hover:bg-black/90 text-white backdrop-blur-xl border border-white/20 shadow-xl transition-all"
-          title={isVideoPlaying ? 'Pause' : 'Play'}
-        >
-          {isVideoPlaying ? <Pause className="w-4 h-4 text-white" /> : <Play className="w-4 h-4 text-white" />}
-        </button>
-      </div>
-
-      {/* Main Hero Header Content */}
-      <div className="container relative z-20 my-auto pt-6 pb-6">
-        
-        {/* Category Pills Header */}
-        <div className="flex flex-wrap items-center gap-2 mb-6 animate-fade-in">
-          <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold">
-            House
+      {/* ─── TOP RIGHT CAROUSEL CONTROLS ─── */}
+      <div className="container relative z-30 flex items-center justify-end pt-2">
+        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+          <button
+            onClick={handlePrevSlide}
+            className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white"
+            aria-label="Previous Slide"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          
+          <span className="text-[11px] font-mono font-bold text-white/80">
+            0{currentSlide + 1} / 0{heroSlides.length}
           </span>
-          <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold">
-            Apartment
-          </span>
-          <span className="px-4 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-white text-xs font-semibold">
-            Residential
-          </span>
+
+          <button
+            onClick={handleNextSlide}
+            className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white"
+            aria-label="Next Slide"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
+      </div>
 
-        {/* Main Headline & Subtitle */}
-        <div className="max-w-3xl space-y-4 animate-fade-in">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-[1.08] tracking-tight drop-shadow-2xl">
+      {/* ─── MAIN HERO CONTENT ─── */}
+      <div className="container relative z-30 my-auto py-6">
+        
+        {/* Headline & Subtitle */}
+        <div className="max-w-2xl space-y-3 animate-fade-in">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white leading-[1.1] tracking-tight drop-shadow-md">
             Build Your Future, One Property at a Time.
           </h1>
-          <p className="text-base sm:text-lg text-gray-200 font-normal max-w-xl leading-relaxed drop-shadow-md">
-            Own Your World, One Property at a Time. Discover verified luxury homes, short-let vacation suites, and direct landlord rentals.
+          <p className="text-sm sm:text-base text-slate-200 font-normal max-w-lg leading-relaxed drop-shadow-sm">
+            Discover verified luxury homes, short-let suites, and direct landlord rentals with zero commission fees.
           </p>
         </div>
 
-        {/* FLOATING WHITE SEARCH ENGINE BAR (Matching Dribbble Reference Design) */}
-        <div className="mt-10 bg-white text-slate-800 rounded-3xl p-5 sm:p-6 shadow-2xl border border-slate-100 animate-fade-in max-w-5xl">
+        {/* ─── FLOATING SEARCH ENGINE BAR ─── */}
+        <div className="mt-8 bg-white text-slate-800 rounded-3xl p-5 shadow-2xl border border-slate-100 animate-fade-in max-w-4xl">
           
-          {/* Inner Filter Category Tabs */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 mb-5">
-            <div className="flex items-center gap-2 overflow-x-auto">
-              <button
-                type="button"
-                onClick={() => setStayTypeFilter('all')}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  stayTypeFilter === 'all'
-                    ? 'bg-slate-900 text-white shadow'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                All
-              </button>
-              <button
-                type="button"
-                onClick={() => setSearchQuery('City')}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
-              >
-                City
-              </button>
-              <button
-                type="button"
-                onClick={() => setPropertyType('house')}
-                className="px-4 py-1.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
-              >
-                House
-              </button>
-              <button
-                type="button"
-                onClick={() => setStayTypeFilter('rentals')}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  stayTypeFilter === 'rentals'
-                    ? 'bg-slate-900 text-white shadow'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                Rentals
-              </button>
-              <button
-                type="button"
-                onClick={() => setStayTypeFilter('short-let')}
-                className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all ${
-                  stayTypeFilter === 'short-let'
-                    ? 'bg-slate-900 text-white shadow'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                }`}
-              >
-                Short-let
-              </button>
+          {/* Filter Category Tabs */}
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
+            <div className="flex items-center gap-2">
+              {[
+                { id: 'all', label: 'All Properties' },
+                { id: 'short-let', label: 'Short-Lets' },
+                { id: 'rentals', label: 'Rentals & Sales' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => setStayTypeFilter(tab.id)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
+                    stayTypeFilter === tab.id
+                      ? 'bg-[#0B2545] text-white shadow-xs'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
-            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-400 font-medium">
-              <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Direct Owner Deals</span>
+            <div className="hidden sm:flex items-center gap-1.5 text-xs text-slate-500 font-medium">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
+              <span>100% Deed-Verified</span>
             </div>
           </div>
 
-          {/* 4 Form Inputs Grid */}
-          <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-4 items-center">
+          {/* Search Inputs Grid */}
+          <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-12 gap-3 items-center">
             
-            {/* Input 1: Looking for */}
-            <div className="lg:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 hover:border-slate-400 transition-all">
-              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-                Looking for
+            {/* 1. Location / Keyword */}
+            <div className="lg:col-span-5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 focus-within:bg-white focus-within:border-[#018F8B] transition-all">
+              <label className="text-[10px] font-extrabold uppercase text-slate-400 block mb-0.5 tracking-wider">
+                Location or Keyword
               </label>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Enter type (e.g. Villa, Suite)"
-                className="w-full bg-transparent text-xs font-bold text-slate-800 placeholder-slate-400 focus:outline-none"
-              />
+              <div className="flex items-center gap-2">
+                <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                <input
+                  type="text"
+                  placeholder="Mayfair, Dubai, Paris, Lagos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 placeholder-slate-400 outline-none"
+                />
+              </div>
             </div>
 
-            {/* Input 2: Price */}
-            <div className="lg:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 hover:border-slate-400 transition-all">
-              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-                Price
+            {/* 2. Destination City Dropdown */}
+            <div className="lg:col-span-4 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 focus-within:bg-white focus-within:border-[#018F8B] transition-all">
+              <label className="text-[10px] font-extrabold uppercase text-slate-400 block mb-0.5 tracking-wider">
+                City / Region
               </label>
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="w-full bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value="any">Any Price Range</option>
-                <option value="under-1k">Under $1,000 / mo</option>
-                <option value="1k-3k">$1,000 - $3,000 / mo</option>
-                <option value="3k-plus">$3,000+ / mo</option>
-              </select>
+              <div className="flex items-center gap-2">
+                <Building className="w-4 h-4 text-slate-400 shrink-0" />
+                <select
+                  value={selectedCity}
+                  onChange={(e) => {
+                    setSelectedCity(e.target.value);
+                    if (e.target.value) setSearchQuery(e.target.value);
+                  }}
+                  className="w-full bg-transparent text-xs font-bold text-slate-900 outline-none cursor-pointer"
+                >
+                  <option value="">Any Global City</option>
+                  {POPULAR_DESTINATIONS.map((dest) => (
+                    <option key={dest.name} value={dest.name.split(',')[0]}>
+                      {dest.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
 
-            {/* Input 3: Location */}
-            <div className="lg:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 hover:border-slate-400 transition-all">
-              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-                Location
-              </label>
-              <select
-                value={selectedCity}
-                onChange={(e) => {
-                  setSelectedCity(e.target.value);
-                  setSearchQuery(e.target.value);
-                }}
-                className="w-full bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value="">All Locations</option>
-                {POPULAR_DESTINATIONS.map((loc, idx) => (
-                  <option key={loc.name || idx} value={loc.name}>
-                    {loc.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Input 4: Number of rooms */}
-            <div className="lg:col-span-3 bg-slate-50 p-3 rounded-2xl border border-slate-200 hover:border-slate-400 transition-all">
-              <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-1">
-                Number of rooms
-              </label>
-              <select
-                value={roomCount}
-                onChange={(e) => setRoomCount(e.target.value)}
-                className="w-full bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
-              >
-                <option value="any">Any Bedrooms</option>
-                <option value="1">1 Bed room</option>
-                <option value="2">2 Bed rooms</option>
-                <option value="3">3+ Bed rooms</option>
-              </select>
-            </div>
-
-            {/* Search Button */}
-            <div className="lg:col-span-12 pt-2 flex justify-end">
+            {/* 3. Search Submit Button */}
+            <div className="lg:col-span-3">
               <button
                 type="submit"
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-slate-900 hover:bg-black text-white font-extrabold text-xs tracking-wide shadow-xl transition-all hover:scale-105 flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-2xl bg-[#018F8B] hover:bg-[#0B2545] text-white text-xs font-black flex items-center justify-center gap-2 shadow-md transition-all duration-200 active:scale-95"
               >
-                <Search className="w-4 h-4 text-emerald-400" />
-                <span>Search Properties</span>
+                <Search className="w-4 h-4" />
+                <span>Search</span>
               </button>
             </div>
 
           </form>
-
         </div>
 
       </div>
+
+      {/* ─── SLIDE INDICATOR DOTS ─── */}
+      <div className="container relative z-30 flex items-center justify-center gap-2 pt-2">
+        {heroSlides.map((slide, idx) => (
+          <button
+            key={slide.id}
+            onClick={() => setCurrentSlide(idx)}
+            className={`h-1.5 rounded-full transition-all duration-300 ${
+              idx === currentSlide
+                ? 'w-8 bg-[#018F8B]'
+                : 'w-2 bg-white/30 hover:bg-white/60'
+            }`}
+            aria-label={`Go to slide ${idx + 1}`}
+          />
+        ))}
+      </div>
+
     </section>
   );
 }

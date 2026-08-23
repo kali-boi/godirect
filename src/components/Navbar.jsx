@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
 import {
-  Building2,
   Heart,
   MessageSquare,
   PlusCircle,
-  User,
-  Moon,
-  Sun,
-  ShieldCheck,
   Menu,
   X,
-  Sparkles,
-  Home,
-  LayoutDashboard,
-  ShieldAlert,
   ChevronDown,
-  Globe
+  Globe,
+  Layers,
+  Building2,
+  Sparkles
 } from 'lucide-react';
 
 export default function Navbar({
@@ -32,158 +26,194 @@ export default function Navbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 bg-[var(--glass-bg)] backdrop-blur-md border-b border-[var(--border-light)] transition-all">
-      <div className="container flex items-center justify-between h-20">
+    <header className="fixed top-3 sm:top-4 inset-x-3 sm:inset-x-6 md:inset-x-8 max-w-7xl mx-auto z-50 transition-all">
+      {/* ─── PURE SOLID WHITE FLOATING PILL CONTAINER ─── */}
+      <div className="bg-white border border-slate-200/90 shadow-[0_8px_30px_rgba(0,0,0,0.08)] rounded-full px-4 sm:px-6 py-2.5 flex items-center justify-between transition-all">
 
-        {/* Brand Logo & Tagline */}
-        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => setActiveView('public')}>
+        {/* ─── BRAND LOGO ONLY ─── */}
+        <div 
+          className="flex items-center cursor-pointer transition-transform duration-200 hover:opacity-90" 
+          onClick={() => setActiveView('public')}
+        >
           <img
             src="/images/logo.png"
-            alt="GoDirect Logo"
-            className="h-10 sm:h-12 w-auto object-contain transition-transform hover:scale-105"
+            alt="GoDirect"
+            className="h-8 sm:h-9 w-auto object-contain"
           />
-          <span className="font-black text-2xl tracking-tight text-[var(--text-primary)] font-['Host_Grotesk']">
-            godirect
-          </span>
         </div>
 
-
-        {/* Desktop Navigation Links */}
-        <nav className="hidden lg:flex items-center gap-1 bg-[var(--bg-elevated)] p-1.5 rounded-full border border-[var(--border-light)]">
+        {/* ─── CLEAN CENTER CAPSULE NAVIGATION ─── */}
+        <nav className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-slate-200/60">
           <button
-            onClick={() => setActiveView('public')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeView === 'public' || activeView === 'explore'
-                ? 'bg-[var(--deep-teal)] text-white shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
+            onClick={() => {
+              setActiveView('public');
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+              activeView === 'public' || activeView === 'explore'
+                ? 'bg-[#0B2545] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-950'
+            }`}
           >
             Explore
           </button>
           <button
-            onClick={() => setActiveView('short-lets')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeView === 'short-lets'
-                ? 'bg-[var(--deep-teal)] text-white shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
+            onClick={() => {
+              setActiveView('short-lets');
+              setTimeout(() => {
+                const el = document.getElementById('properties-grid');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 50);
+            }}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+              activeView === 'short-lets'
+                ? 'bg-[#0B2545] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-950'
+            }`}
           >
             Short-Lets
           </button>
           <button
-            onClick={() => setActiveView('rentals')}
-            className={`px-4 py-2 rounded-full text-xs font-semibold transition-all ${activeView === 'rentals'
-                ? 'bg-[var(--deep-teal)] text-white shadow-sm'
-                : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
-              }`}
+            onClick={() => {
+              setActiveView('rentals');
+              setTimeout(() => {
+                const el = document.getElementById('properties-grid');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 50);
+            }}
+            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
+              activeView === 'rentals'
+                ? 'bg-[#0B2545] text-white shadow-xs'
+                : 'text-slate-600 hover:text-slate-950'
+            }`}
           >
-            Long-term Rent
+            Rent & Buy
           </button>
         </nav>
 
-        {/* Right Portal Switcher & Action Controls */}
-        <div className="hidden md:flex items-center gap-3">
-
-          {/* Persona Portal Switcher Button */}
+        {/* ─── STREAMLINED RIGHT ACTIONS ─── */}
+        <div className="hidden md:flex items-center gap-2.5">
+          
+          {/* Dashboard Hubs Switcher */}
           <button
             onClick={onOpenPortalSwitcher}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-full bg-[var(--bg-elevated)] border border-[var(--border-medium)] hover:border-[var(--teal-blue)] text-xs font-bold text-[var(--text-primary)] transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-xs font-bold text-slate-800 transition-all border border-slate-200/60"
           >
-            <ShieldCheck className="w-4 h-4 text-[var(--teal-blue)]" />
-            <span>Portals & Dashboards</span>
-            <ChevronDown className="w-3.5 h-3.5 text-[var(--text-muted)]" />
+            <Layers className="w-3.5 h-3.5 text-[#018F8B]" />
+            <span>Dashboards</span>
+            <ChevronDown className="w-3 h-3 text-slate-400" />
           </button>
 
-          {/* Wishlist Button */}
-          <button
-            onClick={() => setActiveView('wishlist')}
-            className="relative p-2.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--teal-blue)] hover:bg-[var(--bg-surface)] border border-[var(--border-light)] transition-all"
-            title="Saved Wishlist"
-          >
-            <Heart className="w-5 h-5" />
-            {wishlistCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--teal-blue)] text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">
-                {wishlistCount}
-              </span>
-            )}
-          </button>
-
-          {/* Messages Button */}
+          {/* Direct Chat / Messages */}
           <button
             onClick={onOpenChat}
-            className="relative p-2.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--teal-blue)] hover:bg-[var(--bg-surface)] border border-[var(--border-light)] transition-all"
-            title="Direct Chat Messages"
+            className="relative p-2 rounded-full text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors"
+            title="Messages"
           >
-            <MessageSquare className="w-5 h-5" />
+            <MessageSquare className="w-4 h-4" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-[var(--mellow-gold)] text-white text-xs font-bold rounded-full flex items-center justify-center shadow-sm">
-                {unreadCount}
-              </span>
+              <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-[#CC9955] rounded-full ring-2 ring-white" />
             )}
           </button>
 
-          {/* Theme Toggle */}
+          {/* Wishlist */}
           <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
-            className="p-2.5 rounded-full bg-[var(--bg-elevated)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] border border-[var(--border-light)] transition-all"
-            title={isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            onClick={() => setActiveView('wishlist')}
+            className="relative p-2 rounded-full text-slate-600 hover:text-rose-500 hover:bg-slate-100 transition-colors"
+            title="Wishlist"
           >
-            {isDarkMode ? <Sun className="w-5 h-5 text-[var(--mellow-gold)]" /> : <Moon className="w-5 h-5" />}
+            <Heart className="w-4 h-4" />
+            {wishlistCount > 0 && (
+              <span className="absolute top-0.5 right-0.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white" />
+            )}
           </button>
 
-          {/* Landlord Host Portal Trigger Button */}
+          {/* List Property Primary Action */}
           <button
             onClick={onOpenHostPortal}
-            className="btn-gold text-xs shadow-md transition-transform active:scale-95 py-2.5"
+            className="flex items-center gap-1 px-4 py-1.5 rounded-full bg-[#0B2545] hover:bg-[#122525] text-white text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 ml-1"
           >
-            <PlusCircle className="w-4 h-4" />
-            <span>Post Property</span>
+            <PlusCircle className="w-3.5 h-3.5 text-[#CC9955]" />
+            <span>List Property</span>
           </button>
 
         </div>
 
-        {/* Mobile Menu Button */}
+        {/* ─── MOBILE CONTROLS ─── */}
         <div className="flex md:hidden items-center gap-2">
           <button
             onClick={onOpenPortalSwitcher}
-            className="px-3 py-1.5 rounded-lg bg-[var(--teal-blue)] text-white text-xs font-bold"
+            className="px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold"
           >
-            Dashboards
+            Portals
           </button>
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-lg bg-[var(--bg-elevated)] text-[var(--text-primary)]"
+            className="p-1.5 rounded-full text-slate-700 hover:bg-slate-100"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
 
       </div>
 
-      {/* Mobile Dropdown Drawer */}
+      {/* ─── MOBILE SLIDE-DOWN SHEET ─── */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-[var(--bg-surface)] border-b border-[var(--border-light)] px-6 py-4 flex flex-col gap-3 animate-fade-in">
+        <div className="md:hidden mt-2 bg-white border border-slate-200 rounded-3xl p-4 flex flex-col gap-2 shadow-[0_20px_50px_rgba(0,0,0,0.15)] animate-fade-in">
           <button
-            onClick={() => { setActiveView('public'); setMobileMenuOpen(false); }}
-            className="flex items-center gap-3 p-3 rounded-xl text-left font-medium text-[var(--text-primary)] bg-[var(--bg-elevated)]"
+            onClick={() => { 
+              setActiveView('public'); 
+              setMobileMenuOpen(false); 
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            className="flex items-center gap-3 p-2.5 rounded-2xl text-left font-bold text-xs text-slate-800 hover:bg-slate-50"
           >
-            <Globe className="w-5 h-5 text-[var(--teal-blue)]" /> Public Marketplace Page
+            <Globe className="w-4 h-4 text-[#018F8B]" />
+            <span>Explore All</span>
           </button>
-
+          <button
+            onClick={() => { 
+              setActiveView('short-lets'); 
+              setMobileMenuOpen(false); 
+              setTimeout(() => {
+                const el = document.getElementById('properties-grid');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 50);
+            }}
+            className="flex items-center gap-3 p-2.5 rounded-2xl text-left font-bold text-xs text-slate-800 hover:bg-slate-50"
+          >
+            <Building2 className="w-4 h-4 text-[#018F8B]" />
+            <span>Short-Lets</span>
+          </button>
+          <button
+            onClick={() => { 
+              setActiveView('rentals'); 
+              setMobileMenuOpen(false); 
+              setTimeout(() => {
+                const el = document.getElementById('properties-grid');
+                if (el) el.scrollIntoView({ behavior: 'smooth' });
+              }, 50);
+            }}
+            className="flex items-center gap-3 p-2.5 rounded-2xl text-left font-bold text-xs text-slate-800 hover:bg-slate-50"
+          >
+            <Sparkles className="w-4 h-4 text-[#018F8B]" />
+            <span>Rent & Buy</span>
+          </button>
           <button
             onClick={() => { onOpenPortalSwitcher(); setMobileMenuOpen(false); }}
-            className="flex items-center gap-3 p-3 rounded-xl text-left font-medium bg-[var(--deep-teal)] text-white"
+            className="flex items-center gap-3 p-2.5 rounded-2xl text-left font-bold text-xs bg-slate-100 text-slate-800 mt-1"
           >
-            <ShieldCheck className="w-5 h-5 text-[var(--mellow-gold)]" /> Switch Persona Dashboard
+            <Layers className="w-4 h-4 text-[#018F8B]" />
+            <span>Dashboard Hubs</span>
           </button>
-
           <button
             onClick={() => { onOpenHostPortal(); setMobileMenuOpen(false); }}
-            className="btn-gold w-full mt-2 py-3 justify-center text-center font-bold"
+            className="w-full py-2.5 rounded-2xl bg-[#0B2545] text-white font-bold text-xs text-center mt-1"
           >
-            <PlusCircle className="w-5 h-5" /> Post Property as Landlord
+            List Property
           </button>
         </div>
       )}
     </header>
   );
 }
-
