@@ -17,12 +17,15 @@ export default function Footer({ setActiveView, onOpenHostPortal }) {
           
           {/* Brand Col */}
           <div className="md:col-span-5 space-y-4">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2.5">
               <img
                 src="/images/logo.png"
                 alt="GoDirect Logo"
                 className="h-10 w-auto object-contain filter brightness-110"
               />
+              <span className="font-black text-2xl tracking-tight text-white font-['Host_Grotesk']">
+                godirect
+              </span>
             </div>
 
             <p className="text-sm text-teal-100/80 leading-relaxed max-w-md font-normal">

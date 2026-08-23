@@ -36,12 +36,15 @@ export default function Navbar({
       <div className="container flex items-center justify-between h-20">
 
         {/* Brand Logo & Tagline */}
-        <div className="flex items-center gap-3 cursor-pointer" onClick={() => setActiveView('public')}>
+        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => setActiveView('public')}>
           <img
             src="/images/logo.png"
             alt="GoDirect Logo"
             className="h-10 sm:h-12 w-auto object-contain transition-transform hover:scale-105"
           />
+          <span className="font-black text-2xl tracking-tight text-[var(--text-primary)] font-['Host_Grotesk']">
+            godirect
+          </span>
         </div>
 
 

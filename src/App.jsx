@@ -10,10 +10,10 @@ import BookingModal from './components/BookingModal';
 import VideoTourModal from './components/VideoTourModal';
 import PortalSwitcherModal from './components/PortalSwitcherModal';
 
-// 3 SEPARATED DASHBOARD PORTALS
-import UserDashboard from './components/dashboards/UserDashboard';
-import LandlordDashboard from './components/dashboards/LandlordDashboard';
-import AdminDashboard from './components/dashboards/AdminDashboard';
+// 3 SEPARATED DASHBOARD PORTALS (MODULARIZED FOLDER ARCHITECTURE)
+import UserDashboard from './components/dashboards/user/UserDashboard';
+import LandlordDashboard from './components/dashboards/landlord/LandlordDashboard';
+import AdminDashboard from './components/dashboards/admin/AdminDashboard';
 
 import StatsBar from './components/StatsBar';
 import FeatureGrid from './components/FeatureGrid';
@@ -254,7 +254,7 @@ export default function App() {
                       className="inline-flex items-center gap-2 text-xs font-extrabold text-[var(--text-primary)] hover:text-[var(--teal-blue)] transition-colors self-start sm:self-auto"
                     >
                       <span>See All Properties</span>
-                      <ArrowRight className="w-4 h-4 text-emerald-500" />
+                      <ArrowRight className="w-4 h-4 text-amber-500" />
                     </button>
                   </div>
 
@@ -275,8 +275,8 @@ export default function App() {
                       onClick={() => setStayTypeFilter('short-let')}
                       className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all border ${
                         stayTypeFilter === 'short-let'
-                          ? 'bg-emerald-500 text-white border-emerald-500 shadow-md'
-                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-emerald-500'
+                          ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
+                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-amber-500'
                       }`}
                     >
                       🏢 Shortlet Sub-Section ({properties.filter(p => p.isShortLet).length})
@@ -286,8 +286,8 @@ export default function App() {
                       onClick={() => setStayTypeFilter('rentals')}
                       className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all border ${
                         stayTypeFilter === 'rentals'
-                          ? 'bg-blue-600 text-white border-blue-600 shadow-md'
-                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-blue-600'
+                          ? 'bg-slate-900 text-white border-slate-900 shadow-md'
+                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-slate-700'
                       }`}
                     >
                       🏘️ Property Marketplace Sub-Section ({properties.filter(p => !p.isShortLet).length})
@@ -303,9 +303,9 @@ export default function App() {
                   {/* SUB-SECTION 1: SHORTLET RESIDENCES */}
                   {(stayTypeFilter === 'all' || stayTypeFilter === 'short-let') && (
                     <div className="space-y-6">
-                      <div className="flex items-center justify-between bg-emerald-950/10 border border-emerald-500/20 p-4 sm:p-5 rounded-2xl">
+                      <div className="flex items-center justify-between bg-amber-500/10 border border-amber-500/30 p-4 sm:p-5 rounded-2xl">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center font-bold">
+                          <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold shadow-sm">
                             🏢
                           </div>
                           <div>
@@ -313,7 +313,7 @@ export default function App() {
                               <h3 className="text-xl sm:text-2xl font-black text-[var(--text-primary)]">
                                 Shortlet Residences & Vacation Stays
                               </h3>
-                              <span className="px-2.5 py-0.5 rounded-full bg-emerald-500 text-white font-extrabold text-[10px]">
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-extrabold text-[10px]">
                                 SUB-SECTION 1
                               </span>
                             </div>
@@ -323,7 +323,7 @@ export default function App() {
                           </div>
                         </div>
 
-                        <span className="hidden sm:inline-block text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full">
+                        <span className="hidden sm:inline-block text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
                           {filteredProperties.filter(p => p.isShortLet).length} Short-Lets
                         </span>
                       </div>
@@ -357,30 +357,31 @@ export default function App() {
                   {/* SUB-SECTION 2: PROPERTY MARKETPLACE (LONG-TERM RENTALS & SALES) */}
                   {(stayTypeFilter === 'all' || stayTypeFilter === 'rentals') && (
                     <div className="space-y-6">
-                      <div className="flex items-center justify-between bg-blue-950/10 border border-blue-500/20 p-4 sm:p-5 rounded-2xl">
+                      <div className="flex items-center justify-between bg-slate-900 text-white p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-md">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold">
+                          <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
                             🏘️
                           </div>
                           <div>
                             <div className="flex items-center gap-2">
-                              <h3 className="text-xl sm:text-2xl font-black text-[var(--text-primary)]">
+                              <h3 className="text-xl sm:text-2xl font-black text-white">
                                 Property Marketplace (Rentals & Sales)
                               </h3>
-                              <span className="px-2.5 py-0.5 rounded-full bg-blue-600 text-white font-extrabold text-[10px]">
+                              <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold text-[10px]">
                                 SUB-SECTION 2
                               </span>
                             </div>
-                            <p className="text-xs text-[var(--text-secondary)]">
+                            <p className="text-xs text-slate-300">
                               Direct landlord long-term rental leases and verified residential properties for purchase.
                             </p>
                           </div>
                         </div>
 
-                        <span className="hidden sm:inline-block text-xs font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                        <span className="hidden sm:inline-block text-xs font-bold text-amber-300 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
                           {filteredProperties.filter(p => !p.isShortLet).length} Marketplace Listings
                         </span>
                       </div>
+
 
                       {filteredProperties.filter(p => !p.isShortLet).length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">

@@ -247,8 +247,8 @@ export default function HeroSearch({
                 className="w-full bg-transparent text-xs font-bold text-slate-800 focus:outline-none cursor-pointer"
               >
                 <option value="">All Locations</option>
-                {POPULAR_DESTINATIONS.map((loc) => (
-                  <option key={loc.id} value={loc.name}>
+                {POPULAR_DESTINATIONS.map((loc, idx) => (
+                  <option key={loc.name || idx} value={loc.name}>
                     {loc.name}
                   </option>
                 ))}
