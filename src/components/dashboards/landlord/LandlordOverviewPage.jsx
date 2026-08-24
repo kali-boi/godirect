@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, DollarSign, Eye, Clock, Calendar, PlusCircle, ChevronRight } from 'lucide-react';
+import { Building2, DollarSign, Eye, Clock, Calendar, PlusCircle, ChevronRight, ShieldCheck } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 export default function LandlordOverviewPage({ 
@@ -11,29 +11,7 @@ export default function LandlordOverviewPage({
   const { user, profile } = useAuth();
   const displayName = user?.user_metadata?.full_name || profile?.full_name || user?.email?.split('@')[0] || 'Host';
 
-  const recentActivities = [
-    {
-      id: 'act-1',
-      title: 'Booking Request Received',
-      subtitle: 'The Skyview Horizon Penthouse (Dr. Julian Thorne)',
-      time: '2 hours ago',
-      status: 'pending'
-    },
-    {
-      id: 'act-2',
-      title: 'Escrow Payout Disbursed',
-      subtitle: 'The Azure Waterfront Villa ($8,820.00)',
-      time: 'Yesterday',
-      status: 'completed'
-    },
-    {
-      id: 'act-3',
-      title: 'Property Listing Verified',
-      subtitle: 'Minimalist Haus in Kensington',
-      time: '3 days ago',
-      status: 'completed'
-    }
-  ];
+  const recentActivities = [];
 
   return (
     <div className="space-y-8 animate-fade-in font-['Host_Grotesk']">
@@ -41,6 +19,7 @@ export default function LandlordOverviewPage({
         <h1 className="text-3xl font-black text-slate-900 tracking-tight">
           Welcome back, {displayName}
         </h1>
+        <p className="text-xs text-slate-500 mt-1">Manage your direct verified properties, check-ins, and escrow settlements.</p>
       </div>
 
       {/* 5-COLUMN METRIC CARDS */}
@@ -51,25 +30,25 @@ export default function LandlordOverviewPage({
             <Building2 className="w-4 h-4 text-slate-500" />
           </div>
           <div className="text-3xl font-black text-slate-900">{properties.length}</div>
-          <p className="text-[11px] text-slate-400 font-medium">Active listings</p>
+          <p className="text-[11px] text-slate-400 font-medium">Active verified listings</p>
         </div>
 
         <div onClick={() => setActiveNav('earnings')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-700">Monthly Yield</span>
-            <DollarSign className="w-4 h-4 text-slate-500" />
+            <span className="text-xs font-bold text-slate-700">Wallet Balance</span>
+            <DollarSign className="w-4 h-4 text-[#018F8B]" />
           </div>
-          <div className="text-3xl font-black text-slate-900">$24,850</div>
-          <p className="text-[11px] text-slate-400 font-medium">Monthly revenue</p>
+          <div className="text-3xl font-black text-[#018F8B]">₦0.00</div>
+          <p className="text-[11px] text-slate-400 font-medium">Available NUBAN balance</p>
         </div>
 
         <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-700">Property Views</span>
-            <Eye className="w-4 h-4 text-slate-500" />
+            <span className="text-xs font-bold text-slate-700">Direct Commission</span>
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-3xl font-black text-slate-900">1,420</div>
-          <p className="text-[11px] text-slate-400 font-medium">Total views this month</p>
+          <div className="text-3xl font-black text-emerald-600">0%</div>
+          <p className="text-[11px] text-slate-400 font-medium">Zero broker fees</p>
         </div>
 
         <div onClick={() => setActiveNav('requests')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
@@ -77,17 +56,17 @@ export default function LandlordOverviewPage({
             <span className="text-xs font-bold text-slate-700">Pending Requests</span>
             <Clock className="w-4 h-4 text-slate-500" />
           </div>
-          <div className="text-3xl font-black text-slate-900">2</div>
+          <div className="text-3xl font-black text-slate-900">0</div>
           <p className="text-[11px] text-slate-400 font-medium">Requests awaiting review</p>
         </div>
 
         <div onClick={() => setActiveNav('calendar')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold text-slate-700">Occupancy Rate</span>
-            <Calendar className="w-4 h-4 text-slate-500" />
+            <span className="text-xs font-bold text-slate-700">Escrow Security</span>
+            <ShieldCheck className="w-4 h-4 text-[#CC9955]" />
           </div>
-          <div className="text-3xl font-black text-slate-900">94.2%</div>
-          <p className="text-[11px] text-slate-400 font-medium">Portfolio occupancy</p>
+          <div className="text-3xl font-black text-slate-900">24h</div>
+          <p className="text-[11px] text-slate-400 font-medium">Stay inspection protection</p>
         </div>
       </div>
 
@@ -104,7 +83,7 @@ export default function LandlordOverviewPage({
 
           <div className="space-y-4">
             {properties.length === 0 ? (
-              <div className="text-center py-6 text-xs text-slate-400">No properties listed yet.</div>
+              <div className="text-center py-10 text-xs text-slate-400">No properties listed yet. Click Add Listing to publish your first property.</div>
             ) : (
               properties.map((prop) => {
                 const img = Array.isArray(prop.images) && prop.images.length > 0 ? prop.images[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80';
@@ -137,18 +116,24 @@ export default function LandlordOverviewPage({
           </div>
 
           <div className="space-y-4">
-            {recentActivities.map((act) => (
-              <div key={act.id} className="flex items-start justify-between gap-3 text-xs">
-                <div className="space-y-0.5">
-                  <h5 className="font-bold text-slate-900">{act.title}</h5>
-                  <p className="text-slate-500 font-medium">{act.subtitle}</p>
-                  <span className="text-[10px] text-slate-400">{act.time}</span>
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full shrink-0">
-                  {act.status}
-                </span>
+            {recentActivities.length === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">
+                No recent activity recorded yet. New booking requests, viewing appointments, and escrow payouts will appear here.
               </div>
-            ))}
+            ) : (
+              recentActivities.map((act) => (
+                <div key={act.id} className="flex items-start justify-between gap-3 text-xs">
+                  <div className="space-y-0.5">
+                    <h5 className="font-bold text-slate-900">{act.title}</h5>
+                    <p className="text-slate-500 font-medium">{act.subtitle}</p>
+                    <span className="text-[10px] text-slate-400">{act.time}</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full shrink-0">
+                    {act.status}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

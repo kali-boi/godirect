@@ -4,23 +4,23 @@ import { Award, Building2, MapPin, Star } from 'lucide-react';
 export default function StatsBar() {
   const stats = [
     {
-      value: '100%',
-      label: 'Satisfaction Clients',
+      value: '0%',
+      label: 'Zero Broker Commission Fee',
       icon: Award,
     },
     {
-      value: '500+',
-      label: 'Property Sales',
+      value: '24 Hours',
+      label: 'Direct Escrow Protection Window',
       icon: Building2,
     },
     {
-      value: '150+',
-      label: 'Locations & Cities',
+      value: '100%',
+      label: 'Title Deed Verified Listings',
       icon: MapPin,
     },
     {
-      value: '2,000+',
-      label: 'Positive Reviews',
+      value: 'Free',
+      label: 'Agent-Escorted In-Person Tours',
       icon: Star,
     },
   ];

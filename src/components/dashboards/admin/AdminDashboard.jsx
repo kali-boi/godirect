@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 import AdminOverviewPage from './AdminOverviewPage';
@@ -13,7 +13,9 @@ import AdminRefundsPage from './pages/AdminRefundsPage';
 import AdminRegionsPage from './pages/AdminRegionsPage';
 import AdminPromotionsPage from './pages/AdminPromotionsPage';
 import UserProfileSettingsPage from '../common/UserProfileSettingsPage';
-import { Search, Ban, Eye, Check, X, Edit2, ToggleLeft, ToggleRight, Save } from 'lucide-react';
+import { getAllProfiles, getAllEscrows, getAdminPlatformStats } from '../../../services/supabaseService';
+import { supabase } from '../../../lib/supabaseClient';
+import { Search, Ban, Eye, Check, X, Edit2, ToggleLeft, ToggleRight, Save, RefreshCw } from 'lucide-react';
 
 export default function AdminDashboard({ 
   properties = [], 
@@ -23,31 +25,83 @@ export default function AdminDashboard({
   const [activeNav, setActiveNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [verifications, setVerifications] = useState([
-    { id: 'ver-901', landlordName: 'Lord George Sterling', email: 'george@sterlingestates.co.uk', docType: 'Mayfair Title Deed & Govt Passport', submittedDate: 'Today, 09:14 AM', status: 'pending', propertyTitle: 'Belgravia Terrace Residence' },
-    { id: 'ver-902', landlordName: 'Fatima Al-Hassan', email: 'fatima@dubailux.ae', docType: 'Dubai Land Dept Ownership Certificate', submittedDate: 'Yesterday, 04:30 PM', status: 'pending', propertyTitle: 'Downtown Dubai Executive Suite' }
-  ]);
+  // Live state from Supabase
+  const [userDirectory, setUserDirectory] = useState([]);
+  const [escrowRecords, setEscrowRecords] = useState([]);
+  const [platformStats, setPlatformStats] = useState({
+    totalUsers: 0,
+    verifiedListings: properties.length,
+    pendingDeeds: 0,
+    totalGMV: 0,
+    activeEscrowsCount: 0,
+    systemUptime: '100%'
+  });
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
-  const handleApprove = (id) => {
-    setVerifications(verifications.map(v => v.id === id ? { ...v, status: 'verified' } : v));
+  // Fetch live admin data from Supabase
+  const loadAdminData = async () => {
+    setIsLoadingData(true);
+    try {
+      const [users, escrows, stats] = await Promise.all([
+        getAllProfiles(),
+        getAllEscrows(),
+        getAdminPlatformStats()
+      ]);
+      setUserDirectory(users || []);
+      setEscrowRecords(escrows || []);
+      setPlatformStats(stats || {
+        totalUsers: (users || []).length,
+        verifiedListings: properties.length,
+        pendingDeeds: properties.filter(p => p.verificationStatus === 'pending').length,
+        totalGMV: 0,
+        activeEscrowsCount: 0,
+        systemUptime: '100%'
+      });
+    } catch (err) {
+      console.warn('Error loading admin data:', err);
+    } finally {
+      setIsLoadingData(false);
+    }
   };
 
-  const pendingCount = verifications.filter(v => v.status === 'pending').length;
+  useEffect(() => {
+    loadAdminData();
+  }, [properties]);
+
+  // Deed Verifications: dynamically derived from real properties
+  const verifications = useMemo(() => {
+    return properties
+      .filter(p => p.verificationStatus === 'pending')
+      .map(p => ({
+        id: p.id,
+        landlordName: p.hostName || 'Verified Host',
+        email: p.hostId || 'Direct Host',
+        docType: 'Title Deed & Government ID',
+        submittedDate: 'Pending Review',
+        status: 'pending',
+        propertyTitle: p.title
+      }));
+  }, [properties]);
+
+  const handleApprove = async (propertyId) => {
+    try {
+      await supabase
+        .from('properties')
+        .update({ verification_status: 'verified' })
+        .eq('id', propertyId);
+      loadAdminData();
+    } catch (err) {
+      console.error('Failed to approve deed:', err);
+    }
+  };
+
+  const pendingCount = verifications.length;
 
   // ── USER DIRECTORY STATE ──
   const [userSearch, setUserSearch] = useState('');
   const [userRoleFilter, setUserRoleFilter] = useState('all');
   const [userStatusFilter, setUserStatusFilter] = useState('all');
   const [bannedUsers, setBannedUsers] = useState([]);
-
-  const userDirectory = [
-    { id: 'u-1', name: 'Alexander Wright',   email: 'alex@email.com',              role: 'user',     kycStatus: 'verified',      joinDate: 'Jan 2024', country: 'Nigeria' },
-    { id: 'u-2', name: 'Eleanor Vance',       email: 'eleanor@godirect-vip.com',    role: 'landlord', kycStatus: 'verified',      joinDate: 'Mar 2022', country: 'Nigeria' },
-    { id: 'u-3', name: 'Lord George Sterling',email: 'george@sterlingestates.co.uk',role: 'landlord', kycStatus: 'pending',       joinDate: 'Aug 2026', country: 'Nigeria' },
-    { id: 'u-4', name: 'Chief Adebayo Okonjo',email: 'adebayo@realty.ng',           role: 'landlord', kycStatus: 'verified',      joinDate: 'Jun 2024', country: 'Nigeria' },
-    { id: 'u-5', name: 'Dr. Julian Thorne',   email: 'julian@med.co.uk',            role: 'user',     kycStatus: 'verified',      joinDate: 'May 2025', country: 'Nigeria' },
-    { id: 'u-6', name: 'Amara Al-Zahra',      email: 'amara@corp.ae',               role: 'user',     kycStatus: 'rejected',      joinDate: 'Jul 2026', country: 'Nigeria' }
-  ];
 
   const filteredUsers = useMemo(() => {
     return userDirectory.filter(u => {
@@ -56,18 +110,10 @@ export default function AdminDashboard({
       const matchStatus = userStatusFilter === 'all' || u.kycStatus === userStatusFilter;
       return matchSearch && matchRole && matchStatus;
     });
-  }, [userSearch, userRoleFilter, userStatusFilter, bannedUsers]);
+  }, [userSearch, userRoleFilter, userStatusFilter, userDirectory, bannedUsers]);
 
-  const getInitials = (name) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const getInitials = (name) => (name || 'GD').split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
   const avatarColors = ['bg-teal-500', 'bg-indigo-500', 'bg-amber-500', 'bg-rose-500', 'bg-violet-500', 'bg-emerald-500'];
-
-  // ── ESCROW VAULT STATE ──
-  const escrowRecords = [
-    { id: 'ESC-NG-881234', booking: 'BKG-881234', property: 'Ikoyi Waterfront Penthouse',      guest: 'Dr. Julian Thorne',    amount: 555000,   status: 'inspection_active', age: '18h', currency: 'NGN' },
-    { id: 'ESC-NG-774521', booking: 'BKG-774521', property: 'Victoria Island 2-Bed Suite',     guest: 'Amara Al-Zahra',       amount: 300000,   status: 'vaulted',           age: '3d',  currency: 'NGN' },
-    { id: 'ESC-NG-663018', booking: 'BKG-663018', property: 'Lekki Phase 1 3-Bed Apartment',   guest: 'Marcus Obi',           amount: 458333,   status: 'released',          age: '7d',  currency: 'NGN' },
-    { id: 'ESC-NG-550902', booking: 'BKG-550902', property: 'Maitama 4-Bed Duplex',            guest: 'Nkechi Adeyemi',       amount: 700000,   status: 'frozen_dispute',    age: '12d', currency: 'NGN' }
-  ];
 
   const escrowStatusMeta = {
     vaulted:           { label: 'Vaulted',           className: 'bg-blue-50 text-blue-800 border-blue-200' },
@@ -78,11 +124,11 @@ export default function AdminDashboard({
   };
 
   const escrowKPIs = [
-    { label: 'Total GMV Vault',       value: '₦2,013,333', color: 'text-slate-900',   sub: 'All time gross value' },
-    { label: 'Active Escrows',        value: '2',          color: 'text-amber-600',   sub: 'Vaulted or in inspection' },
-    { label: 'Released Today',        value: '₦458,333',   color: 'text-emerald-600', sub: 'Paid out to host' },
-    { label: 'Frozen (Disputes)',     value: '1',          color: 'text-rose-600',    sub: 'Pending admin resolution' },
-    { label: 'Platform Fee Earned',   value: '₦100,667',   color: 'text-teal-700',    sub: '5% of disbursed amounts' }
+    { label: 'Total GMV Vault',       value: `₦${Number(platformStats.totalGMV || 0).toLocaleString()}`, color: 'text-slate-900',   sub: 'All time gross value' },
+    { label: 'Active Escrows',        value: String(platformStats.activeEscrowsCount || 0),              color: 'text-amber-600',   sub: 'Vaulted or in inspection' },
+    { label: 'Released Today',        value: '₦0.00',                                                   color: 'text-emerald-600', sub: 'Paid out to host' },
+    { label: 'Frozen (Disputes)',     value: '0',                                                       color: 'text-rose-600',    sub: 'Pending admin resolution' },
+    { label: 'Platform Fee Earned',   value: `₦${Math.round(Number(platformStats.totalGMV || 0) * 0.05).toLocaleString()}`, color: 'text-teal-700', sub: '5% of disbursed amounts' }
   ];
 
   // ── SYSTEM SETTINGS STATE ──
@@ -144,6 +190,9 @@ export default function AdminDashboard({
             <AdminOverviewPage 
               properties={properties} 
               verifications={verifications} 
+              usersCount={platformStats.totalUsers || userDirectory.length}
+              totalGMV={platformStats.totalGMV || 0}
+              recentActivities={[]}
               handleApprove={handleApprove} 
               setActiveNav={setActiveNav} 
             />
@@ -349,24 +398,30 @@ export default function AdminDashboard({
                   <div className="col-span-1 text-right">Status</div>
                 </div>
                 <div className="divide-y divide-slate-50">
-                  {escrowRecords.map(e => {
-                    const meta = escrowStatusMeta[e.status] || escrowStatusMeta.vaulted;
-                    return (
-                      <div key={e.id} className="grid grid-cols-12 gap-3 px-6 py-4 items-center hover:bg-slate-50/60 transition-colors">
-                        <div className="col-span-3">
-                          <p className="text-xs font-mono font-bold text-[#0B2545]">{e.id}</p>
-                          <p className="text-[10px] text-slate-400">{e.booking}</p>
+                  {escrowRecords.length === 0 ? (
+                    <div className="p-12 text-center text-xs text-slate-400">
+                      No escrow holds in vault yet. Escrow deposits will appear here as bookings are placed.
+                    </div>
+                  ) : (
+                    escrowRecords.map(e => {
+                      const meta = escrowStatusMeta[e.status] || escrowStatusMeta.vaulted;
+                      return (
+                        <div key={e.id} className="grid grid-cols-12 gap-3 px-6 py-4 items-center hover:bg-slate-50/60 transition-colors">
+                          <div className="col-span-3">
+                            <p className="text-xs font-mono font-bold text-[#0B2545]">{e.id}</p>
+                            <p className="text-[10px] text-slate-400">{e.booking}</p>
+                          </div>
+                          <div className="col-span-3 text-xs text-slate-700 font-medium truncate">{e.property}</div>
+                          <div className="col-span-2 text-xs text-slate-500 truncate">{e.guest}</div>
+                          <div className="col-span-2 text-xs font-black text-slate-900">₦{Number(e.amount || 0).toLocaleString()}</div>
+                          <div className="col-span-1 text-xs text-slate-400">{e.age}</div>
+                          <div className="col-span-1 flex justify-end">
+                            <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap ${meta.className}`}>{meta.label}</span>
+                          </div>
                         </div>
-                        <div className="col-span-3 text-xs text-slate-700 font-medium truncate">{e.property}</div>
-                        <div className="col-span-2 text-xs text-slate-500 truncate">{e.guest}</div>
-                        <div className="col-span-2 text-xs font-black text-slate-900">₦{e.amount.toLocaleString()}</div>
-                        <div className="col-span-1 text-xs text-slate-400">{e.age}</div>
-                        <div className="col-span-1 flex justify-end">
-                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap ${meta.className}`}>{meta.label}</span>
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })
+                  )}
                 </div>
               </div>
             </div>

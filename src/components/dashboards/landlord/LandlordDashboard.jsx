@@ -24,10 +24,7 @@ export default function LandlordDashboard({
   const [searchQuery, setSearchQuery] = useState('');
 
   // ── BOOKING REQUESTS ──
-  const [requests, setRequests] = useState([
-    { id: 'req-201', propertyName: 'Ikoyi Waterfront Penthouse', guestName: 'Dr. Julian Thorne', guestAvatar: null, dates: 'Oct 12 - Oct 16 (4 Nights)', guestsCount: 4, totalAmount: 740000, status: 'pending', timestamp: '2 hours ago' },
-    { id: 'req-202', propertyName: 'Victoria Island 2-Bed Suite', guestName: 'Amara Al-Zahra', guestAvatar: null, dates: 'Nov 01 - Nov 07 (6 Nights)', guestsCount: 2, totalAmount: 450000, status: 'approved', timestamp: 'Yesterday' }
-  ]);
+  const [requests, setRequests] = useState([]);
 
   const handleApproveRequest = (reqId) => setRequests(requests.map(r => r.id === reqId ? { ...r, status: 'approved' } : r));
   const handleDeclineRequest = (reqId) => setRequests(requests.map(r => r.id === reqId ? { ...r, status: 'declined' } : r));
@@ -39,9 +36,8 @@ export default function LandlordDashboard({
   const [calYear, setCalYear]   = useState(today.getFullYear());
   const [selectedDay, setSelectedDay] = useState(null);
 
-  // Sample booked days for demonstration
-  const bookedDays = [3, 4, 5, 12, 13, 14, 15, 22, 23];
-  const blockedDays = [8, 9, 29, 30];
+  const bookedDays = [];
+  const blockedDays = [];
 
   const calDays = useMemo(() => {
     const firstDay = new Date(calYear, calMonth, 1).getDay();
@@ -63,19 +59,10 @@ export default function LandlordDashboard({
   };
 
   // ── MESSAGES ──
-  const [hostMessages, setHostMessages] = useState([
-    { id: 'm-1', guestName: 'Dr. Julian Thorne', initials: 'JT', color: 'bg-indigo-500', snippet: 'Hi, is early check-in available on Oct 12?', time: '10:42 AM', unread: true },
-    { id: 'm-2', guestName: 'Amara Al-Zahra',    initials: 'AA', color: 'bg-rose-500',   snippet: 'Thanks for confirming! See you in November.', time: 'Yesterday', unread: false },
-    { id: 'm-3', guestName: 'Marcus Obi',        initials: 'MO', color: 'bg-teal-500',   snippet: 'Is the property still available for Dec 20?', time: 'Mon', unread: true }
-  ]);
+  const [hostMessages, setHostMessages] = useState([]);
 
   // ── NOTIFICATIONS ──
-  const [hostNotifs, setHostNotifs] = useState([
-    { id: 'n-1', title: 'New Booking Request',    desc: 'Dr. Julian Thorne requested 4 nights at Ikoyi Penthouse.',        time: 'Today 09:30 AM', unread: true },
-    { id: 'n-2', title: 'Escrow Released',         desc: '₦458,333 has been released from Escrow to your wallet.',              time: 'Yesterday 2:15 PM', unread: true },
-    { id: 'n-3', title: 'New Review Received',     desc: 'Amara Al-Zahra left a 5★ review on Victoria Island 2-Bed Suite.', time: '2 days ago', unread: false },
-    { id: 'n-4', title: 'KYC Reminder',            desc: 'Complete your KYC verification to unlock full payout access.',       time: '3 days ago', unread: false }
-  ]);
+  const [hostNotifs, setHostNotifs] = useState([]);
 
   const markAllRead = () => setHostNotifs(n => n.map(x => ({ ...x, unread: false })));
 
@@ -172,42 +159,54 @@ export default function LandlordDashboard({
 
           {activeNav === 'requests' && (
             <div className="space-y-6 animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Booking Requests ({pendingRequestsCount} Pending)</h2>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900">Guest Booking Requests</h2>
+                  <p className="text-xs text-slate-500 mt-1">Review, approve, or decline reservation requests for your properties.</p>
+                </div>
+              </div>
+
               <div className="space-y-4">
-                {requests.map((req) => (
-                  <div key={req.id} className="p-5 rounded-2xl bg-white border border-slate-200 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <img src={req.guestAvatar} alt={req.guestName} className="w-12 h-12 rounded-full object-cover" />
-                        <div>
-                          <h4 className="font-bold text-sm text-slate-900">{req.guestName}</h4>
-                          <p className="text-xs text-slate-500">{req.propertyName} • {req.dates}</p>
+                {requests.length === 0 ? (
+                  <div className="p-12 text-center text-xs text-slate-400 bg-white rounded-2xl border border-slate-200">
+                    No booking requests received yet. Incoming reservation requests from verified renters will appear here.
+                  </div>
+                ) : (
+                  requests.map((req) => (
+                    <div key={req.id} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <img src={req.guestAvatar} alt={req.guestName} className="w-12 h-12 rounded-full object-cover" />
+                          <div>
+                            <h4 className="font-bold text-sm text-slate-900">{req.guestName}</h4>
+                            <p className="text-xs text-slate-500">{req.propertyName} • {req.dates}</p>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <span className="text-lg font-black text-slate-900">₦{Number(req.totalAmount || 0).toLocaleString()}</span>
+                          <span className="block text-[10px] text-slate-400">Total Escrow Value</span>
                         </div>
                       </div>
-                      <div className="text-right">
-                        <span className="text-lg font-black text-slate-900">${req.totalAmount}</span>
-                        <span className="block text-[10px] text-slate-400">Total Revenue</span>
+
+                      <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+                        {req.status === 'pending' ? (
+                          <>
+                            <button onClick={() => handleDeclineRequest(req.id)} className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold">
+                              Decline
+                            </button>
+                            <button onClick={() => handleApproveRequest(req.id)} className="px-5 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
+                              Approve Booking
+                            </button>
+                          </>
+                        ) : (
+                          <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold capitalize">
+                            Status: {req.status}
+                          </span>
+                        )}
                       </div>
                     </div>
-
-                    <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
-                      {req.status === 'pending' ? (
-                        <>
-                          <button onClick={() => handleDeclineRequest(req.id)} className="px-4 py-2 rounded-xl border border-slate-200 text-slate-700 text-xs font-bold">
-                            Decline
-                          </button>
-                          <button onClick={() => handleApproveRequest(req.id)} className="px-5 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
-                            Approve Booking
-                          </button>
-                        </>
-                      ) : (
-                        <span className="px-3 py-1 rounded-full bg-slate-100 text-slate-800 text-xs font-bold capitalize">
-                          Status: {req.status}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -291,34 +290,9 @@ export default function LandlordDashboard({
 
           {activeNav === 'messages' && (
             <div className="space-y-5 animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Guest Messages</h2>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-50 overflow-hidden">
-                {hostMessages.length === 0 && (
-                  <div className="p-10 text-center text-xs text-slate-400">No messages yet.</div>
-                )}
-                {hostMessages.map(msg => (
-                  <div key={msg.id} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-slate-50/80 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-10 h-10 rounded-full ${msg.color} flex items-center justify-center text-white text-xs font-black shrink-0 relative`}>
-                        {msg.initials}
-                        {msg.unread && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-teal-500 rounded-full border-2 border-white" />}
-                      </div>
-                      <div className="min-w-0">
-                        <p className={`text-xs truncate ${msg.unread ? 'font-extrabold text-slate-900' : 'font-bold text-slate-700'}`}>{msg.guestName}</p>
-                        <p className="text-[11px] text-slate-400 truncate">{msg.snippet}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-slate-400">{msg.time}</span>
-                      <button
-                        onClick={() => onOpenChatWithHost({ hostName: msg.guestName })}
-                        className="px-3 py-1.5 rounded-xl bg-[#0B2545] text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        Reply
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <h2 className="text-2xl font-black text-slate-900">Direct Guest Messages</h2>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+                <p className="text-xs text-slate-400">No active messages yet. Direct inquiries from guests will appear here.</p>
               </div>
             </div>
           )}

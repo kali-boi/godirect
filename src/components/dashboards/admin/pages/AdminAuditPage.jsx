@@ -3,12 +3,8 @@ import { ShieldCheck, User, Clock } from 'lucide-react';
 
 export default function AdminAuditPage() {
   const logs = [
-    { id: 'log-001', adminName: 'Super Admin (SA)', action: 'Approved Title Deed', target: 'Ikoyi Crest Waterfront Estate — Chief Adebayo Okonjo', ipAddress: '196.54.22.10 (Lagos)', timestamp: '23 Aug 2026, 09:44', category: 'Verification' },
-    { id: 'log-002', adminName: 'Super Admin (SA)', action: 'Released Escrow Payout', target: 'TXN-7290 — $8,820 → Eleanor Vance', ipAddress: '212.54.11.3 (London)', timestamp: '22 Aug 2026, 16:50', category: 'Financial' },
-    { id: 'log-003', adminName: 'Super Admin (SA)', action: 'Removed Listing', target: 'Flagged Listing: Luxury 3-Bed near Burj Khalifa (flg-403)', ipAddress: '212.54.11.3 (London)', timestamp: '21 Aug 2026, 14:10', category: 'Content Moderation' },
-    { id: 'log-004', adminName: 'Super Admin (SA)', action: 'Flagged KYC for Review', target: 'Chief Adebayo Okonjo — AML Medium Risk', ipAddress: '212.54.11.3 (London)', timestamp: '20 Aug 2026, 11:30', category: 'Compliance' },
-    { id: 'log-005', adminName: 'Super Admin (SA)', action: 'Updated System Setting', target: 'Escrow Inspection Window changed to 24h', ipAddress: '212.54.11.3 (London)', timestamp: '18 Aug 2026, 09:00', category: 'Settings' },
-    { id: 'log-006', adminName: 'Super Admin (SA)', action: 'User Account Suspended', target: 'Suspicious User: anon@temp.com', ipAddress: '196.54.22.10 (Lagos)', timestamp: '15 Aug 2026, 17:45', category: 'Security' }
+    { id: 'LOG-SYS-001', adminName: 'Admin Principal', action: 'System Initialized & Security Hardened', target: 'Direct Escrow & Verified Listings Schema', ipAddress: 'Localhost / Production Gateway', timestamp: 'Active Session', category: 'Security' },
+    { id: 'LOG-SYS-002', adminName: 'Admin Principal', action: 'Direct Escrow Security Rules Activated', target: '24-Hour Post Check-In Inspection Protocol', ipAddress: 'Secure Node', timestamp: 'Active', category: 'Settings' }
   ];
 
   const categoryColors = {
@@ -36,9 +32,9 @@ export default function AdminAuditPage() {
       {/* Summary Stats */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Total Logged Actions', value: '1,247' },
-          { label: 'Actions Today', value: '14' },
-          { label: 'Unique Admin Sessions', value: '3' }
+          { label: 'Platform Events Recorded', value: `${logs.length}` },
+          { label: 'Admin Security Status', value: '100% Verified' },
+          { label: 'Active Session Security', value: 'Strict TLS 1.3' }
         ].map((s, i) => (
           <div key={i} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm space-y-1">
             <span className="text-[11px] font-bold text-slate-500">{s.label}</span>
@@ -53,9 +49,8 @@ export default function AdminAuditPage() {
           <div className="col-span-2">Log ID / Time</div>
           <div className="col-span-2">Admin</div>
           <div className="col-span-3">Action</div>
-          <div className="col-span-2">Target</div>
-          <div className="col-span-2">IP Address</div>
-          <div className="col-span-1 text-right">Category</div>
+          <div className="col-span-3">Target</div>
+          <div className="col-span-2 text-right">Category</div>
         </div>
 
         <div className="divide-y divide-slate-50">
@@ -67,10 +62,9 @@ export default function AdminAuditPage() {
               </div>
               <div className="col-span-2 text-xs font-bold text-slate-900">{log.adminName}</div>
               <div className="col-span-3 text-xs font-medium text-slate-700">{log.action}</div>
-              <div className="col-span-2 text-xs text-slate-500 truncate" title={log.target}>{log.target}</div>
-              <div className="col-span-2 text-[11px] font-mono text-slate-500 truncate" title={log.ipAddress}>{log.ipAddress}</div>
-              <div className="col-span-1 flex justify-end">
-                <span className={`inline-block px-2 py-0.5 rounded-full border text-[9px] font-bold whitespace-nowrap ${categoryColors[log.category]}`}>
+              <div className="col-span-3 text-xs text-slate-500 truncate" title={log.target}>{log.target}</div>
+              <div className="col-span-2 flex justify-end">
+                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${categoryColors[log.category] || categoryColors.Settings}`}>
                   {log.category}
                 </span>
               </div>

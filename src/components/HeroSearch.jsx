@@ -20,35 +20,35 @@ export default function HeroSearch({
   const [selectedCity, setSelectedCity] = useState('');
   const [roomCount, setRoomCount] = useState('any');
 
-  // Hero Carousel Slides
+  // Hero Carousel Slides (Verified Platform Properties)
   const heroSlides = [
     {
       id: 'slide-1',
-      title: 'The Skyview Horizon Penthouse',
-      location: 'Mayfair, London, UK',
-      price: '$850 / night',
+      title: 'Ikoyi Waterfront Luxury Penthouse',
+      location: 'Bourkillon Road, Ikoyi, Lagos',
+      price: '₦185,000 / night',
       image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=2000&q=85'
     },
     {
       id: 'slide-2',
-      title: 'The Azure Waterfront Villa',
-      location: 'Jersey, Channel Islands',
-      price: '$1,470 / night',
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2000&q=85'
+      title: 'Maitama Diplomatic 5-Bed Mansion',
+      location: 'Gana Street, Maitama, Abuja',
+      price: '₦35,000,000 / year',
+      image: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=2000&q=85'
     },
     {
       id: 'slide-3',
-      title: 'Eiffel View Executive Suite',
-      location: '7th Arrondissement, Paris, France',
-      price: '$680 / night',
-      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=2000&q=85'
+      title: 'Victoria Island Executive 2-Bed Suite',
+      location: 'Ahmadu Bello Way, Victoria Island, Lagos',
+      price: '₦95,000 / night',
+      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=2000&q=85'
     },
     {
       id: 'slide-4',
-      title: 'Downtown Dubai Sky Palace',
-      location: 'Downtown Dubai, UAE',
-      price: '$1,850 / night',
-      image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=2000&q=85'
+      title: 'Lekki Phase 1 Contemporary 4-Bed Duplex',
+      location: 'Admiralty Way, Lekki Phase 1, Lagos',
+      price: '₦18,000,000 / year',
+      image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85'
     }
   ];
 

@@ -4,15 +4,15 @@ export const CATEGORIES = [
   { id: 'luxury-villa', name: 'Luxury Villas', icon: 'Sparkles' },
   { id: 'penthouse', name: 'Penthouses', icon: 'Building' },
   { id: 'apartment', name: 'Apartments', icon: 'Home' },
-  { id: 'commercial', name: 'Commercial', icon: 'Briefcase' }
+  { id: 'duplex', name: 'Duplexes & Mansions', icon: 'Briefcase' }
 ];
 
 export const POPULAR_DESTINATIONS = [
-  { name: 'London, UK', count: '142 properties', image: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Dubai, UAE', count: '98 properties', image: 'https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Paris, France', count: '115 properties', image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=600&q=80' },
-  { name: 'New York, USA', count: '160 properties', image: 'https://images.unsplash.com/photo-1496442226666-8d4d0e62e6e9?auto=format&fit=crop&w=600&q=80' },
-  { name: 'Lagos, Nigeria', count: '85 properties', image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=600&q=80' }
+  { name: 'Ikoyi, Lagos', count: 'Direct Landlords', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Victoria Island, Lagos', count: 'Verified Escrow', image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Lekki Phase 1, Lagos', count: '0% Broker Fees', image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Maitama, Abuja', count: 'Diplomatic Zone', image: 'https://images.unsplash.com/photo-1600566753376-12c8ab7fb75b?auto=format&fit=crop&w=600&q=80' },
+  { name: 'Banana Island, Lagos', count: 'Ultra-Luxury', image: 'https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=600&q=80' }
 ];
 
 export const MOCK_PROPERTIES = [

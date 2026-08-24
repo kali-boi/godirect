@@ -99,84 +99,62 @@ export default function LandlordWalletPage() {
     { code: '033', name: 'United Bank for Africa (UBA)' }
   ];
 
-  // Escrow Pipeline Items (Bookings in Lagos & Abuja)
-  const [escrowBookings, setEscrowBookings] = useState([
-    {
-      id: 'ESC-NG-901',
-      bookingId: 'BKG-IKOYI-101',
-      property: 'Ikoyi Crest Waterfront Penthouse',
-      location: 'Bourkillon Road, Ikoyi, Lagos',
-      guestName: 'Dr. Babatunde Adeleke',
-      guestAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80',
-      grossAmountNGN: 4500000, // ₦4.5m
-      platformCutRate: 5, // 5% platform fee
-      platformFeeNGN: 225000,
-      netToHostNGN: 4275000,
-      checkInDate: '24 Aug 2026',
-      inspectionWindowRemaining: '19 hours remaining',
-      status: 'locked_inspection',
-      gateway: 'Paystack NIP'
-    },
-    {
-      id: 'ESC-NG-902',
-      bookingId: 'BKG-BANANA-204',
-      property: 'Banana Island Oceanview Villa',
-      location: 'Zone A, Banana Island, Lagos',
-      guestName: 'Hajiya Zainab Danjuma',
-      guestAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
-      grossAmountNGN: 3950000, // ₦3.95m
-      platformCutRate: 5,
-      platformFeeNGN: 197500,
-      netToHostNGN: 3752500,
-      checkInDate: '28 Aug 2026',
-      inspectionWindowRemaining: 'Pending Check-in',
-      status: 'pending_checkin',
-      gateway: 'Flutterwave Card'
-    }
-  ]);
+  // Escrow Pipeline Items (Live from Supabase)
+  const [escrowBookings, setEscrowBookings] = useState([]);
 
-  // Nigerian Financial Statement Ledger
-  const [transactions, setTransactions] = useState([
-    {
-      id: 'TXN-NG-77890',
-      type: 'credit',
-      title: 'Escrow Released: Maitama Diplomatic Villa (Chief Emeka)',
-      date: 'Today, 08:30 AM',
-      grossNGN: 6500000,
-      feeNGN: 325000,
-      netNGN: 6175000,
-      status: 'Completed',
-      category: 'Booking Settlement',
-      reference: 'PAY-NIP-20260824',
-      payoutBank: 'GTBank (0129481920)'
-    },
-    {
-      id: 'TXN-NG-77810',
-      type: 'debit',
-      title: 'Withdrawal to GTBank (0129481920) via NIP',
-      date: '21 Aug 2026, 14:15',
-      grossNGN: 10000000,
-      feeNGN: 0,
-      netNGN: -10000000,
-      status: 'Completed',
-      category: 'NUBAN Payout',
-      reference: 'NIP-OUT-992149',
-      payoutBank: 'GTBank (0129481920)'
-    },
-    {
-      id: 'TXN-NG-77640',
-      type: 'credit',
-      title: 'Escrow Released: Victoria Island Executive Suite (Sarah A.)',
-      date: '16 Aug 2026',
-      grossNGN: 2800000,
-      feeNGN: 140000,
-      netNGN: 2660000,
-      status: 'Completed',
-      category: 'Booking Settlement',
-      reference: 'PAY-PSTK-881920',
-      payoutBank: 'Zenith Bank'
+  // Nigerian Financial Statement Ledger (Live from Supabase)
+  const [transactions, setTransactions] = useState([]);
+
+  useEffect(() => {
+    if (user?.id) {
+      // 1. Fetch wallet
+      getUserWallet(user.id).then((wallet) => {
+        if (wallet) {
+          setAvailableBalanceNGN(wallet.available_balance || 0);
+          setEscrowPendingNGN(wallet.escrow_locked_balance || 0);
+          setTotalLifetimePaidNGN(wallet.total_withdrawn || 0);
+          setPlatformFeesPaidNGN(Math.round((wallet.total_withdrawn || 0) * 0.05));
+        }
+      });
+
+      // 2. Fetch bank accounts
+      getBankAccounts(user.id).then((accounts) => {
+        if (accounts && accounts.length > 0) {
+          setBankAccounts(accounts);
+          setSelectedBankId(accounts[0].id);
+        } else {
+          setBankAccounts([]);
+        }
+        setLoading(false);
+      });
+
+      // 3. Fetch escrows
+      getEscrowTransactions(user.id).then((escrows) => {
+        if (escrows && escrows.length > 0) {
+          setEscrowBookings(escrows.map(e => ({
+            id: e.id,
+            bookingId: e.booking_id || e.id,
+            property: e.bookings?.properties?.title || 'Verified Property',
+            location: e.bookings?.properties?.location || 'Lagos, Nigeria',
+            guestName: e.bookings?.profiles?.full_name || 'Verified Guest',
+            guestAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+            grossAmountNGN: Number(e.amount || 0),
+            platformCutRate: 5,
+            platformFeeNGN: Math.round(Number(e.amount || 0) * 0.05),
+            netToHostNGN: Math.round(Number(e.amount || 0) * 0.95),
+            checkInDate: 'Scheduled',
+            inspectionWindowRemaining: '24 hours inspection window',
+            status: e.status,
+            gateway: 'Direct Escrow Vault'
+          })));
+        } else {
+          setEscrowBookings([]);
+        }
+      });
+    } else {
+      setLoading(false);
     }
-  ]);
+  }, [user]);
 
   // Helper Formatter
   const formatMoney = (amountNGN) => {

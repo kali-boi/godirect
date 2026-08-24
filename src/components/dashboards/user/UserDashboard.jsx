@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import UserSidebar from './UserSidebar';
 import UserHeader from './UserHeader';
 import UserOverviewPage from './UserOverviewPage';
@@ -10,6 +10,8 @@ import UserDocumentsPage from './pages/UserDocumentsPage';
 import UserSupportPage from './pages/UserSupportPage';
 import UserVerificationPage from './pages/UserVerificationPage';
 import UserProfileSettingsPage from '../common/UserProfileSettingsPage';
+import { useAuth } from '../../../contexts/AuthContext';
+import { getUserScheduledTours } from '../../../services/supabaseService';
 
 export default function UserDashboard({ 
   wishlistProperties = [], 
@@ -18,32 +20,36 @@ export default function UserDashboard({
   onReturnToPublic,
   onSelectPortal
 }) {
+  const { user } = useAuth();
   const [activeNav, setActiveNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
 
-  // Mock Data
-  const appointments = [
-    {
-      id: 'app-1',
-      propertyName: 'The Skyview Horizon Penthouse',
-      location: 'Mayfair, London',
-      hostName: 'Eleanor Vance',
-      date: 'Oct 12, 2026',
-      time: '3:00 PM GMT',
-      status: 'Confirmed',
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80'
+  const [appointments, setAppointments] = useState([]);
+  const [savedSearches, setSavedSearches] = useState([]);
+  const [notificationsList, setNotificationsList] = useState([]);
+  const [loadingTours, setLoadingTours] = useState(true);
+
+  useEffect(() => {
+    if (user?.id) {
+      getUserScheduledTours(user.id)
+        .then(tours => {
+          setAppointments((tours || []).map(t => ({
+            id: t.id,
+            propertyName: t.properties?.title || 'Verified Property',
+            location: t.properties ? `${t.properties.city}, ${t.properties.state}` : 'Lagos, Nigeria',
+            hostName: t.assigned_agent_name || 'GoDirect Escort Agent',
+            date: t.tour_date,
+            time: t.tour_time,
+            status: t.status || 'Confirmed',
+            image: t.properties?.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80'
+          })));
+        })
+        .catch(err => console.warn('Error fetching tours:', err))
+        .finally(() => setLoadingTours(false));
+    } else {
+      setLoadingTours(false);
     }
-  ];
-
-  const savedSearches = [
-    { id: 's-1', title: 'Mayfair 3-Bed Penthouses', filter: 'Penthouse • London' },
-    { id: 's-2', title: 'Paris Short-Let Executive Suites', filter: 'Shortlet • Paris' }
-  ];
-
-  const notificationsList = [
-    { id: 'n-1', title: 'Escrow Deposit Vaulted', desc: '$3,570.00 is secured in Escrow for Skyview Penthouse.', time: 'Today 09:30 AM' },
-    { id: 'n-2', title: 'Viewing Confirmed', desc: 'Eleanor Vance confirmed your viewing on Oct 12 at 3:00 PM.', time: 'Yesterday' }
-  ];
+  }, [user]);
 
   return (
     <div className="min-h-screen bg-[#f8fafc] text-slate-800 font-['Host_Grotesk'] flex flex-col md:flex-row pb-20 md:pb-0">
@@ -160,77 +166,70 @@ export default function UserDashboard({
           {activeNav === 'searches' && (
             <div className="space-y-6 animate-fade-in">
               <h2 className="text-2xl font-black text-slate-900">Saved Searches & Alerts</h2>
-              <div className="space-y-3">
-                {savedSearches.map((s) => (
-                  <div key={s.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
-                    <div>
-                      <h4 className="font-extrabold text-sm text-slate-900">{s.title}</h4>
-                      <p className="text-xs text-slate-400">{s.filter}</p>
+              {savedSearches.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+                  <p className="text-xs text-slate-400">No saved searches or price alerts yet.</p>
+                  <button onClick={onReturnToPublic} className="px-5 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
+                    Explore Properties
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {savedSearches.map((s) => (
+                    <div key={s.id} className="p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
+                      <div>
+                        <h4 className="font-extrabold text-sm text-slate-900">{s.title}</h4>
+                        <p className="text-xs text-slate-400">{s.filter}</p>
+                      </div>
+                      <button onClick={onReturnToPublic} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold">
+                        Run Search
+                      </button>
                     </div>
-                    <button onClick={onReturnToPublic} className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold">
-                      Run Search
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {activeNav === 'appointments' && (
             <div className="space-y-6 animate-fade-in">
               <h2 className="text-2xl font-black text-slate-900">Scheduled Tours & Appointments</h2>
-              <div className="space-y-4">
-                {appointments.map((app) => (
-                  <div key={app.id} className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                    <div className="flex items-center gap-4">
-                      <img src={app.image} alt={app.propertyName} className="w-16 h-16 rounded-xl object-cover" />
-                      <div>
-                        <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
-                          {app.status}
-                        </span>
-                        <h4 className="font-extrabold text-sm text-slate-900 mt-1">{app.propertyName}</h4>
-                        <p className="text-xs text-slate-500">{app.date} • {app.time}</p>
+              {appointments.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+                  <p className="text-xs text-slate-400">No scheduled tours or viewing appointments. You can book an agent-escorted inspection on any property listing.</p>
+                  <button onClick={onReturnToPublic} className="px-5 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
+                    Browse Properties
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {appointments.map((app) => (
+                    <div key={app.id} className="p-5 rounded-2xl bg-white border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <img src={app.image} alt={app.propertyName} className="w-16 h-16 rounded-xl object-cover" />
+                        <div>
+                          <span className="px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold">
+                            {app.status}
+                          </span>
+                          <h4 className="font-extrabold text-sm text-slate-900 mt-1">{app.propertyName}</h4>
+                          <p className="text-xs text-slate-500">{app.date} • {app.time}</p>
+                        </div>
                       </div>
+                      <button onClick={() => onOpenChatWithHost(app)} className="px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
+                        Chat Host
+                      </button>
                     </div>
-                    <button onClick={() => onOpenChatWithHost(app)} className="px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
-                      Chat Host
-                    </button>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {activeNav === 'messages' && (
             <div className="space-y-5 animate-fade-in">
               <h2 className="text-2xl font-black text-slate-900">Messages & Inquiries</h2>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-50 overflow-hidden">
-                {[
-                  { id: 'uc-1', name: 'Ikoyi Penthouse Host', initials: 'IH', color: 'bg-teal-500',   snippet: 'Looking forward to hosting your stay!', time: '10:42 AM', unread: true },
-                  { id: 'uc-2', name: 'VI 2-Bed Suite Host',  initials: 'VS', color: 'bg-indigo-500', snippet: 'Hi, your booking is confirmed for Nov 1.', time: 'Yesterday', unread: false }
-                ].map(conv => (
-                  <div key={conv.id} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-slate-50/80 transition-colors cursor-pointer group">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className={`w-10 h-10 rounded-full ${conv.color} flex items-center justify-center text-white text-xs font-black shrink-0 relative`}>
-                        {conv.initials}
-                        {conv.unread && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#018F8B] rounded-full border-2 border-white" />}
-                      </div>
-                      <div className="min-w-0">
-                        <p className={`text-xs truncate ${conv.unread ? 'font-extrabold text-slate-900' : 'font-bold text-slate-700'}`}>{conv.name}</p>
-                        <p className="text-[11px] text-slate-400 truncate">{conv.snippet}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] text-slate-400">{conv.time}</span>
-                      <button
-                        onClick={() => onOpenChatWithHost({ hostName: conv.name })}
-                        className="px-3 py-1.5 rounded-xl bg-[#0B2545] text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        Open Chat
-                      </button>
-                    </div>
-                  </div>
-                ))}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+                <p className="text-xs text-slate-400">No active message threads yet. Start a direct conversation with any landlord from their property listing.</p>
               </div>
             </div>
           )}

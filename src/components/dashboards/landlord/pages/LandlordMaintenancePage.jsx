@@ -2,44 +2,7 @@ import React, { useState } from 'react';
 import { Wrench, Clock, CheckCircle2, AlertTriangle, PlusCircle } from 'lucide-react';
 
 export default function LandlordMaintenancePage() {
-  const [tasks, setTasks] = useState([
-    {
-      id: 'maint-001',
-      property: 'The Skyview Horizon Penthouse',
-      title: 'Rooftop Pool Heating System Repair',
-      description: 'Pool heating unit fault reported by guest Dr. Julian Thorne. Contractor scheduled for 25 Aug 2026.',
-      category: 'Plumbing / HVAC',
-      cost: '$840',
-      reportedDate: '20 Aug 2026',
-      scheduledDate: '25 Aug 2026',
-      status: 'scheduled',
-      priority: 'High'
-    },
-    {
-      id: 'maint-002',
-      property: 'The Azure Waterfront Villa',
-      title: 'Bulthaup Kitchen Island Surface Chip',
-      description: 'Minor surface chip on the kitchen island noted during post-stay inspection.',
-      category: 'Interior / Furniture',
-      cost: '$320',
-      reportedDate: '18 Aug 2026',
-      scheduledDate: '30 Aug 2026',
-      status: 'pending',
-      priority: 'Low'
-    },
-    {
-      id: 'maint-003',
-      property: 'The Skyview Horizon Penthouse',
-      title: 'Smart Home System Software Update',
-      description: 'Annual Lutron smart lighting system update completed by certified technician.',
-      category: 'Technology',
-      cost: '$0',
-      reportedDate: '10 Aug 2026',
-      scheduledDate: '10 Aug 2026',
-      status: 'completed',
-      priority: 'Low'
-    }
-  ]);
+  const [tasks, setTasks] = useState([]);
 
   const statusColors = {
     scheduled: 'bg-blue-50 text-blue-800 border-blue-200',
@@ -59,16 +22,16 @@ export default function LandlordMaintenancePage() {
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
           <PlusCircle className="w-4 h-4" />
-          Log Issue
+          Log Maintenance Task
         </button>
       </div>
 
       {/* Summary */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { label: 'Active Issues', value: tasks.filter(t => t.status !== 'completed').length, color: 'text-amber-600', icon: AlertTriangle },
-          { label: 'Scheduled', value: tasks.filter(t => t.status === 'scheduled').length, color: 'text-blue-600', icon: Clock },
-          { label: 'Total Maintenance Cost', value: `$${tasks.reduce((a, t) => a + parseInt(t.cost.replace('$', '') || 0), 0).toLocaleString()}`, color: 'text-slate-900', icon: Wrench }
+          { label: 'Pending Tasks', value: tasks.filter(t => t.status === 'pending').length, icon: Clock, color: 'text-amber-600' },
+          { label: 'Scheduled Visits', value: tasks.filter(t => t.status === 'scheduled').length, icon: Wrench, color: 'text-blue-600' },
+          { label: 'Completed', value: tasks.filter(t => t.status === 'completed').length, icon: CheckCircle2, color: 'text-emerald-600' }
         ].map((s, i) => {
           const Icon = s.icon;
           return (
@@ -77,39 +40,54 @@ export default function LandlordMaintenancePage() {
                 <span className="text-[11px] font-bold text-slate-500">{s.label}</span>
                 <Icon className={`w-4 h-4 ${s.color}`} />
               </div>
-              <div className={`text-xl font-black ${s.color}`}>{s.value}</div>
+              <div className={`text-2xl font-black ${s.color}`}>{s.value}</div>
             </div>
           );
         })}
       </div>
 
-      {/* Maintenance Tasks */}
+      {/* Tasks List */}
       <div className="space-y-4">
-        {tasks.map((t) => (
-          <div key={t.id} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-extrabold text-sm text-slate-900">{t.title}</h4>
-                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${priorityColors[t.priority]}`}>{t.priority}</span>
-                </div>
-                <p className="text-xs text-slate-500">{t.property} • Category: {t.category}</p>
-                <p className="text-xs text-slate-400">Reported: {t.reportedDate} • Scheduled: {t.scheduledDate} • Cost: <strong className="text-slate-700">{t.cost}</strong></p>
-              </div>
-              <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border shrink-0 ${statusColors[t.status]}`}>
-                {t.status}
-              </span>
-            </div>
-            <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed">
-              {t.description}
-            </p>
-            {t.status !== 'completed' && (
-              <button onClick={() => complete(t.id)} className="px-4 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold">
-                Mark as Resolved
-              </button>
-            )}
+        {tasks.length === 0 ? (
+          <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-xs text-slate-400">
+            No maintenance tasks or repair logs recorded. All verified properties are fully inspected and operational.
           </div>
-        ))}
+        ) : (
+          tasks.map((t) => (
+            <div key={t.id} className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-3">
+              <div className="flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-extrabold text-sm text-slate-900">{t.title}</h4>
+                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${priorityColors[t.priority]}`}>
+                      {t.priority} Priority
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500">{t.property} • Category: {t.category}</p>
+                </div>
+                <div className="flex flex-col items-end gap-1.5">
+                  <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${statusColors[t.status]}`}>
+                    {t.status}
+                  </span>
+                  <span className="font-black text-sm text-slate-900">{t.cost}</span>
+                </div>
+              </div>
+
+              <p className="text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 leading-relaxed">
+                "{t.description}"
+              </p>
+
+              <div className="flex items-center justify-between pt-2 border-t border-slate-100 text-xs">
+                <span className="text-slate-400">Scheduled Date: {t.scheduledDate}</span>
+                {t.status !== 'completed' && (
+                  <button onClick={() => complete(t.id)} className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold">
+                    Mark Completed
+                  </button>
+                )}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
