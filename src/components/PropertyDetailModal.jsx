@@ -33,10 +33,23 @@ export default function PropertyDetailModal({
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [stayNights, setStayNights] = useState(3);
 
-  const nightlyRate = property.price;
+  const images = Array.isArray(property.images) && property.images.length > 0
+    ? property.images
+    : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'];
+
+  const rawPrice = property.price ?? (property.isShortLet ? property.pricePerNight : property.pricePerYear) ?? 0;
+  const nightlyRate = Number(rawPrice);
+  const currencySymbol = property.currency === 'USD' ? '$' : '₦';
+  const pricePeriod = property.pricePeriod || (property.isShortLet ? 'night' : 'year');
   const totalBase = nightlyRate * (property.isShortLet ? stayNights : 1);
   const serviceFee = Math.round(totalBase * 0.05); // low 5% direct fee vs 15%+ on other platforms
   const grandTotal = totalBase + serviceFee;
+
+  const hostName = property.hostName || property.host?.name || 'Verified Direct Landlord';
+  const hostAvatar = property.hostAvatar || property.host?.avatar || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80';
+  const amenitiesList = Array.isArray(property.amenities) ? property.amenities : [];
+  const displayRating = property.rating || 5.0;
+  const displayReviewCount = property.reviewCount || property.reviewsCount || 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 overflow-y-auto bg-black/75 backdrop-blur-md animate-fade-in">
@@ -81,7 +94,7 @@ export default function PropertyDetailModal({
           <div>
             <div className="flex items-center gap-2 text-xs font-semibold text-[var(--teal-blue)] uppercase tracking-wider mb-1">
               <MapPin className="w-4 h-4" />
-              <span>{property.address}</span>
+              <span>{property.address || property.location}</span>
             </div>
             <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--text-primary)]">
               {property.title}
@@ -92,22 +105,26 @@ export default function PropertyDetailModal({
           <div className="space-y-3">
             <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden bg-gray-900 shadow-md">
               <img 
-                src={property.images[activeImageIndex]} 
-                alt={property.title} 
+                src={images[activeImageIndex] || images[0]} 
+                alt={property.title || 'Property'} 
                 className="w-full h-full object-cover"
               />
-              <button 
-                onClick={() => setActiveImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length)}
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/80"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <button 
-                onClick={() => setActiveImageIndex((prev) => (prev + 1) % property.images.length)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/80"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </button>
+              {images.length > 1 && (
+                <>
+                  <button 
+                    onClick={() => setActiveImageIndex((prev) => (prev - 1 + images.length) % images.length)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/80"
+                  >
+                    <ChevronLeft className="w-5 h-5" />
+                  </button>
+                  <button 
+                    onClick={() => setActiveImageIndex((prev) => (prev + 1) % images.length)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/50 text-white flex items-center justify-center backdrop-blur-sm hover:bg-black/80"
+                  >
+                    <ChevronRight className="w-5 h-5" />
+                  </button>
+                </>
+              )}
 
               {/* Video Tour Badge Overlay */}
               <button
@@ -120,19 +137,21 @@ export default function PropertyDetailModal({
             </div>
 
             {/* Thumbnails */}
-            <div className="flex gap-3 overflow-x-auto pb-1">
-              {property.images.map((img, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveImageIndex(idx)}
-                  className={`relative w-24 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
-                    activeImageIndex === idx ? 'border-[var(--teal-blue)] scale-105' : 'border-transparent opacity-60 hover:opacity-100'
-                  }`}
-                >
-                  <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
-                </button>
-              ))}
-            </div>
+            {images.length > 1 && (
+              <div className="flex gap-3 overflow-x-auto pb-1">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setActiveImageIndex(idx)}
+                    className={`relative w-24 h-16 rounded-xl overflow-hidden shrink-0 border-2 transition-all ${
+                      activeImageIndex === idx ? 'border-[var(--teal-blue)] scale-105' : 'border-transparent opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    <img src={img} alt="thumbnail" className="w-full h-full object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Grid Layout: Left Details, Right Booking Calculator */}
@@ -146,22 +165,22 @@ export default function PropertyDetailModal({
                 <div>
                   <Bed className="w-5 h-5 mx-auto text-[var(--teal-blue)] mb-1" />
                   <div className="text-xs text-[var(--text-muted)]">Bedrooms</div>
-                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.beds} Beds</div>
+                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.beds || 0} Beds</div>
                 </div>
                 <div>
                   <Bath className="w-5 h-5 mx-auto text-[var(--teal-blue)] mb-1" />
                   <div className="text-xs text-[var(--text-muted)]">Bathrooms</div>
-                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.baths} Baths</div>
+                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.baths || 0} Baths</div>
                 </div>
                 <div>
                   <Maximize2 className="w-5 h-5 mx-auto text-[var(--teal-blue)] mb-1" />
                   <div className="text-xs text-[var(--text-muted)]">Area</div>
-                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.sqft} sqft</div>
+                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.sqft || 0} sqft</div>
                 </div>
                 <div>
                   <Star className="w-5 h-5 mx-auto text-[var(--mellow-gold)] mb-1 fill-[var(--mellow-gold)]" />
                   <div className="text-xs text-[var(--text-muted)]">Rating</div>
-                  <div className="font-bold text-sm text-[var(--text-primary)]">{property.rating} ({property.reviewsCount})</div>
+                  <div className="font-bold text-sm text-[var(--text-primary)]">{displayRating} ({displayReviewCount})</div>
                 </div>
               </div>
 
@@ -169,7 +188,7 @@ export default function PropertyDetailModal({
               <div>
                 <h3 className="text-lg font-bold text-[var(--text-primary)] mb-2">About this Property</h3>
                 <p className="text-sm text-[var(--text-secondary)] leading-relaxed">
-                  {property.description}
+                  {property.description || 'No description provided.'}
                 </p>
               </div>
 
@@ -178,21 +197,21 @@ export default function PropertyDetailModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <img 
-                      src={property.host.avatar} 
-                      alt={property.host.name} 
+                      src={hostAvatar} 
+                      alt={hostName} 
                       className="w-12 h-12 rounded-full object-cover border-2 border-[var(--teal-blue)]"
                     />
                     <div>
-                      <h4 className="font-bold text-base text-[var(--text-primary)]">{property.host.name}</h4>
-                      <p className="text-xs text-[var(--text-muted)]">{property.host.role} • Joined {property.host.joinedYear}</p>
+                      <h4 className="font-bold text-base text-[var(--text-primary)]">{hostName}</h4>
+                      <p className="text-xs text-[var(--text-muted)]">Verified Direct Owner</p>
                     </div>
                   </div>
                   <span className="badge-gold">Verified Owner</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 text-xs text-[var(--text-secondary)] pt-2 border-t border-[var(--border-light)]">
-                  <div>Response Rate: <strong className="text-[var(--text-primary)]">{property.host.responseRate}</strong></div>
-                  <div>Response Time: <strong className="text-[var(--text-primary)]">{property.host.responseTime}</strong></div>
+                  <div>Response Rate: <strong className="text-[var(--text-primary)]">100%</strong></div>
+                  <div>Response Time: <strong className="text-[var(--text-primary)]">&lt; 15 mins</strong></div>
                 </div>
 
                 <button
@@ -208,17 +227,19 @@ export default function PropertyDetailModal({
               </div>
 
               {/* Amenities Grid */}
-              <div>
-                <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">Property Amenities</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-                  {property.amenities.map((amenity, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2.5 rounded-xl bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-primary)]">
-                      <Check className="w-4 h-4 text-[var(--teal-blue)] shrink-0" />
-                      <span>{amenity}</span>
-                    </div>
-                  ))}
+              {amenitiesList.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-bold text-[var(--text-primary)] mb-3">Property Amenities</h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+                    {amenitiesList.map((amenity, idx) => (
+                      <div key={idx} className="flex items-center gap-2 p-2.5 rounded-xl bg-[var(--bg-elevated)] text-xs font-semibold text-[var(--text-primary)]">
+                        <Check className="w-4 h-4 text-[var(--teal-blue)] shrink-0" />
+                        <span>{amenity}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
             </div>
 
@@ -228,12 +249,12 @@ export default function PropertyDetailModal({
                 
                 <div className="flex items-baseline justify-between">
                   <div>
-                    <span className="text-3xl font-extrabold text-[var(--text-primary)]">${property.price.toLocaleString()}</span>
-                    <span className="text-sm text-[var(--text-muted)]"> /{property.pricePeriod}</span>
+                    <span className="text-3xl font-extrabold text-[var(--text-primary)]">{currencySymbol}{nightlyRate.toLocaleString()}</span>
+                    <span className="text-sm text-[var(--text-muted)]"> /{pricePeriod}</span>
                   </div>
                   <div className="flex items-center gap-1 text-xs font-bold text-[var(--mellow-gold)]">
                     <Star className="w-4 h-4 fill-[var(--mellow-gold)]" />
-                    <span>{property.rating}</span>
+                    <span>{displayRating}</span>
                   </div>
                 </div>
 
@@ -263,19 +284,19 @@ export default function PropertyDetailModal({
                 {/* Price Breakdown */}
                 <div className="space-y-2.5 text-sm text-[var(--text-secondary)] border-t border-b border-[var(--border-light)] py-4">
                   <div className="flex justify-between">
-                    <span>${property.price} × {property.isShortLet ? `${stayNights} nights` : '1 month'}</span>
-                    <span className="font-semibold text-[var(--text-primary)]">${totalBase.toLocaleString()}</span>
+                    <span>{currencySymbol}{nightlyRate.toLocaleString()} × {property.isShortLet ? `${stayNights} nights` : '1 year'}</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{currencySymbol}{totalBase.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="flex items-center gap-1">
-                      GoDirect Platform Fee
-                      <span className="badge-teal text-[9px] px-1 py-0">Direct Deal</span>
+                      GoDirect Platform Fee (5%)
+                      <span className="badge-teal text-[9px] px-1 py-0">Direct Escrow</span>
                     </span>
-                    <span className="font-semibold text-[var(--text-primary)]">${serviceFee}</span>
+                    <span className="font-semibold text-[var(--text-primary)]">{currencySymbol}{serviceFee.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between font-extrabold text-base text-[var(--text-primary)] pt-2 border-t border-[var(--border-light)]">
                     <span>Total Price</span>
-                    <span className="text-[var(--teal-blue)]">${grandTotal.toLocaleString()}</span>
+                    <span className="text-[var(--teal-blue)]">{currencySymbol}{grandTotal.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -289,7 +310,7 @@ export default function PropertyDetailModal({
                     className="btn-gold w-full py-3.5 text-sm font-bold justify-center shadow-lg"
                   >
                     <Calendar className="w-4 h-4" />
-                    <span>Reserve via 24h Escrow (₦{grandTotal.toLocaleString()})</span>
+                    <span>Reserve via 24h Escrow ({currencySymbol}{grandTotal.toLocaleString()})</span>
                   </button>
 
                   <button

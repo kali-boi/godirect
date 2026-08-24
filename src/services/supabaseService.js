@@ -1,9 +1,8 @@
 /**
  * GoDirect Supabase Service Layer
- * Connects frontend models to Supabase Postgres with seamless fallback to mock state.
+ * Connects frontend models to Supabase Postgres.
  */
 import { supabase } from '../lib/supabaseClient';
-import { MOCK_PROPERTIES, INITIAL_MESSAGES } from '../data/mockData';
 
 // ==============================================================================
 // 1. PROPERTIES SERVICE
@@ -12,41 +11,64 @@ export async function getProperties() {
   try {
     const { data, error } = await supabase
       .from('properties')
-      .select('*')
+      .select('*, profiles!host_id(full_name, avatar_url)')
+      .eq('status', 'active')
       .order('created_at', { ascending: false });
 
-    if (error || !data || data.length === 0) {
-      console.info('Using local properties data (Supabase empty or pending seed)');
-      return MOCK_PROPERTIES;
+    if (error) {
+      console.error('getProperties DB error:', error.message);
+      return [];
     }
 
+    if (!data || data.length === 0) return [];
+
     // Map database snake_case to frontend camelCase
-    return data.map(p => ({
-      id: p.id,
-      title: p.title,
-      type: p.type,
-      isShortLet: p.is_short_let,
-      pricePerNight: Number(p.price_per_night),
-      pricePerYear: Number(p.price_per_year),
-      currency: p.currency || 'NGN',
-      location: `${p.city}, ${p.state}`,
-      address: p.address,
-      beds: p.beds,
-      baths: Number(p.baths),
-      maxGuests: p.max_guests,
-      sqft: p.sqft,
-      amenities: p.amenities || [],
-      images: p.images || [],
-      rating: 4.95,
-      reviewCount: 18,
-      verifiedDirectDeed: p.verification_status === 'verified',
-      isFeatured: true,
-      description: p.description,
-      hostName: 'Verified Direct Owner'
-    }));
+    return data.map(p => {
+      const priceVal = p.is_short_let ? Number(p.price_per_night || 0) : Number(p.price_per_year || 0);
+      const periodVal = p.is_short_let ? 'night' : 'year';
+      const imagesList = Array.isArray(p.images) && p.images.length > 0
+        ? p.images
+        : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'];
+
+      return {
+        id: p.id,
+        title: p.title,
+        slug: p.slug,
+        type: p.type,
+        isShortLet: Boolean(p.is_short_let),
+        price: priceVal,
+        pricePeriod: periodVal,
+        pricePerNight: Number(p.price_per_night || 0),
+        pricePerYear: Number(p.price_per_year || 0),
+        currency: p.currency || 'NGN',
+        location: `${p.city || ''}, ${p.state || ''}`.trim().replace(/^,|,$/g, '') || 'Nigeria',
+        city: p.city,
+        state: p.state,
+        country: p.country,
+        address: p.address || '',
+        beds: p.beds || 0,
+        baths: Number(p.baths || 0),
+        maxGuests: p.max_guests || 2,
+        sqft: p.sqft || 0,
+        amenities: p.amenities || [],
+        images: imagesList,
+        rating: 5.0,
+        reviewCount: 0,
+        reviewsCount: 0,
+        isVerified: p.verification_status === 'verified',
+        verifiedDirectDeed: p.verification_status === 'verified',
+        isFeatured: false,
+        description: p.description || '',
+        hostId: p.host_id,
+        hostName: p.profiles?.full_name || 'Verified Direct Owner',
+        hostAvatar: p.profiles?.avatar_url || null,
+        status: p.status,
+        verificationStatus: p.verification_status
+      };
+    });
   } catch (err) {
-    console.warn('getProperties catch error:', err);
-    return MOCK_PROPERTIES;
+    console.error('getProperties error:', err);
+    return [];
   }
 }
 
@@ -293,7 +315,6 @@ export async function addBankAccount(accountData) {
 // ==============================================================================
 export async function scheduleAgentEscortedTour(tourData) {
   try {
-    const randomCode = Math.floor(100000 + Math.random() * 900000).toString();
     const payload = {
       property_id: tourData.propertyId,
       user_id: tourData.userId,
@@ -303,7 +324,6 @@ export async function scheduleAgentEscortedTour(tourData) {
       tour_date: tourData.tourDate,
       tour_time: tourData.tourTime,
       tour_type: tourData.tourType || 'physical',
-      security_checkin_code: randomCode,
       escort_compliance_status: 'agent_assigned',
       status: 'confirmed'
     };
@@ -314,20 +334,11 @@ export async function scheduleAgentEscortedTour(tourData) {
       .select()
       .single();
 
-    if (error) {
-      console.warn('scheduled_tours table insert note (returning local receipt):', error.message);
-      return { 
-        success: true, 
-        data: { ...payload, id: `tour-${Date.now()}` } 
-      };
-    }
+    if (error) throw error;
     return { success: true, data };
   } catch (err) {
-    console.warn('scheduleAgentEscortedTour error:', err);
-    return { 
-      success: true, 
-      data: { ...tourData, security_checkin_code: '482109', id: `tour-${Date.now()}` } 
-    };
+    console.error('scheduleAgentEscortedTour error:', err);
+    return { success: false, error: err.message };
   }
 }
 

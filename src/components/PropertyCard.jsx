@@ -21,15 +21,28 @@ export default function PropertyCard({
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  if (!property) return null;
+
+  const images = Array.isArray(property.images) && property.images.length > 0
+    ? property.images
+    : ['https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=800&q=80'];
+
   const nextImage = (e) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev + 1) % property.images.length);
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = (e) => {
     e.stopPropagation();
-    setCurrentImageIndex((prev) => (prev - 1 + property.images.length) % property.images.length);
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
+
+  const rawPrice = property.price ?? (property.isShortLet ? property.pricePerNight : property.pricePerYear) ?? 0;
+  const displayPrice = Number(rawPrice).toLocaleString();
+  const currencySymbol = property.currency === 'USD' ? '$' : '₦';
+  const pricePeriod = property.pricePeriod || (property.isShortLet ? 'night' : 'year');
+  const displayRating = property.rating || 5.0;
+  const displayReviewCount = property.reviewCount || property.reviewsCount || 0;
 
   return (
     <div 
@@ -41,8 +54,8 @@ export default function PropertyCard({
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-100 p-2">
         <div className="w-full h-full rounded-2xl overflow-hidden relative">
           <img 
-            src={property.images[currentImageIndex]} 
-            alt={property.title}
+            src={images[currentImageIndex] || images[0]} 
+            alt={property.title || 'Property'}
             className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           />
 
@@ -50,7 +63,7 @@ export default function PropertyCard({
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
 
           {/* Carousel Arrows */}
-          {property.images.length > 1 && (
+          {images.length > 1 && (
             <>
               <button 
                 onClick={prevImage}
@@ -83,7 +96,7 @@ export default function PropertyCard({
               </span>
             )}
 
-            {property.isVerified && (
+            {(property.isVerified || property.verifiedDirectDeed) && (
               <span className="px-2.5 py-1 rounded-full bg-amber-400 text-slate-950 font-bold text-[10px] flex items-center gap-1 shadow-md">
                 <ShieldCheck className="w-3 h-3" />
                 <span>Verified</span>
@@ -106,8 +119,8 @@ export default function PropertyCard({
           {/* Rating Badge */}
           <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-semibold">
             <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span>{property.rating}</span>
-            <span className="text-gray-300">({property.reviewsCount})</span>
+            <span>{displayRating}</span>
+            <span className="text-gray-300">({displayReviewCount})</span>
           </div>
         </div>
       </div>
@@ -131,11 +144,11 @@ export default function PropertyCard({
           <div className="flex items-center gap-4 text-xs font-bold text-[var(--text-secondary)] py-2.5 border-y border-[var(--border-light)] mb-4">
             <div className="flex items-center gap-1.5">
               <Bed className="w-4 h-4 text-[var(--teal-blue)]" />
-              <span>{property.beds} Bedrooms</span>
+              <span>{property.beds || 0} Bedrooms</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Bath className="w-4 h-4 text-[var(--teal-blue)]" />
-              <span>{property.baths} Bathrooms</span>
+              <span>{property.baths || 0} Bathrooms</span>
             </div>
           </div>
         </div>
@@ -145,8 +158,8 @@ export default function PropertyCard({
           <div>
             <span className="text-xs text-[var(--text-muted)] block font-medium">Price</span>
             <div className="text-xl font-black text-[var(--text-primary)]">
-              ${property.price.toLocaleString()}
-              <span className="text-xs font-semibold text-[var(--text-muted)]">/{property.pricePeriod}</span>
+              {currencySymbol}{displayPrice}
+              <span className="text-xs font-semibold text-[var(--text-muted)]">/{pricePeriod}</span>
             </div>
           </div>
 

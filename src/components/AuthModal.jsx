@@ -21,15 +21,13 @@ import { useAuth } from '../contexts/AuthContext';
 export default function AuthModal({ 
   isOpen, 
   onClose, 
-  initialMode = 'signin', // 'signin' | 'signup'
+  initialMode = 'signin',
   onAuthSuccess 
 }) {
-  if (!isOpen) return null;
-
-  const { signInWithPassword, signUpWithRole, switchDemoRole } = useAuth();
+  const { signInWithPassword, signUpWithRole } = useAuth();
   
-  const [mode, setMode] = useState(initialMode); // 'signin' | 'signup' | 'forgot'
-  const [selectedRole, setSelectedRole] = useState('user'); // 'user' | 'landlord'
+  const [mode, setMode] = useState(initialMode);
+  const [selectedRole, setSelectedRole] = useState('user');
   
   // Form fields
   const [fullName, setFullName] = useState('');
@@ -44,6 +42,9 @@ export default function AuthModal({
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+
+  // All hooks above — safe to early return now
+  if (!isOpen) return null;
 
   // Password strength calculation
   const getPasswordStrength = () => {
@@ -109,7 +110,7 @@ export default function AuthModal({
       } else {
         setSuccessMsg('Signed in successfully! Redirecting...');
         setTimeout(() => {
-          if (onAuthSuccess) onAuthSuccess('user');
+          if (onAuthSuccess) onAuthSuccess(res.profile?.role || 'user');
           onClose();
         }, 1200);
       }
@@ -122,15 +123,6 @@ export default function AuthModal({
     }
   };
 
-  // Quick Demo Login Handler
-  const handleQuickDemo = (personaRole) => {
-    switchDemoRole(personaRole);
-    setSuccessMsg(`Signed in as ${personaRole.toUpperCase()}! Redirecting...`);
-    setTimeout(() => {
-      if (onAuthSuccess) onAuthSuccess(personaRole);
-      onClose();
-    }, 800);
-  };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in font-['Host_Grotesk'] overflow-y-auto">

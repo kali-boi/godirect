@@ -112,10 +112,10 @@ export default function UserOverviewPage({
             {wishlistProperties.length > 0 ? (
               wishlistProperties.map((prop) => (
                 <div key={prop.id} className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-slate-300 transition-all cursor-pointer" onClick={() => onSelectProperty(prop)}>
-                  <img src={prop.images[0]} alt={prop.title} className="w-16 h-16 rounded-xl object-cover" />
+                  <img src={prop.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80'} alt={prop.title} className="w-16 h-16 rounded-xl object-cover" />
                   <div className="flex-1">
                     <h4 className="font-extrabold text-sm text-slate-900">{prop.title}</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Saved on 23/08/2026</p>
+                    <p className="text-xs text-slate-400 mt-0.5">{prop.location || 'Saved Property'}</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-slate-400" />
                 </div>

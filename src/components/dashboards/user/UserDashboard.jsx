@@ -93,6 +93,28 @@ export default function UserDashboard({
                   Explore Full Marketplace
                 </button>
               </div>
+              {wishlistProperties.length > 0 && (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                  {wishlistProperties.map(prop => (
+                    <div key={prop.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
+                      <div className="relative">
+                        <img src={prop.images?.[0]} alt={prop.title} className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" />
+                        {prop.isShortLet && <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#018F8B] text-white">Short-Let</span>}
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <h3 className="font-bold text-sm text-slate-900 line-clamp-1">{prop.title}</h3>
+                        <p className="text-xs text-slate-500">{prop.location}</p>
+                        <p className="text-sm font-black text-[#0B2545]">
+                          {prop.isShortLet
+                            ? `₦${Number(prop.pricePerNight).toLocaleString()}/night`
+                            : `₦${Number(prop.pricePerYear).toLocaleString()}/year`}
+                        </p>
+                        <button onClick={() => onSelectProperty(prop)} className="w-full py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold hover:bg-[#122525] transition-colors">View Details</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -105,18 +127,33 @@ export default function UserDashboard({
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {wishlistProperties.map((prop) => (
-                  <div key={prop.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
-                    <img src={prop.images[0]} alt={prop.title} className="w-full h-44 rounded-xl object-cover" />
-                    <h3 className="font-bold text-base text-slate-900">{prop.title}</h3>
-                    <p className="text-xs text-slate-500">{prop.location}</p>
-                    <button onClick={() => onSelectProperty(prop)} className="w-full py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
-                      View Details
-                    </button>
-                  </div>
-                ))}
-              </div>
+              {wishlistProperties.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center space-y-3">
+                  <p className="text-slate-400 text-sm">Your wishlist is empty.</p>
+                  <button onClick={onReturnToPublic} className="px-5 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold">Browse Properties</button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {wishlistProperties.map((prop) => (
+                    <div key={prop.id} className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden group">
+                      <div className="relative">
+                        <img src={prop.images?.[0]} alt={prop.title} className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-300" />
+                        {prop.isShortLet && <span className="absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#018F8B] text-white">Short-Let</span>}
+                      </div>
+                      <div className="p-4 space-y-2">
+                        <h3 className="font-bold text-sm text-slate-900 line-clamp-1">{prop.title}</h3>
+                        <p className="text-xs text-slate-500">{prop.location}</p>
+                        <p className="text-sm font-black text-[#0B2545]">
+                          {prop.isShortLet
+                            ? `₦${Number(prop.pricePerNight).toLocaleString()}/night`
+                            : `₦${Number(prop.pricePerYear).toLocaleString()}/year`}
+                        </p>
+                        <button onClick={() => onSelectProperty(prop)} className="w-full py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold hover:bg-[#122525] transition-colors">View Details</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -165,19 +202,35 @@ export default function UserDashboard({
           )}
 
           {activeNav === 'messages' && (
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-5 animate-fade-in">
               <h2 className="text-2xl font-black text-slate-900">Messages & Inquiries</h2>
-              <div className="p-4 rounded-2xl bg-white border border-slate-200 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Eleanor Vance" className="w-10 h-10 rounded-full object-cover" />
-                  <div>
-                    <h4 className="font-bold text-xs text-slate-900">Eleanor Vance (Host)</h4>
-                    <p className="text-xs text-slate-500">"Looking forward to hosting your stay at Skyview Penthouse!"</p>
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-50 overflow-hidden">
+                {[
+                  { id: 'uc-1', name: 'Ikoyi Penthouse Host', initials: 'IH', color: 'bg-teal-500',   snippet: 'Looking forward to hosting your stay!', time: '10:42 AM', unread: true },
+                  { id: 'uc-2', name: 'VI 2-Bed Suite Host',  initials: 'VS', color: 'bg-indigo-500', snippet: 'Hi, your booking is confirmed for Nov 1.', time: 'Yesterday', unread: false }
+                ].map(conv => (
+                  <div key={conv.id} className="flex items-center justify-between gap-4 px-5 py-4 hover:bg-slate-50/80 transition-colors cursor-pointer group">
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className={`w-10 h-10 rounded-full ${conv.color} flex items-center justify-center text-white text-xs font-black shrink-0 relative`}>
+                        {conv.initials}
+                        {conv.unread && <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#018F8B] rounded-full border-2 border-white" />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className={`text-xs truncate ${conv.unread ? 'font-extrabold text-slate-900' : 'font-bold text-slate-700'}`}>{conv.name}</p>
+                        <p className="text-[11px] text-slate-400 truncate">{conv.snippet}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className="text-[10px] text-slate-400">{conv.time}</span>
+                      <button
+                        onClick={() => onOpenChatWithHost({ hostName: conv.name })}
+                        className="px-3 py-1.5 rounded-xl bg-[#0B2545] text-white text-[10px] font-bold opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        Open Chat
+                      </button>
+                    </div>
                   </div>
-                </div>
-                <button onClick={() => onOpenChatWithHost({ hostName: 'Eleanor Vance', propertyName: 'Skyview Penthouse' })} className="px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
-                  Open Chat
-                </button>
+                ))}
               </div>
             </div>
           )}
@@ -199,11 +252,31 @@ export default function UserDashboard({
 
           {activeNav === 'payments' && (
             <div className="space-y-6 animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Payments & Escrow Security Vault</h2>
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-2">
-                <span className="text-xs font-bold text-slate-400 uppercase">Active Escrow Security Hold</span>
-                <div className="text-3xl font-black text-slate-900">$3,570.00</div>
-                <p className="text-xs text-slate-500">Funds held in isolated Escrow until 24h post check-in.</p>
+              <h2 className="text-2xl font-black text-slate-900">Payments & Escrow Vault</h2>
+
+              {/* Active escrow card */}
+              <div className="bg-gradient-to-br from-[#0B2545] to-[#018F8B] rounded-2xl p-6 text-white space-y-3">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-white/60">Active Escrow Security Hold</span>
+                <div className="text-3xl font-black">₦0.00</div>
+                <p className="text-xs text-white/70">No active escrow holds. Funds will appear here once you make a booking.</p>
+                <div className="flex gap-3 pt-2">
+                  {['Escrow Deposited', 'Check-in Verified', '24h Inspection', 'Released to Host'].map((step, i) => (
+                    <div key={step} className="flex-1 text-center">
+                      <div className={`w-6 h-6 rounded-full mx-auto flex items-center justify-center text-[10px] font-black mb-1 ${ i === 0 ? 'bg-amber-400 text-slate-900' : 'bg-white/20 text-white/50' }`}>{i + 1}</div>
+                      <p className="text-[9px] text-white/60 leading-tight">{step}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Payment history table */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="px-6 py-4 border-b border-slate-100">
+                  <h3 className="font-extrabold text-sm text-slate-900">Payment History</h3>
+                </div>
+                <div className="p-10 text-center text-xs text-slate-400">
+                  No payments yet. Complete your first booking to see transaction history here.
+                </div>
               </div>
             </div>
           )}

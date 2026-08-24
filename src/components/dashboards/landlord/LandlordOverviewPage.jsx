@@ -103,20 +103,31 @@ export default function LandlordOverviewPage({
           </div>
 
           <div className="space-y-4">
-            {properties.map((prop) => (
-              <div 
-                key={prop.id} 
-                className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-slate-300 transition-all cursor-pointer"
-                onClick={() => onSelectProperty(prop)}
-              >
-                <img src={prop.images[0]} alt={prop.title} className="w-16 h-16 rounded-xl object-cover" />
-                <div className="flex-1">
-                  <h4 className="font-extrabold text-sm text-slate-900">{prop.title}</h4>
-                  <p className="text-xs text-slate-400">{prop.location} • ${prop.price}/{prop.pricePeriod}</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
-              </div>
-            ))}
+            {properties.length === 0 ? (
+              <div className="text-center py-6 text-xs text-slate-400">No properties listed yet.</div>
+            ) : (
+              properties.map((prop) => {
+                const img = Array.isArray(prop.images) && prop.images.length > 0 ? prop.images[0] : 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80';
+                const priceFormatted = prop.isShortLet
+                  ? `₦${Number(prop.pricePerNight || prop.price || 0).toLocaleString()}/night`
+                  : `₦${Number(prop.pricePerYear || prop.price || 0).toLocaleString()}/year`;
+
+                return (
+                  <div 
+                    key={prop.id} 
+                    className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-slate-300 transition-all cursor-pointer"
+                    onClick={() => onSelectProperty(prop)}
+                  >
+                    <img src={img} alt={prop.title} className="w-16 h-16 rounded-xl object-cover" />
+                    <div className="flex-1">
+                      <h4 className="font-extrabold text-sm text-slate-900">{prop.title}</h4>
+                      <p className="text-xs text-slate-400">{prop.location} • {priceFormatted}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-slate-400" />
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 

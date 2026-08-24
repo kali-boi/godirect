@@ -12,7 +12,6 @@ import {
   Zap,
   PhoneOff
 } from 'lucide-react';
-import { INITIAL_MESSAGES } from '../data/mockData';
 import { filterChatMessage } from '../utils/chatShield';
 import { supabase } from '../lib/supabaseClient';
 import { useAuth } from '../contexts/AuthContext';
@@ -24,17 +23,16 @@ export default function ChatDrawer({
   activePropertyForChat,
   onOpenBookingModal
 }) {
-  if (!isOpen) return null;
-
   const { user } = useAuth();
-  const [conversations, setConversations] = useState(INITIAL_MESSAGES);
-  const [activeThreadId, setActiveThreadId] = useState(
-    activePropertyForChat ? 'msg-01' : 'msg-01'
-  );
+  const [conversations, setConversations] = useState([]);
+  const [activeThreadId, setActiveThreadId] = useState('msg-01');
   const [inputMessage, setInputMessage] = useState('');
   const [securityAlert, setSecurityAlert] = useState(null);
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
+
+  // All hooks above — safe to early return now
+  if (!isOpen) return null;
 
   const activeThread = conversations.find(c => c.id === activeThreadId) || conversations[0];
 
@@ -47,14 +45,14 @@ export default function ChatDrawer({
     scrollToBottom();
   }, [activeThread?.history, isTyping]);
 
-  // Set up Supabase Realtime Subscription
+  // Set up Supabase Realtime — scoped to active conversation only
   useEffect(() => {
-    // Listen for new messages across channels
+    if (!activeThread?.id) return;
     const channel = supabase
-      .channel('public-chat-room')
+      .channel(`conversation-${activeThread.id}`)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
+        { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${activeThread.id}` },
         (payload) => {
           const newMsg = payload.new;
           if (newMsg) {

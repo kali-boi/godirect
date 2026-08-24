@@ -22,14 +22,14 @@ import FeatureGrid from './components/FeatureGrid';
 import BestValueMapSection from './components/BestValueMapSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
-import { MOCK_PROPERTIES } from './data/mockData';
 import { useAuth } from './contexts/AuthContext';
 import { getProperties } from './services/supabaseService';
-import { Heart, Search, Sparkles, Building2, ArrowRight, ShieldAlert, ArrowLeftRight } from 'lucide-react';
+import { Heart, Search, Sparkles, Building2, ArrowRight, ShieldAlert, ArrowLeftRight, Loader2 } from 'lucide-react';
 
 export default function App() {
   const { user, profile, role } = useAuth();
-  const [properties, setProperties] = useState(MOCK_PROPERTIES);
+  const [properties, setProperties] = useState([]);
+  const [isLoadingProperties, setIsLoadingProperties] = useState(true);
   
   // Persistent portal view
   const [currentPortal, setCurrentPortal] = useState(() => {
@@ -49,18 +49,25 @@ export default function App() {
 
   // Load properties from Supabase Postgres on mount
   useEffect(() => {
-    getProperties().then((data) => {
-      if (data && data.length > 0) {
-        setProperties(data);
-      }
-    });
+    setIsLoadingProperties(true);
+    getProperties()
+      .then((data) => {
+        setProperties(data || []);
+      })
+      .catch((err) => {
+        console.error('Failed to load properties from Supabase:', err);
+        setProperties([]);
+      })
+      .finally(() => {
+        setIsLoadingProperties(false);
+      });
   }, []);
 
-  // When user signs in, route them to their real portal if on public
+  // When user signs in, route them to their real portal if on public or user
   useEffect(() => {
-    if (role === 'admin' && currentPortal === 'public') {
+    if (role === 'admin' && (currentPortal === 'public' || currentPortal === 'user')) {
       setCurrentPortal('admin');
-    } else if (role === 'landlord' && currentPortal === 'public') {
+    } else if (role === 'landlord' && (currentPortal === 'public' || currentPortal === 'user')) {
       setCurrentPortal('landlord');
     }
   }, [role]);
@@ -72,7 +79,7 @@ export default function App() {
   const [searchQuery, setSearchQuery] = useState('');
   
   // State Overlays & Modals
-  const [wishlist, setWishlist] = useState(['gd-101']);
+  const [wishlist, setWishlist] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [bookingData, setBookingData] = useState(null);
   const [tourProperty, setTourProperty] = useState(null);
@@ -116,7 +123,7 @@ export default function App() {
 
   // Add new property published from Host Portal
   const handleAddProperty = (newProp) => {
-    setProperties([newProp, ...properties]);
+    setProperties((prev) => [newProp, ...prev]);
     setCurrentPortal('public');
     setActiveView('public');
   };
@@ -365,7 +372,27 @@ export default function App() {
               )}
 
               {/* PROPERTIES SUB-SECTIONS CONTAINER */}
-              {filteredProperties.length > 0 ? (
+              {isLoadingProperties ? (
+                /* Loading Skeleton Grid */
+                <div className="space-y-8 animate-pulse">
+                  <div className="h-16 bg-slate-200/70 rounded-2xl w-full" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                    {[1, 2, 3, 4].map((n) => (
+                      <div key={n} className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-4">
+                        <div className="h-48 bg-slate-200/80 rounded-2xl w-full" />
+                        <div className="space-y-2">
+                          <div className="h-4 bg-slate-200/80 rounded-md w-3/4" />
+                          <div className="h-3 bg-slate-200/60 rounded-md w-1/2" />
+                        </div>
+                        <div className="flex justify-between items-center pt-2">
+                          <div className="h-5 bg-slate-200/80 rounded-md w-1/3" />
+                          <div className="h-8 bg-slate-200/80 rounded-xl w-24" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ) : filteredProperties.length > 0 ? (
                 <div className="space-y-16">
                   
                   {/* SUB-SECTION 1: SHORTLET RESIDENCES */}

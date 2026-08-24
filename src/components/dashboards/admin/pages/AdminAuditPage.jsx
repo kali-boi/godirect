@@ -49,26 +49,28 @@ export default function AdminAuditPage() {
 
       {/* Audit Log Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-          <div className="col-span-2">Log ID</div>
+        <div className="grid grid-cols-12 gap-3 px-6 py-3 border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+          <div className="col-span-2">Log ID / Time</div>
           <div className="col-span-2">Admin</div>
           <div className="col-span-3">Action</div>
-          <div className="col-span-3">Target</div>
-          <div className="col-span-2">Category</div>
+          <div className="col-span-2">Target</div>
+          <div className="col-span-2">IP Address</div>
+          <div className="col-span-1 text-right">Category</div>
         </div>
 
         <div className="divide-y divide-slate-50">
           {logs.map((log) => (
-            <div key={log.id} className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-slate-50 transition-all items-start">
+            <div key={log.id} className="grid grid-cols-12 gap-3 px-6 py-4 hover:bg-slate-50 transition-all items-center">
               <div className="col-span-2 space-y-0.5">
-                <span className="text-[11px] font-mono text-slate-500 block">{log.id}</span>
+                <span className="text-[11px] font-mono font-bold text-slate-700 block">{log.id}</span>
                 <span className="text-[10px] text-slate-400 block">{log.timestamp}</span>
               </div>
               <div className="col-span-2 text-xs font-bold text-slate-900">{log.adminName}</div>
               <div className="col-span-3 text-xs font-medium text-slate-700">{log.action}</div>
-              <div className="col-span-3 text-xs text-slate-500 truncate">{log.target}</div>
-              <div className="col-span-2">
-                <span className={`inline-block px-2 py-0.5 rounded-full border text-[10px] font-bold ${categoryColors[log.category]}`}>
+              <div className="col-span-2 text-xs text-slate-500 truncate" title={log.target}>{log.target}</div>
+              <div className="col-span-2 text-[11px] font-mono text-slate-500 truncate" title={log.ipAddress}>{log.ipAddress}</div>
+              <div className="col-span-1 flex justify-end">
+                <span className={`inline-block px-2 py-0.5 rounded-full border text-[9px] font-bold whitespace-nowrap ${categoryColors[log.category]}`}>
                   {log.category}
                 </span>
               </div>

@@ -20,10 +20,7 @@ export default function BookingModal({
   onClose, 
   onConfirmSuccess 
 }) {
-  if (!bookingData) return null;
-
   const { user, profile } = useAuth();
-  const { property, calculation } = bookingData;
 
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [createdBookingCode, setCreatedBookingCode] = useState('');
@@ -33,6 +30,7 @@ export default function BookingModal({
   const [guestPhone, setGuestPhone] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('escrow_paystack');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [bookingError, setBookingError] = useState('');
 
   useEffect(() => {
     if (user || profile) {
@@ -42,6 +40,10 @@ export default function BookingModal({
     }
   }, [user, profile]);
 
+  // All hooks above — safe to early return now
+  if (!bookingData) return null;
+
+  const { property, calculation } = bookingData;
   const currencySymbol = property?.currency === 'USD' ? '$' : '₦';
   const totalAmount = calculation.grandTotal || 0;
   const baseRate = calculation.totalBase || 0;
@@ -50,12 +52,13 @@ export default function BookingModal({
   const handleConfirm = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
+    setBookingError('');
 
     try {
       const payload = {
         propertyId: property.id,
-        guestId: user?.id || 'usr-guest-direct',
-        hostId: property.host?.id || 'usr-host-direct',
+        guestId: user?.id || null,
+        hostId: property.hostId || null,
         checkIn: calculation.checkInDate || new Date().toISOString().split('T')[0],
         checkOut: calculation.checkOutDate || new Date(Date.now() + 4 * 86400000).toISOString().split('T')[0],
         grossAmount: totalAmount,
@@ -65,18 +68,19 @@ export default function BookingModal({
       };
 
       const result = await createBookingWithEscrow(payload);
-      if (result.success) {
-        setCreatedBookingCode(result.booking?.booking_code || `BKG-NG-${Math.floor(100000 + Math.random() * 900000)}`);
-        setCreatedEscrowCode(result.escrow?.escrow_code || `ESC-NG-${Math.floor(100000 + Math.random() * 900000)}`);
-      } else {
-        setCreatedBookingCode(`BKG-NG-${Math.floor(100000 + Math.random() * 900000)}`);
-        setCreatedEscrowCode(`ESC-NG-${Math.floor(100000 + Math.random() * 900000)}`);
+
+      if (!result.success) {
+        setBookingError(result.error || 'Booking failed. Please try again.');
+        setIsProcessing(false);
+        return;
       }
+
+      setCreatedBookingCode(result.booking?.booking_code || '');
+      setCreatedEscrowCode(result.escrow?.escrow_code || '');
       setIsConfirmed(true);
     } catch (err) {
-      console.warn('Booking confirmation error:', err);
-      setCreatedBookingCode(`BKG-NG-${Math.floor(100000 + Math.random() * 900000)}`);
-      setIsConfirmed(true);
+      console.error('Booking confirmation error:', err);
+      setBookingError('An unexpected error occurred. Please try again.');
     } finally {
       setIsProcessing(false);
     }
@@ -102,7 +106,14 @@ export default function BookingModal({
 
         {!isConfirmed ? (
           <form onSubmit={handleConfirm} className="p-6 space-y-5 overflow-y-auto">
-            
+
+            {/* Booking Error Banner */}
+            {bookingError && (
+              <div className="bg-rose-50 border border-rose-200 text-rose-800 p-3.5 rounded-2xl text-xs flex items-center gap-2">
+                <span className="font-bold">{bookingError}</span>
+              </div>
+            )}
+
             {/* Property Summary */}
             <div className="flex items-center gap-4 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
               <img src={property.images?.[0] || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80'} alt={property.title} className="w-20 h-16 rounded-xl object-cover" />

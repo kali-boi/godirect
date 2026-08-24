@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import AdminSidebar from './AdminSidebar';
 import AdminHeader from './AdminHeader';
 import AdminOverviewPage from './AdminOverviewPage';
@@ -13,6 +13,7 @@ import AdminRefundsPage from './pages/AdminRefundsPage';
 import AdminRegionsPage from './pages/AdminRegionsPage';
 import AdminPromotionsPage from './pages/AdminPromotionsPage';
 import UserProfileSettingsPage from '../common/UserProfileSettingsPage';
+import { Search, Ban, Eye, Check, X, Edit2, ToggleLeft, ToggleRight, Save } from 'lucide-react';
 
 export default function AdminDashboard({ 
   properties = [], 
@@ -23,24 +24,8 @@ export default function AdminDashboard({
   const [searchQuery, setSearchQuery] = useState('');
 
   const [verifications, setVerifications] = useState([
-    {
-      id: 'ver-901',
-      landlordName: 'Lord George Sterling',
-      email: 'george@sterlingestates.co.uk',
-      docType: 'Mayfair Title Deed & Govt Passport',
-      submittedDate: 'Today, 09:14 AM',
-      status: 'pending',
-      propertyTitle: 'Belgravia Terrace Residence'
-    },
-    {
-      id: 'ver-902',
-      landlordName: 'Fatima Al-Hassan',
-      email: 'fatima@dubailux.ae',
-      docType: 'Dubai Land Dept Ownership Certificate',
-      submittedDate: 'Yesterday, 04:30 PM',
-      status: 'pending',
-      propertyTitle: 'Downtown Dubai Executive Suite'
-    }
+    { id: 'ver-901', landlordName: 'Lord George Sterling', email: 'george@sterlingestates.co.uk', docType: 'Mayfair Title Deed & Govt Passport', submittedDate: 'Today, 09:14 AM', status: 'pending', propertyTitle: 'Belgravia Terrace Residence' },
+    { id: 'ver-902', landlordName: 'Fatima Al-Hassan', email: 'fatima@dubailux.ae', docType: 'Dubai Land Dept Ownership Certificate', submittedDate: 'Yesterday, 04:30 PM', status: 'pending', propertyTitle: 'Downtown Dubai Executive Suite' }
   ]);
 
   const handleApprove = (id) => {
@@ -49,16 +34,77 @@ export default function AdminDashboard({
 
   const pendingCount = verifications.filter(v => v.status === 'pending').length;
 
+  // ── USER DIRECTORY STATE ──
+  const [userSearch, setUserSearch] = useState('');
+  const [userRoleFilter, setUserRoleFilter] = useState('all');
+  const [userStatusFilter, setUserStatusFilter] = useState('all');
+  const [bannedUsers, setBannedUsers] = useState([]);
+
   const userDirectory = [
-    { id: 'u-1', name: 'Alexander Wright', email: 'alex@email.com', role: 'Renter', status: 'Verified', joinDate: 'Jan 2024', country: 'UK' },
-    { id: 'u-2', name: 'Eleanor Vance', email: 'eleanor@godirect-vip.com', role: 'Superhost', status: 'Superhost', joinDate: 'Mar 2022', country: 'UK' },
-    { id: 'u-3', name: 'Lord George Sterling', email: 'george@sterlingestates.co.uk', role: 'Host', status: 'Pending Deed', joinDate: 'Aug 2026', country: 'UK' },
-    { id: 'u-4', name: 'Chief Adebayo Okonjo', email: 'adebayo@realty.ng', role: 'Host', status: 'Verified', joinDate: 'Jun 2024', country: 'Nigeria' },
-    { id: 'u-5', name: 'Dr. Julian Thorne', email: 'julian@med.co.uk', role: 'Renter', status: 'Verified', joinDate: 'May 2025', country: 'UK' }
+    { id: 'u-1', name: 'Alexander Wright',   email: 'alex@email.com',              role: 'user',     kycStatus: 'verified',      joinDate: 'Jan 2024', country: 'Nigeria' },
+    { id: 'u-2', name: 'Eleanor Vance',       email: 'eleanor@godirect-vip.com',    role: 'landlord', kycStatus: 'verified',      joinDate: 'Mar 2022', country: 'Nigeria' },
+    { id: 'u-3', name: 'Lord George Sterling',email: 'george@sterlingestates.co.uk',role: 'landlord', kycStatus: 'pending',       joinDate: 'Aug 2026', country: 'Nigeria' },
+    { id: 'u-4', name: 'Chief Adebayo Okonjo',email: 'adebayo@realty.ng',           role: 'landlord', kycStatus: 'verified',      joinDate: 'Jun 2024', country: 'Nigeria' },
+    { id: 'u-5', name: 'Dr. Julian Thorne',   email: 'julian@med.co.uk',            role: 'user',     kycStatus: 'verified',      joinDate: 'May 2025', country: 'Nigeria' },
+    { id: 'u-6', name: 'Amara Al-Zahra',      email: 'amara@corp.ae',               role: 'user',     kycStatus: 'rejected',      joinDate: 'Jul 2026', country: 'Nigeria' }
   ];
 
+  const filteredUsers = useMemo(() => {
+    return userDirectory.filter(u => {
+      const matchSearch = !userSearch || u.name.toLowerCase().includes(userSearch.toLowerCase()) || u.email.toLowerCase().includes(userSearch.toLowerCase());
+      const matchRole = userRoleFilter === 'all' || u.role === userRoleFilter;
+      const matchStatus = userStatusFilter === 'all' || u.kycStatus === userStatusFilter;
+      return matchSearch && matchRole && matchStatus;
+    });
+  }, [userSearch, userRoleFilter, userStatusFilter, bannedUsers]);
+
+  const getInitials = (name) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+  const avatarColors = ['bg-teal-500', 'bg-indigo-500', 'bg-amber-500', 'bg-rose-500', 'bg-violet-500', 'bg-emerald-500'];
+
+  // ── ESCROW VAULT STATE ──
+  const escrowRecords = [
+    { id: 'ESC-NG-881234', booking: 'BKG-881234', property: 'Ikoyi Waterfront Penthouse',      guest: 'Dr. Julian Thorne',    amount: 555000,   status: 'inspection_active', age: '18h', currency: 'NGN' },
+    { id: 'ESC-NG-774521', booking: 'BKG-774521', property: 'Victoria Island 2-Bed Suite',     guest: 'Amara Al-Zahra',       amount: 300000,   status: 'vaulted',           age: '3d',  currency: 'NGN' },
+    { id: 'ESC-NG-663018', booking: 'BKG-663018', property: 'Lekki Phase 1 3-Bed Apartment',   guest: 'Marcus Obi',           amount: 458333,   status: 'released',          age: '7d',  currency: 'NGN' },
+    { id: 'ESC-NG-550902', booking: 'BKG-550902', property: 'Maitama 4-Bed Duplex',            guest: 'Nkechi Adeyemi',       amount: 700000,   status: 'frozen_dispute',    age: '12d', currency: 'NGN' }
+  ];
+
+  const escrowStatusMeta = {
+    vaulted:           { label: 'Vaulted',           className: 'bg-blue-50 text-blue-800 border-blue-200' },
+    inspection_active: { label: 'Inspection Active', className: 'bg-amber-50 text-amber-800 border-amber-200' },
+    released:          { label: 'Released',          className: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+    refunded:          { label: 'Refunded',          className: 'bg-slate-50 text-slate-600 border-slate-200' },
+    frozen_dispute:    { label: 'Frozen – Dispute',  className: 'bg-rose-50 text-rose-800 border-rose-200' }
+  };
+
+  const escrowKPIs = [
+    { label: 'Total GMV Vault',       value: '₦2,013,333', color: 'text-slate-900',   sub: 'All time gross value' },
+    { label: 'Active Escrows',        value: '2',          color: 'text-amber-600',   sub: 'Vaulted or in inspection' },
+    { label: 'Released Today',        value: '₦458,333',   color: 'text-emerald-600', sub: 'Paid out to host' },
+    { label: 'Frozen (Disputes)',     value: '1',          color: 'text-rose-600',    sub: 'Pending admin resolution' },
+    { label: 'Platform Fee Earned',   value: '₦100,667',   color: 'text-teal-700',    sub: '5% of disbursed amounts' }
+  ];
+
+  // ── SYSTEM SETTINGS STATE ──
+  const [settings, setSettings] = useState({
+    platformFee: '5',
+    escrowWindow: '24',
+    deedRequired: true,
+    kycRequired: true,
+    maintenanceMode: false,
+    autoRelease: true
+  });
+  const [editingField, setEditingField] = useState(null);
+  const [settingsSaved, setSettingsSaved] = useState(false);
+
+  const handleSaveSettings = () => {
+    setEditingField(null);
+    setSettingsSaved(true);
+    setTimeout(() => setSettingsSaved(false), 2500);
+  };
+
   const notificationsList = [
-    { id: 'ann-1', title: 'System Maintenance Scheduled', body: 'GoDirect will undergo routine maintenance on 30 Aug 2026 from 02:00–04:00 UTC. No bookings will be disrupted.', sentTo: 'All Users', date: '23 Aug 2026', status: 'scheduled' },
+    { id: 'ann-1', title: 'System Maintenance Scheduled', body: 'GoDirect will undergo routine maintenance on 30 Aug 2026 from 02:00–04:00 UTC.', sentTo: 'All Users', date: '23 Aug 2026', status: 'scheduled' },
     { id: 'ann-2', title: 'New Feature: Escrow Dispute Portal', body: 'Guests and hosts can now raise escrow disputes directly from their dashboards.', sentTo: 'All Users', date: '20 Aug 2026', status: 'sent' }
   ];
 
@@ -142,16 +188,25 @@ export default function AdminDashboard({
           {activeNav === 'listings' && (
             <div className="space-y-6 animate-fade-in">
               <h2 className="text-2xl font-black text-slate-900">All Marketplace Listings ({properties.length})</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {properties.map((prop) => (
-                  <div key={prop.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
-                    <img src={prop.images[0]} alt={prop.title} className="w-full h-44 rounded-xl object-cover" />
-                    <h3 className="font-bold text-base text-slate-900">{prop.title}</h3>
-                    <p className="text-xs text-slate-500">{prop.location} • ${prop.price}/{prop.pricePeriod}</p>
-                    <span className="text-[11px] font-bold text-emerald-600 block">✓ Verified & Active</span>
-                  </div>
-                ))}
-              </div>
+              {properties.length === 0 ? (
+                <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-slate-400 text-sm">No listings yet. Run the seed script to add properties.</div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {properties.map((prop) => (
+                    <div key={prop.id} className="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm space-y-3">
+                      <img src={prop.images?.[0]} alt={prop.title} className="w-full h-44 rounded-xl object-cover" />
+                      <h3 className="font-bold text-base text-slate-900">{prop.title}</h3>
+                      <p className="text-xs text-slate-500">
+                        {prop.location} •{' '}
+                        {prop.isShortLet
+                          ? `₦${Number(prop.pricePerNight).toLocaleString()}/night`
+                          : `₦${Number(prop.pricePerYear).toLocaleString()}/year`}
+                      </p>
+                      <span className="text-[11px] font-bold text-emerald-600 block">✓ Verified & Active</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -160,34 +215,102 @@ export default function AdminDashboard({
 
           {/* USER DIRECTORY */}
           {activeNav === 'users' && (
-            <div className="space-y-6 animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">User Directory ({userDirectory.length} Shown • 1,420 Registered)</h2>
+            <div className="space-y-5 animate-fade-in">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900">User Directory</h2>
+                  <p className="text-xs text-slate-500 mt-0.5">{filteredUsers.length} of {userDirectory.length} users shown</p>
+                </div>
+              </div>
+
+              {/* Filters */}
+              <div className="flex flex-wrap gap-3 items-center">
+                <div className="relative flex-1 min-w-[180px]">
+                  <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search name or email..."
+                    value={userSearch}
+                    onChange={e => setUserSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 outline-none focus:border-[#018F8B] bg-white"
+                  />
+                </div>
+                <select value={userRoleFilter} onChange={e => setUserRoleFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 bg-white outline-none focus:border-[#018F8B]">
+                  <option value="all">All Roles</option>
+                  <option value="user">Renter / User</option>
+                  <option value="landlord">Landlord / Host</option>
+                  <option value="admin">Admin</option>
+                </select>
+                <select value={userStatusFilter} onChange={e => setUserStatusFilter(e.target.value)} className="px-3 py-2 rounded-xl border border-slate-200 text-xs text-slate-700 bg-white outline-none focus:border-[#018F8B]">
+                  <option value="all">All KYC Status</option>
+                  <option value="verified">Verified</option>
+                  <option value="pending">Pending</option>
+                  <option value="rejected">Rejected</option>
+                </select>
+              </div>
+
+              {/* Table */}
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 text-[11px] font-extrabold text-slate-400 uppercase tracking-wider">
-                  <div className="col-span-3">Name</div>
-                  <div className="col-span-3">Email</div>
+                <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-3 border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                  <div className="col-span-4">User</div>
                   <div className="col-span-2">Role</div>
-                  <div className="col-span-2">Country</div>
-                  <div className="col-span-2">Status</div>
+                  <div className="col-span-2">KYC Status</div>
+                  <div className="col-span-2">Joined</div>
+                  <div className="col-span-2 text-right">Actions</div>
                 </div>
                 <div className="divide-y divide-slate-50">
-                  {userDirectory.map((u) => (
-                    <div key={u.id} className="grid grid-cols-12 gap-4 px-6 py-4 hover:bg-slate-50 items-center">
-                      <div className="col-span-3 text-xs font-bold text-slate-900">{u.name}</div>
-                      <div className="col-span-3 text-xs text-slate-500 truncate">{u.email}</div>
-                      <div className="col-span-2 text-xs text-slate-600">{u.role}</div>
-                      <div className="col-span-2 text-xs text-slate-600">{u.country}</div>
-                      <div className="col-span-2">
-                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          u.status === 'Verified' || u.status === 'Superhost'
-                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                  {filteredUsers.length === 0 && (
+                    <div className="px-6 py-10 text-center text-xs text-slate-400">No users match your filters.</div>
+                  )}
+                  {filteredUsers.map((u, i) => {
+                    const isBanned = bannedUsers.includes(u.id);
+                    return (
+                      <div key={u.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors ${isBanned ? 'opacity-50 bg-rose-50/40' : 'hover:bg-slate-50/80'}`}>
+                        {/* Avatar + name */}
+                        <div className="col-span-4 flex items-center gap-3">
+                          <div className={`w-9 h-9 rounded-full ${avatarColors[i % avatarColors.length]} flex items-center justify-center text-white text-xs font-black shrink-0`}>
+                            {getInitials(u.name)}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-slate-900 truncate">{u.name}</p>
+                            <p className="text-[10px] text-slate-400 truncate">{u.email}</p>
+                          </div>
+                        </div>
+                        {/* Role badge */}
+                        <div className="col-span-2">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize ${
+                            u.role === 'admin' ? 'bg-violet-50 text-violet-800 border-violet-200'
+                            : u.role === 'landlord' ? 'bg-blue-50 text-blue-800 border-blue-200'
+                            : 'bg-slate-100 text-slate-700 border-slate-200'
+                          }`}>{u.role}</span>
+                        </div>
+                        {/* KYC status */}
+                        <div className="col-span-2">
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                            u.kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                            : u.kycStatus === 'rejected' ? 'bg-rose-50 text-rose-800 border-rose-200'
                             : 'bg-amber-50 text-amber-800 border-amber-200'
-                        }`}>
-                          {u.status}
-                        </span>
+                          }`}>{u.kycStatus}</span>
+                        </div>
+                        {/* Join date */}
+                        <div className="col-span-2 text-xs text-slate-500">{u.joinDate}</div>
+                        {/* Actions */}
+                        <div className="col-span-2 flex items-center justify-end gap-1.5">
+                          <button title="View Profile" className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+                            <Eye className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            title={isBanned ? 'Unban User' : 'Ban User'}
+                            onClick={() => setBannedUsers(prev => isBanned ? prev.filter(id => id !== u.id) : [...prev, u.id])}
+                            className={`p-1.5 rounded-lg transition-colors ${
+                              isBanned ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700' : 'bg-rose-100 hover:bg-rose-200 text-rose-700'
+                            }`}>
+                            {isBanned ? <Check className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             </div>
@@ -199,22 +322,52 @@ export default function AdminDashboard({
           {/* TRANSACTIONS */}
           {activeNav === 'transactions' && <AdminTransactionsPage />}
 
-          {/* ESCROW */}
+          {/* ESCROW VAULT */}
           {activeNav === 'escrow' && (
             <div className="space-y-6 animate-fade-in">
               <h2 className="text-2xl font-black text-slate-900">Platform Escrow Vault Control</h2>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                {[
-                  { label: 'Total GMV Vault', value: '$148,500.00', sub: 'Gross marketplace value processed', color: 'text-slate-900' },
-                  { label: 'Currently Held in Escrow', value: '$3,570.00', sub: 'Pending 24h inspection windows', color: 'text-amber-600' },
-                  { label: 'Total Disbursed', value: '$140,610.00', sub: 'Released to verified hosts', color: 'text-emerald-600' }
-                ].map((e, i) => (
-                  <div key={i} className="bg-white p-6 rounded-2xl border border-slate-200 space-y-2">
-                    <span className="text-xs font-bold text-slate-400 uppercase">{e.label}</span>
-                    <div className={`text-3xl font-black ${e.color}`}>{e.value}</div>
-                    <p className="text-xs text-slate-500">{e.sub}</p>
+
+              {/* 5-stat KPI strip */}
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                {escrowKPIs.map((kpi, i) => (
+                  <div key={i} className="bg-white rounded-2xl border border-slate-200 p-4 space-y-1">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">{kpi.label}</span>
+                    <div className={`text-xl font-black ${kpi.color}`}>{kpi.value}</div>
+                    <p className="text-[10px] text-slate-400">{kpi.sub}</p>
                   </div>
                 ))}
+              </div>
+
+              {/* Escrow Table */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="hidden md:grid grid-cols-12 gap-3 px-6 py-3 border-b border-slate-100 text-[10px] font-extrabold text-slate-400 uppercase tracking-wider">
+                  <div className="col-span-3">Escrow ID</div>
+                  <div className="col-span-3">Property</div>
+                  <div className="col-span-2">Guest</div>
+                  <div className="col-span-2">Amount</div>
+                  <div className="col-span-1">Age</div>
+                  <div className="col-span-1 text-right">Status</div>
+                </div>
+                <div className="divide-y divide-slate-50">
+                  {escrowRecords.map(e => {
+                    const meta = escrowStatusMeta[e.status] || escrowStatusMeta.vaulted;
+                    return (
+                      <div key={e.id} className="grid grid-cols-12 gap-3 px-6 py-4 items-center hover:bg-slate-50/60 transition-colors">
+                        <div className="col-span-3">
+                          <p className="text-xs font-mono font-bold text-[#0B2545]">{e.id}</p>
+                          <p className="text-[10px] text-slate-400">{e.booking}</p>
+                        </div>
+                        <div className="col-span-3 text-xs text-slate-700 font-medium truncate">{e.property}</div>
+                        <div className="col-span-2 text-xs text-slate-500 truncate">{e.guest}</div>
+                        <div className="col-span-2 text-xs font-black text-slate-900">₦{e.amount.toLocaleString()}</div>
+                        <div className="col-span-1 text-xs text-slate-400">{e.age}</div>
+                        <div className="col-span-1 flex justify-end">
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border whitespace-nowrap ${meta.className}`}>{meta.label}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           )}
@@ -267,23 +420,90 @@ export default function AdminDashboard({
 
           {/* SETTINGS */}
           {activeNav === 'settings' && (
-            <div className="space-y-6 max-w-xl animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">System Settings</h2>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100">
+            <div className="space-y-6 max-w-2xl animate-fade-in">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black text-slate-900">System Settings</h2>
+                {settingsSaved && (
+                  <span className="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl animate-fade-in">✓ Settings saved</span>
+                )}
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 overflow-hidden">
+                {/* Numeric / text editable fields */}
                 {[
-                  { label: 'Platform Commission Fee', value: '0% (Zero Broker Fee)' },
-                  { label: 'Escrow Inspection Window', value: '24 Hours Post Check-in' },
-                  { label: 'Listing Verification Required', value: 'Yes — Title Deed Mandatory' },
-                  { label: 'KYC Requirement', value: 'All Hosts — Full KYC + AML' },
-                  { label: 'Supported Currencies', value: 'USD, GBP, AED, EUR, NGN' },
-                  { label: 'Platform Version', value: 'v2.0.1-alpha' }
-                ].map((s, i) => (
-                  <div key={i} className="flex items-center justify-between px-6 py-4">
-                    <span className="text-xs font-bold text-slate-700">{s.label}</span>
-                    <span className="text-xs font-mono font-bold text-slate-500">{s.value}</span>
+                  { key: 'platformFee',   label: 'Platform Commission Fee (%)',    suffix: '%',      hint: 'Percentage deducted from each disbursement to the host.' },
+                  { key: 'escrowWindow',  label: 'Escrow Inspection Window (hrs)', suffix: ' hrs',   hint: 'Hours after check-in before funds are auto-released to host.' }
+                ].map(field => (
+                  <div key={field.key} className="flex items-center justify-between px-6 py-4 gap-4">
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">{field.label}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{field.hint}</p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {editingField === field.key ? (
+                        <input
+                          type="number"
+                          value={settings[field.key]}
+                          onChange={e => setSettings(s => ({ ...s, [field.key]: e.target.value }))}
+                          className="w-20 text-center px-2 py-1.5 rounded-lg border border-[#018F8B] text-xs font-bold outline-none"
+                          autoFocus
+                        />
+                      ) : (
+                        <span className="text-xs font-mono font-bold text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg">
+                          {settings[field.key]}{field.suffix}
+                        </span>
+                      )}
+                      <button
+                        onClick={() => editingField === field.key ? handleSaveSettings() : setEditingField(field.key)}
+                        className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors"
+                        title={editingField === field.key ? 'Save' : 'Edit'}
+                      >
+                        {editingField === field.key ? <Save className="w-3.5 h-3.5" /> : <Edit2 className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
                   </div>
                 ))}
+
+                {/* Toggle fields */}
+                {[
+                  { key: 'deedRequired',     label: 'Deed Verification Required',  hint: 'Hosts must upload a title deed before listing.' },
+                  { key: 'kycRequired',      label: 'KYC Required for All Hosts',  hint: 'Full KYC + AML check mandatory before first payout.' },
+                  { key: 'autoRelease',      label: 'Auto-Release After Window',   hint: 'Automatically release escrow when inspection window expires.' },
+                  { key: 'maintenanceMode',  label: 'Maintenance Mode',            hint: 'Disables new bookings and shows a maintenance banner.' }
+                ].map(toggle => (
+                  <div key={toggle.key} className="flex items-center justify-between px-6 py-4 gap-4">
+                    <div>
+                      <p className="text-xs font-bold text-slate-800">{toggle.label}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{toggle.hint}</p>
+                    </div>
+                    <button
+                      onClick={() => { setSettings(s => ({ ...s, [toggle.key]: !s[toggle.key] })); setSettingsSaved(false); }}
+                      className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+                        settings[toggle.key]
+                          ? 'bg-teal-50 text-teal-800 border-teal-200'
+                          : 'bg-slate-100 text-slate-600 border-slate-200'
+                      }`}
+                    >
+                      {settings[toggle.key]
+                        ? <><ToggleRight className="w-4 h-4" /> ON</>
+                        : <><ToggleLeft className="w-4 h-4" /> OFF</>}
+                    </button>
+                  </div>
+                ))}
+
+                {/* Static info */}
+                <div className="flex items-center justify-between px-6 py-4">
+                  <p className="text-xs font-bold text-slate-800">Platform Version</p>
+                  <span className="text-xs font-mono text-slate-400">v2.0.1-alpha</span>
+                </div>
               </div>
+
+              <button
+                onClick={handleSaveSettings}
+                className="px-6 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold hover:bg-[#122525] transition-all"
+              >
+                Save All Settings
+              </button>
             </div>
           )}
 
