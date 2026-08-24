@@ -164,6 +164,7 @@ export default function App() {
             setIsChatOpen(true);
           }}
           onReturnToPublic={() => setCurrentPortal('public')}
+          onSelectPortal={handleSelectPortal}
         />
       ) : 
 
@@ -178,6 +179,7 @@ export default function App() {
           }}
           onSelectProperty={setSelectedProperty}
           onReturnToPublic={() => setCurrentPortal('public')}
+          onSelectPortal={handleSelectPortal}
         />
       ) :
 

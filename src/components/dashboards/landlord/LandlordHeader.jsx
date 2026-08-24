@@ -2,8 +2,14 @@ import React from 'react';
 import { Search, Bell, Globe, LogOut } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
-export default function LandlordHeader({ searchQuery, setSearchQuery, setActiveNav, onReturnToPublic }) {
-  const { user, profile, signOut } = useAuth();
+export default function LandlordHeader({ 
+  searchQuery, 
+  setSearchQuery, 
+  setActiveNav, 
+  onReturnToPublic,
+  onSelectPortal
+}) {
+  const { user, profile, role, signOut } = useAuth();
 
   const fullName = user?.user_metadata?.full_name || profile?.full_name || user?.email?.split('@')[0] || 'Landlord';
   const initials = fullName
@@ -45,6 +51,26 @@ export default function LandlordHeader({ searchQuery, setSearchQuery, setActiveN
             2
           </span>
         </button>
+
+        {/* Quick Portal Switcher for Admins / Multi-role */}
+        {(role === 'admin' || user?.role === 'admin') && onSelectPortal && (
+          <div className="hidden lg:flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+            <button 
+              onClick={() => onSelectPortal('admin')}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-950 text-[11px] font-black shadow-xs transition-all"
+              title="Return to Super Admin Dashboard"
+            >
+              <span>Admin Dashboard</span>
+            </button>
+            <button 
+              onClick={() => onSelectPortal('user')}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white text-slate-800 hover:bg-slate-50 text-[11px] font-black border border-slate-200/60 shadow-xs transition-all"
+              title="Inspect Guest / User Dashboard"
+            >
+              <span>Guest Portal</span>
+            </button>
+          </div>
+        )}
 
         <button 
           onClick={onReturnToPublic}

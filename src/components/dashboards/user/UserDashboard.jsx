@@ -15,7 +15,8 @@ export default function UserDashboard({
   wishlistProperties = [], 
   onSelectProperty, 
   onOpenChatWithHost,
-  onReturnToPublic 
+  onReturnToPublic,
+  onSelectPortal
 }) {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
@@ -65,6 +66,7 @@ export default function UserDashboard({
             setSearchQuery={setSearchQuery} 
             setActiveNav={setActiveNav} 
             onReturnToPublic={onReturnToPublic} 
+            onSelectPortal={onSelectPortal}
           />
         </div>
 

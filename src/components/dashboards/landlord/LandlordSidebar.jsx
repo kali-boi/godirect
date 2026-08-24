@@ -5,7 +5,15 @@ import {
   BarChart3, Star, Users, Wrench, FileText, Receipt, Wallet
 } from 'lucide-react';
 
-export default function LandlordSidebar({ activeNav, setActiveNav, propertiesCount, pendingRequestsCount, onOpenHostPortal, onReturnToPublic }) {
+export default function LandlordSidebar({ 
+  activeNav, 
+  setActiveNav, 
+  propertiesCount, 
+  pendingRequestsCount, 
+  onOpenHostPortal, 
+  onReturnToPublic,
+  onSelectPortal
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navSections = [
@@ -123,19 +131,19 @@ export default function LandlordSidebar({ activeNav, setActiveNav, propertiesCou
       </aside>
 
       {/* ─── MOBILE: Fixed top bar ─── */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200 shadow-sm px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2" onClick={onReturnToPublic}>
-          <img src="/images/logo.png" alt="GoDirect" className="h-7 w-auto object-contain" />
-          <div>
-            <p className="font-black text-xs text-slate-900 leading-none">GODIRECT</p>
-            <p className="text-[9px] text-slate-400">Host Portal</p>
-          </div>
+      <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200 shadow-sm px-4 py-2.5 flex items-center justify-between">
+        <div className="flex items-center gap-2 cursor-pointer" onClick={onReturnToPublic}>
+          <img src="/images/logo.png" alt="GoDirect" className="h-6 w-auto object-contain" />
+          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-teal-100 text-[#018F8B]">
+            Host
+          </span>
         </div>
-        <span className="text-xs font-bold text-slate-500">
+        <span className="text-xs font-extrabold text-slate-700 capitalize max-w-[120px] truncate">
           {allItems.find(i => i.id === activeNav)?.label || 'Dashboard'}
         </span>
         <button onClick={() => setMobileOpen(true)}
-          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200">
+          className="w-9 h-9 rounded-xl bg-slate-100 flex items-center justify-center text-slate-700 hover:bg-slate-200 transition-all"
+          aria-label="Open menu">
           <Menu className="w-5 h-5" />
         </button>
       </div>

@@ -155,18 +155,17 @@ export default function AdminSidebar({
       </aside>
 
       {/* ─── MOBILE: Top bar with hamburger ─── */}
-      <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200 shadow-sm px-4 py-3 flex items-center justify-between">
+      <div className="md:hidden fixed top-0 inset-x-0 z-50 bg-white border-b border-slate-200 shadow-sm px-4 py-2.5 flex items-center justify-between">
         {/* Logo */}
-        <div className="flex items-center gap-2" onClick={onReturnToPublic}>
-          <img src="/images/logo.png" alt="GoDirect" className="h-7 w-auto object-contain" />
-          <div>
-            <p className="font-black text-xs text-slate-900 leading-none">GODIRECT</p>
-            <p className="text-[9px] text-slate-400">Admin Portal</p>
-          </div>
+        <div className="flex items-center gap-2 cursor-pointer" onClick={onReturnToPublic}>
+          <img src="/images/logo.png" alt="GoDirect" className="h-6 w-auto object-contain" />
+          <span className="text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 text-white">
+            Admin
+          </span>
         </div>
 
         {/* Active page label */}
-        <span className="text-xs font-bold text-slate-500 capitalize">
+        <span className="text-xs font-extrabold text-slate-700 capitalize max-w-[120px] truncate">
           {navSections.flatMap(s => s.items).find(i => i.id === activeNav)?.label || 'Dashboard'}
         </span>
 

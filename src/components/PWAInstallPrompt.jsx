@@ -94,8 +94,8 @@ export default function PWAInstallPrompt() {
 
         {!showIOSInstructions ? (
           <div className="flex items-start gap-3.5 pr-6">
-            <div className="w-12 h-12 rounded-2xl bg-white p-1.5 shadow-md flex-shrink-0 flex items-center justify-center">
-              <img src="/images/logo.png" alt="GoDirect App" className="w-full h-full object-contain" />
+            <div className="w-12 h-12 rounded-2xl bg-white p-1 shadow-md flex-shrink-0 flex items-center justify-center overflow-hidden">
+              <img src="/android-chrome-192x192.png" alt="GoDirect App" className="w-full h-full object-cover rounded-xl" />
             </div>
 
             <div className="space-y-1 flex-1 min-w-0">

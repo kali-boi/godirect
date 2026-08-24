@@ -16,7 +16,8 @@ export default function LandlordDashboard({
   onOpenHostPortal, 
   onOpenChatWithHost,
   onSelectProperty,
-  onReturnToPublic
+  onReturnToPublic,
+  onSelectPortal
 }) {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
@@ -67,6 +68,7 @@ export default function LandlordDashboard({
         pendingRequestsCount={pendingRequestsCount} 
         onOpenHostPortal={onOpenHostPortal} 
         onReturnToPublic={onReturnToPublic} 
+        onSelectPortal={onSelectPortal}
       />
 
       {/* MAIN CONTENT */}
@@ -79,6 +81,7 @@ export default function LandlordDashboard({
             setSearchQuery={setSearchQuery} 
             setActiveNav={setActiveNav} 
             onReturnToPublic={onReturnToPublic} 
+            onSelectPortal={onSelectPortal}
           />
         </div>
 
