@@ -65,70 +65,64 @@ export default function LandlordSidebar({
     setMobileOpen(false);
   };
 
-  const renderNavList = () => (
-    <div className="flex flex-col h-full overflow-hidden">
-      {/* Scrollable nav section */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-5">
-        {/* Logo */}
-        <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
-          <img src="/images/logo.png" alt="GoDirect" className="h-8 w-auto object-contain self-start" />
-          <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pl-0.5">Host Portal</span>
-        </div>
-
-        {/* Sectioned Nav */}
-        {navSections.map((section) => (
-          <div key={section.label} className="space-y-1">
-            <div className="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase px-3 pb-1">{section.label}</div>
-            <nav className="space-y-0.5">
-              {section.items.map((item) => {
-                const Icon = item.icon;
-                const isActive = activeNav === item.id;
-                return (
-                  <button key={item.id} onClick={() => handleNavClick(item.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                      isActive ? 'bg-[#0B2545] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
-                    }`}>
-                    <div className="flex items-center gap-2.5">
-                      <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                      <span>{item.label}</span>
-                    </div>
-                    {item.badge !== undefined && item.badge > 0 && (
-                      <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-extrabold ${isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700'}`}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        ))}
-      </div>
-
-      {/* Bottom Actions */}
-      <div className="p-5 border-t border-slate-100 space-y-2 shrink-0 bg-white">
-        <button onClick={() => { onOpenHostPortal && onOpenHostPortal(); setMobileOpen(false); }}
-          className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black flex items-center justify-center gap-2">
-          <PlusCircle className="w-4 h-4" />
-          List New Property
-        </button>
-        <button onClick={() => { onReturnToPublic(); setMobileOpen(false); }}
-          className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold border border-slate-200">
-          <div className="flex items-center gap-2">
-            <Globe className="w-4 h-4 text-slate-600" />
-            <span>Back to Site</span>
-          </div>
-          <ArrowRight className="w-4 h-4 text-slate-400" />
-        </button>
-      </div>
-    </div>
-  );
-
   return (
     <>
       {/* ─── DESKTOP SIDEBAR ─── */}
-      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30">
-        {renderNavList()}
+      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30 overflow-hidden">
+        {/* Scrollable nav section */}
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+          {/* Logo */}
+          <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
+            <img src="/images/logo.png" alt="GoDirect" className="h-8 w-auto object-contain self-start" />
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pl-0.5">Host Portal</span>
+          </div>
+
+          {/* Sectioned Nav */}
+          {navSections.map((section) => (
+            <div key={section.label} className="space-y-1">
+              <div className="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase px-3 pb-1">{section.label}</div>
+              <nav className="space-y-0.5">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeNav === item.id;
+                  return (
+                    <button key={item.id} onClick={() => handleNavClick(item.id)}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        isActive ? 'bg-[#0B2545] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      }`}>
+                      <div className="flex items-center gap-2.5">
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                        <span>{item.label}</span>
+                      </div>
+                      {item.badge !== undefined && item.badge > 0 && (
+                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-extrabold ${isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700'}`}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Actions */}
+        <div className="p-5 border-t border-slate-100 space-y-2 shrink-0 bg-white">
+          <button onClick={() => { onOpenHostPortal && onOpenHostPortal(); setMobileOpen(false); }}
+            className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black flex items-center justify-center gap-2">
+            <PlusCircle className="w-4 h-4" />
+            List New Property
+          </button>
+          <button onClick={() => { onReturnToPublic(); setMobileOpen(false); }}
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold border border-slate-200">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-slate-600" />
+              <span>Back to Site</span>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400" />
+          </button>
+        </div>
       </aside>
 
       {/* ─── MOBILE: Fixed top bar ─── */}
@@ -162,8 +156,58 @@ export default function LandlordSidebar({
             <X className="w-4 h-4 text-slate-600" />
           </button>
         </div>
-        <div className="flex-1 overflow-hidden">
-          {renderNavList()}
+        <div className="flex-1 overflow-y-auto p-5 space-y-5">
+          {/* Logo */}
+          <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
+            <img src="/images/logo.png" alt="GoDirect" className="h-8 w-auto object-contain self-start" />
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pl-0.5">Host Portal</span>
+          </div>
+
+          {/* Sectioned Nav */}
+          {navSections.map((section) => (
+            <div key={section.label} className="space-y-1">
+              <div className="text-[9px] font-extrabold tracking-widest text-slate-400 uppercase px-3 pb-1">{section.label}</div>
+              <nav className="space-y-0.5">
+                {section.items.map((item) => {
+                  const Icon = item.icon;
+                  const isActive = activeNav === item.id;
+                  return (
+                    <button key={item.id} onClick={() => handleNavClick(item.id)}
+                      className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                        isActive ? 'bg-[#0B2545] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                      }`}>
+                      <div className="flex items-center gap-2.5">
+                        <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                        <span>{item.label}</span>
+                      </div>
+                      {item.badge !== undefined && item.badge > 0 && (
+                        <span className={`px-1.5 py-0.5 rounded-full text-[9px] font-extrabold ${isActive ? 'bg-white/20 text-white' : 'bg-rose-100 text-rose-700'}`}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Actions */}
+        <div className="p-5 border-t border-slate-100 space-y-2 shrink-0 bg-white">
+          <button onClick={() => { onOpenHostPortal && onOpenHostPortal(); setMobileOpen(false); }}
+            className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black flex items-center justify-center gap-2">
+            <PlusCircle className="w-4 h-4" />
+            List New Property
+          </button>
+          <button onClick={() => { onReturnToPublic(); setMobileOpen(false); }}
+            className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold border border-slate-200">
+            <div className="flex items-center gap-2">
+              <Globe className="w-4 h-4 text-slate-600" />
+              <span>Back to Site</span>
+            </div>
+            <ArrowRight className="w-4 h-4 text-slate-400" />
+          </button>
         </div>
       </div>
     </>

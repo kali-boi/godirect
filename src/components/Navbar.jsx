@@ -53,11 +53,11 @@ export default function Navbar({
         <nav className="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-full border border-slate-200/60">
           <button
             onClick={() => {
-              setActiveView('public');
+              setActiveView('explore');
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}
             className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 ${
-              activeView === 'public' || activeView === 'explore'
+              activeView === 'explore'
                 ? 'bg-[#0B2545] text-white shadow-xs'
                 : 'text-slate-600 hover:text-slate-950'
             }`}
@@ -217,9 +217,9 @@ export default function Navbar({
           {/* List Property Primary Action */}
           <button
             onClick={onOpenHostPortal}
-            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gradient-to-r from-[#018F8B] to-[#0B2545] hover:opacity-95 text-white text-xs font-bold shadow-sm transition-all duration-200 active:scale-95 ml-1"
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-[#0B2545] hover:bg-slate-800 text-white text-xs font-black shadow-md transition-all duration-200 active:scale-95 ml-1 border border-slate-800"
           >
-            <PlusCircle className="w-3.5 h-3.5 text-[#CC9955]" />
+            <PlusCircle className="w-4 h-4 text-[#CC9955]" />
             <span>List Property</span>
           </button>
 

@@ -22,9 +22,10 @@ import FeatureGrid from './components/FeatureGrid';
 import BestValueMapSection from './components/BestValueMapSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
+import PropertiesPage from './components/PropertiesPage';
 import { useAuth } from './contexts/AuthContext';
 import { getProperties } from './services/supabaseService';
-import { Heart, Search, Sparkles, Building2, ArrowRight, ShieldAlert, ArrowLeftRight, Loader2 } from 'lucide-react';
+import { Heart, Search, Sparkles, Building2, ArrowRight, ShieldAlert, ArrowLeftRight, Loader2, Zap } from 'lucide-react';
 
 export default function App() {
   const { user, profile, role } = useAuth();
@@ -232,321 +233,258 @@ export default function App() {
             }}
           />
 
-          {/* Hero Section */}
-          {activeView !== 'wishlist' && (
+          {/* Dedicated Properties Explorer Page View */}
+          {(activeView === 'explore' || activeView === 'properties') ? (
+            <PropertiesPage
+              properties={properties}
+              wishlist={wishlist}
+              onToggleWishlist={handleToggleWishlist}
+              onSelectProperty={setSelectedProperty}
+              onScheduleTour={(prop) => {
+                setTourProperty(prop);
+                setIsTourModalOpen(true);
+              }}
+              initialStayType={stayTypeFilter}
+              onReturnToHome={() => setActiveView('public')}
+            />
+          ) : (
             <>
-              <HeroSearch
-                searchQuery={searchQuery}
-                setSearchQuery={setSearchQuery}
-                stayTypeFilter={stayTypeFilter}
-                setStayTypeFilter={setStayTypeFilter}
-                onPerformSearch={() => {
-                  const el = document.getElementById('properties-grid');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                onOpenVideoTour={() => setIsVideoTourOpen(true)}
-              />
+              {/* Hero Section */}
+              {activeView !== 'wishlist' && (
+                <>
+                  <HeroSearch
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    stayTypeFilter={stayTypeFilter}
+                    setStayTypeFilter={setStayTypeFilter}
+                    onPerformSearch={() => {
+                      const el = document.getElementById('properties-grid');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    onOpenVideoTour={() => setIsVideoTourOpen(true)}
+                  />
 
-              {/* 1. Social Proof Stats Bar */}
-              <StatsBar />
+                  {/* 1. Social Proof Stats Bar */}
+                  <StatsBar />
 
-              {/* 2. Feature Showcase Grid ("Your primary home...") */}
-              <FeatureGrid
-                onExploreClick={() => {
-                  const el = document.getElementById('properties-grid');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-              />
+                  {/* 2. Feature Showcase Grid ("Your primary home...") */}
+                  <FeatureGrid
+                    onExploreClick={() => {
+                      const el = document.getElementById('properties-grid');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                  />
 
-              {/* 3. Best Value Map Interactive Section */}
-              <BestValueMapSection
-                onExploreClick={() => {
-                  const el = document.getElementById('properties-grid');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                onSelectProperty={setSelectedProperty}
-                properties={properties}
-              />
+                  {/* 3. Best Value Map Interactive Section */}
+                  <BestValueMapSection
+                    onExploreClick={() => {
+                      const el = document.getElementById('properties-grid');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
+                    }}
+                    onSelectProperty={setSelectedProperty}
+                    properties={properties}
+                  />
+                </>
+              )}
+
+              {/* Main Content Container */}
+              <main className="flex-1">
+                
+                {/* ─── 1. MARKETPLACE SECTION HEADER & SEGMENT SELECTOR (PLACED ABOVE FILTER BAR) ─── */}
+                <div id="properties-grid" className="container pt-12 pb-2">
+                  
+                  {/* Wishlist Header Banner */}
+                  {activeView === 'wishlist' ? (
+                    <div className="mb-8">
+                      <div className="flex items-center gap-3">
+                        <Heart className="w-8 h-8 text-red-500 fill-red-500" />
+                        <h1 className="text-3xl font-extrabold text-[var(--text-primary)]">
+                          Your Saved Properties ({filteredProperties.length})
+                        </h1>
+                      </div>
+                      <p className="text-sm text-[var(--text-secondary)] mt-1">
+                        Access your saved luxury penthouses, short-lets, and rental residences anytime.
+                      </p>
+                    </div>
+                  ) : (
+                    /* Sub-Section Navigation Header */
+                    <div className="mb-4 space-y-4 font-['Host_Grotesk']">
+                      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                        <div>
+                          <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)]">
+                            {stayTypeFilter === 'short-let'
+                              ? 'Verified Short-Let Suites & Vacation Stays'
+                              : stayTypeFilter === 'rentals'
+                              ? 'Direct Landlord Rentals & Sales'
+                              : 'Explore Marketplace & Shortlets'}
+                          </h2>
+                          <p className="text-sm text-[var(--text-secondary)] mt-1">
+                            {stayTypeFilter === 'short-let'
+                              ? 'Browse top-rated luxury short-let apartments and vacation villas with daily pricing.'
+                              : stayTypeFilter === 'rentals'
+                              ? 'Long-term residential leases, luxury penthouses, and estates directly from landlords.'
+                              : 'Browse top-rated short-let suites or direct landlord long-term leases & sales.'}
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => {
+                            setActiveView('explore');
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                          }}
+                          className="inline-flex items-center gap-2 text-xs font-extrabold text-[#0B2545] dark:text-[#CC9955] hover:text-[#018F8B] transition-colors self-start sm:self-auto bg-slate-100 dark:bg-slate-800 px-4 py-2 rounded-full border border-slate-200 dark:border-slate-700"
+                        >
+                          <span>See All Properties</span>
+                          <ArrowRight className="w-4 h-4 text-[#018F8B]" />
+                        </button>
+                      </div>
+
+                      {/* 3-Way Sub-Section Pill Switcher */}
+                      <div className="flex flex-wrap items-center gap-2 pt-2 border-b border-slate-200 dark:border-slate-800 pb-4">
+                        <button
+                          onClick={() => {
+                            setStayTypeFilter('all');
+                            setSelectedCategory('all');
+                          }}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
+                            stayTypeFilter === 'all'
+                              ? 'bg-[#0B2545] text-white border-[#0B2545] shadow-xs'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-slate-400 hover:text-slate-900'
+                          }`}
+                        >
+                          ⚡ All Listings ({properties.length})
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setStayTypeFilter('short-let');
+                            setSelectedCategory('all');
+                          }}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
+                            stayTypeFilter === 'short-let'
+                              ? 'bg-[#018F8B] text-white border-[#018F8B] shadow-xs'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#018F8B] hover:text-slate-900'
+                          }`}
+                        >
+                          <Zap className="w-3.5 h-3.5 text-[#CC9955]" />
+                          <span>Short-Lets ({properties.filter(p => p.isShortLet).length})</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setStayTypeFilter('rentals');
+                            setSelectedCategory('all');
+                          }}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border flex items-center gap-1.5 ${
+                            stayTypeFilter === 'rentals'
+                              ? 'bg-[#0B2545] text-white border-[#0B2545] shadow-xs'
+                              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:border-[#0B2545] hover:text-slate-900'
+                          }`}
+                        >
+                          <Building2 className="w-3.5 h-3.5 text-[#CC9955]" />
+                          <span>Rentals & Leases ({properties.filter(p => !p.isShortLet).length})</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* ─── 2. CATEGORY & FILTER BAR (PLACED DIRECTLY BELOW MARKETPLACE HEADER) ─── */}
+                {activeView !== 'wishlist' && (
+                  <FilterBar
+                    selectedCategory={selectedCategory}
+                    setSelectedCategory={setSelectedCategory}
+                    stayTypeFilter={stayTypeFilter}
+                    onOpenFilterDrawer={() => {}}
+                    totalResultsCount={filteredProperties.length}
+                  />
+                )}
+
+                {/* ─── 3. UNIFIED RESPONSIVE PROPERTY GRID (CLEAN & DIRECT) ─── */}
+                <div className="container pb-16">
+
+                  {isLoadingProperties ? (
+                    /* Loading Skeleton Grid */
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 animate-pulse">
+                      {[1, 2, 3, 4].map((n) => (
+                        <div key={n} className="bg-white rounded-3xl p-4 border border-slate-200 shadow-xs space-y-4">
+                          <div className="h-48 bg-slate-200/80 rounded-2xl w-full" />
+                          <div className="space-y-2">
+                            <div className="h-4 bg-slate-200/80 rounded-md w-3/4" />
+                            <div className="h-3 bg-slate-200/60 rounded-md w-1/2" />
+                          </div>
+                          <div className="flex justify-between items-center pt-2">
+                            <div className="h-5 bg-slate-200/80 rounded-md w-1/3" />
+                            <div className="h-8 bg-slate-200/80 rounded-xl w-24" />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : filteredProperties.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {filteredProperties.map((property) => (
+                        <PropertyCard
+                          key={property.id}
+                          property={property}
+                          onSelectProperty={setSelectedProperty}
+                          onToggleWishlist={handleToggleWishlist}
+                          isWishlisted={wishlist.includes(property.id)}
+                          onOpenChatWithHost={(prop) => {
+                            setActiveChatProperty(prop);
+                            setIsChatOpen(true);
+                          }}
+                          onScheduleTour={(prop) => {
+                            setTourProperty(prop);
+                            setIsTourModalOpen(true);
+                          }}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    /* Clean Empty State */
+                    <div className="text-center py-16 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 max-w-lg mx-auto p-8 shadow-xs space-y-4">
+                      <div className="w-14 h-14 mx-auto rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 flex items-center justify-center">
+                        <Search className="w-7 h-7 text-[#018F8B]" />
+                      </div>
+                      <div className="space-y-1">
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                          No Properties Found
+                        </h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">
+                          {activeView === 'wishlist' 
+                            ? "You haven't saved any properties to your wishlist yet." 
+                            : "No properties match your current search and category filters."}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => {
+                          setSearchQuery('');
+                          setSelectedCategory('all');
+                          setStayTypeFilter('all');
+                          setActiveView('public');
+                        }}
+                        className="px-5 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold hover:bg-slate-800 transition-all shadow-xs"
+                      >
+                        Reset All Filters
+                      </button>
+                    </div>
+                  )}
+
+                </div>
+
+                {/* 4. Frequently Asked Questions (FAQ) Section */}
+                {activeView !== 'wishlist' && (
+                  <FAQSection onOpenHostPortal={() => setIsHostPortalOpen(true)} />
+                )}
+
+              </main>
             </>
           )}
 
-          {/* Main Content Container */}
-          <main className="flex-1">
-            
-            {/* Category & Filter Bar */}
-            {activeView !== 'wishlist' && (
-              <FilterBar
-                selectedCategory={selectedCategory}
-                setSelectedCategory={setSelectedCategory}
-                onOpenFilterDrawer={() => {}}
-                totalResultsCount={filteredProperties.length}
-              />
-            )}
-
-            <div id="properties-grid" className="container py-12">
-              
-              {/* Wishlist Header Banner */}
-              {activeView === 'wishlist' ? (
-                <div className="mb-8">
-                  <div className="flex items-center gap-3">
-                    <Heart className="w-8 h-8 text-red-500 fill-red-500" />
-                    <h1 className="text-3xl font-extrabold text-[var(--text-primary)]">
-                      Your Saved Properties ({filteredProperties.length})
-                    </h1>
-                  </div>
-                  <p className="text-sm text-[var(--text-secondary)] mt-1">
-                    Access your saved luxury penthouses, short-lets, and rental residences anytime.
-                  </p>
-                </div>
-              ) : (
-                /* Sub-Section Navigation Header */
-                <div className="mb-10 space-y-4">
-                  <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-                    <div>
-                      <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)]">
-                        {stayTypeFilter === 'short-let'
-                          ? 'Verified Short-Let Suites & Vacation Stays'
-                          : stayTypeFilter === 'rentals'
-                          ? 'Direct Landlord Rentals & Sales'
-                          : 'Explore Marketplace & Shortlets'}
-                      </h2>
-                      <p className="text-sm text-[var(--text-secondary)] mt-1">
-                        {stayTypeFilter === 'short-let'
-                          ? 'Browse top-rated luxury short-let apartments and vacation villas with daily pricing.'
-                          : stayTypeFilter === 'rentals'
-                          ? 'Long-term residential leases, luxury penthouses, and estates directly from landlords.'
-                          : 'Browse top-rated short-let suites or direct landlord long-term leases & sales.'}
-                      </p>
-                    </div>
-
-                    <button
-                      onClick={() => {
-                        setStayTypeFilter('all');
-                        setActiveView('public');
-                        setSelectedCategory('all');
-                        setSearchQuery('');
-                      }}
-                      className="inline-flex items-center gap-2 text-xs font-extrabold text-[var(--text-primary)] hover:text-[var(--teal-blue)] transition-colors self-start sm:self-auto"
-                    >
-                      <span>See All Properties</span>
-                      <ArrowRight className="w-4 h-4 text-amber-500" />
-                    </button>
-                  </div>
-
-                  {/* 2 Sub-Section Pill Switcher */}
-                  <div className="flex flex-wrap items-center gap-2 pt-2 border-b border-[var(--border-light)] pb-4">
-                    <button
-                      onClick={() => setStayTypeFilter('all')}
-                      className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all border ${
-                        stayTypeFilter === 'all'
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-md'
-                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-slate-400'
-                      }`}
-                    >
-                      ⚡ All Listings ({filteredProperties.length})
-                    </button>
-
-                    <button
-                      onClick={() => setStayTypeFilter('short-let')}
-                      className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all border ${
-                        stayTypeFilter === 'short-let'
-                          ? 'bg-amber-500 text-slate-950 border-amber-500 shadow-md'
-                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-amber-500'
-                      }`}
-                    >
-                      🏢 Shortlet Sub-Section ({properties.filter(p => p.isShortLet).length})
-                    </button>
-
-                    <button
-                      onClick={() => setStayTypeFilter('rentals')}
-                      className={`px-5 py-2.5 rounded-full text-xs font-extrabold transition-all border ${
-                        stayTypeFilter === 'rentals'
-                          ? 'bg-slate-900 text-white border-slate-900 shadow-md'
-                          : 'bg-[var(--bg-elevated)] text-[var(--text-secondary)] border-[var(--border-light)] hover:border-slate-700'
-                      }`}
-                    >
-                      🏘️ Property Marketplace Sub-Section ({properties.filter(p => !p.isShortLet).length})
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* PROPERTIES SUB-SECTIONS CONTAINER */}
-              {isLoadingProperties ? (
-                /* Loading Skeleton Grid */
-                <div className="space-y-8 animate-pulse">
-                  <div className="h-16 bg-slate-200/70 rounded-2xl w-full" />
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                    {[1, 2, 3, 4].map((n) => (
-                      <div key={n} className="bg-white rounded-3xl p-4 border border-slate-200 shadow-sm space-y-4">
-                        <div className="h-48 bg-slate-200/80 rounded-2xl w-full" />
-                        <div className="space-y-2">
-                          <div className="h-4 bg-slate-200/80 rounded-md w-3/4" />
-                          <div className="h-3 bg-slate-200/60 rounded-md w-1/2" />
-                        </div>
-                        <div className="flex justify-between items-center pt-2">
-                          <div className="h-5 bg-slate-200/80 rounded-md w-1/3" />
-                          <div className="h-8 bg-slate-200/80 rounded-xl w-24" />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ) : filteredProperties.length > 0 ? (
-                <div className="space-y-16">
-                  
-                  {/* SUB-SECTION 1: SHORTLET RESIDENCES */}
-                  {(stayTypeFilter === 'all' || stayTypeFilter === 'short-let') && (
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between bg-amber-500/10 border border-amber-500/30 p-4 sm:p-5 rounded-2xl">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-bold shadow-sm">
-                            🏢
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-xl sm:text-2xl font-black text-[var(--text-primary)]">
-                                Shortlet Residences & Vacation Stays
-                              </h3>
-                              <span className="px-2.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-extrabold text-[10px]">
-                                SUB-SECTION 1
-                              </span>
-                            </div>
-                            <p className="text-xs text-[var(--text-secondary)]">
-                              Verified short-let apartments & vacation penthouses with daily pricing and zero broker commission.
-                            </p>
-                          </div>
-                        </div>
-
-                        <span className="hidden sm:inline-block text-xs font-bold text-amber-800 bg-amber-50 border border-amber-200 px-3 py-1 rounded-full">
-                          {filteredProperties.filter(p => p.isShortLet).length} Short-Lets
-                        </span>
-                      </div>
-
-                      {filteredProperties.filter(p => p.isShortLet).length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                          {filteredProperties
-                            .filter(p => p.isShortLet)
-                            .map((property) => (
-                              <PropertyCard
-                                key={property.id}
-                                property={property}
-                                onSelectProperty={setSelectedProperty}
-                                onToggleWishlist={handleToggleWishlist}
-                                isWishlisted={wishlist.includes(property.id)}
-                                onOpenChatWithHost={(prop) => {
-                                  setActiveChatProperty(prop);
-                                  setIsChatOpen(true);
-                                }}
-                              />
-                            ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 bg-[var(--bg-surface)] rounded-2xl text-xs text-[var(--text-muted)]">
-                          No short-let properties match your search filters.
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* SUB-SECTION 2: PROPERTY MARKETPLACE (LONG-TERM RENTALS & SALES) */}
-                  {(stayTypeFilter === 'all' || stayTypeFilter === 'rentals') && (
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between bg-slate-900 text-white p-4 sm:p-5 rounded-2xl border border-slate-800 shadow-md">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-bold">
-                            🏘️
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="text-xl sm:text-2xl font-black text-white">
-                                Property Marketplace (Rentals & Sales)
-                              </h3>
-                              <span className="px-2.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-extrabold text-[10px]">
-                                SUB-SECTION 2
-                              </span>
-                            </div>
-                            <p className="text-xs text-slate-300">
-                              Direct landlord long-term rental leases and verified residential properties for purchase.
-                            </p>
-                          </div>
-                        </div>
-
-                        <span className="hidden sm:inline-block text-xs font-bold text-amber-300 bg-slate-800 px-3 py-1 rounded-full border border-slate-700">
-                          {filteredProperties.filter(p => !p.isShortLet).length} Marketplace Listings
-                        </span>
-                      </div>
-
-
-                      {filteredProperties.filter(p => !p.isShortLet).length > 0 ? (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-                          {filteredProperties
-                            .filter(p => !p.isShortLet)
-                            .map((property) => (
-                              <PropertyCard
-                                key={property.id}
-                                property={property}
-                                onSelectProperty={setSelectedProperty}
-                                onToggleWishlist={handleToggleWishlist}
-                                isWishlisted={wishlist.includes(property.id)}
-                                onOpenChatWithHost={(prop) => {
-                                  setActiveChatProperty(prop);
-                                  setIsChatOpen(true);
-                                }}
-                              />
-                            ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-8 bg-[var(--bg-surface)] rounded-2xl text-xs text-[var(--text-muted)]">
-                          No marketplace rental/sale properties match your search filters.
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                </div>
-              ) : (
-                /* Empty State */
-                <div className="text-center py-20 bg-[var(--bg-surface)] rounded-3xl border border-[var(--border-light)] max-w-lg mx-auto p-8 shadow-sm">
-                  <div className="w-16 h-16 mx-auto rounded-full bg-[var(--bg-elevated)] text-[var(--text-muted)] flex items-center justify-center mb-4">
-                    <Search className="w-8 h-8 text-[var(--teal-blue)]" />
-                  </div>
-                  <h3 className="text-xl font-bold text-[var(--text-primary)] mb-2">
-                    No Properties Found
-                  </h3>
-                  <p className="text-sm text-[var(--text-secondary)] mb-6">
-                    {activeView === 'wishlist' 
-                      ? "You haven't saved any properties to your wishlist yet." 
-                      : "No properties match your current search filters."}
-                  </p>
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSelectedCategory('all');
-                      setStayTypeFilter('all');
-                      setActiveView('public');
-                    }}
-                    className="btn-primary text-xs px-6 py-2.5"
-                  >
-                    Reset All Filters
-                  </button>
-                </div>
-              )}
-
-
-            </div>
-
-            {/* 4. Frequently Asked Questions (FAQ) Section */}
-            {activeView !== 'wishlist' && (
-              <FAQSection onOpenHostPortal={() => setIsHostPortalOpen(true)} />
-            )}
-
-          </main>
-
-          {/* Footer */}
+          {/* Footer for Public Portal */}
           <Footer
             setActiveView={setActiveView}
-
             onOpenHostPortal={() => setIsHostPortalOpen(true)}
           />
         </>
