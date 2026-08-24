@@ -7,7 +7,8 @@ import LandlordReviewsPage from './pages/LandlordReviewsPage';
 import LandlordGuestsPage from './pages/LandlordGuestsPage';
 import LandlordMaintenancePage from './pages/LandlordMaintenancePage';
 import LandlordDocumentsPage from './pages/LandlordDocumentsPage';
-import LandlordTaxPage from './pages/LandlordTaxPage';
+import LandlordWalletPage from './pages/LandlordWalletPage';
+import UserProfileSettingsPage from '../common/UserProfileSettingsPage';
 import { PlusCircle } from 'lucide-react';
 
 export default function LandlordDashboard({ 
@@ -160,14 +161,7 @@ export default function LandlordDashboard({
           )}
 
           {activeNav === 'earnings' && (
-            <div className="space-y-6 animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Host Earnings & Escrow Payouts</h2>
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 space-y-2">
-                <span className="text-xs font-bold text-slate-400 uppercase">Monthly Portfolio Revenue</span>
-                <div className="text-3xl font-black text-slate-900">$24,850.00</div>
-                <p className="text-xs text-emerald-700 font-bold">✓ 0% Commission Deducted by GoDirect</p>
-              </div>
-            </div>
+            <LandlordWalletPage />
           )}
 
           {activeNav === 'calendar' && (
@@ -204,17 +198,9 @@ export default function LandlordDashboard({
             </div>
           )}
 
+          {/* ── LIVE HOST PROFILE (CONNECTED TO SUPABASE) ── */}
           {activeNav === 'profile' && (
-            <div className="space-y-6 max-w-xl animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Host Profile</h2>
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 text-center space-y-3">
-                <div className="w-20 h-20 rounded-full bg-amber-100 text-amber-900 border border-amber-300 mx-auto flex items-center justify-center font-bold text-xl">
-                  EV
-                </div>
-                <h3 className="font-extrabold text-lg text-slate-900">Eleanor Vance</h3>
-                <p className="text-xs text-slate-500">Verified Superhost & Property Owner</p>
-              </div>
-            </div>
+            <UserProfileSettingsPage portalType="landlord" />
           )}
 
 

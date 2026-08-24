@@ -8,7 +8,9 @@ import ChatDrawer from './components/ChatDrawer';
 import HostPortalModal from './components/HostPortalModal';
 import BookingModal from './components/BookingModal';
 import VideoTourModal from './components/VideoTourModal';
-import PortalSwitcherModal from './components/PortalSwitcherModal';
+import ScheduleTourModal from './components/ScheduleTourModal';
+import AuthModal from './components/AuthModal';
+import PWAInstallPrompt from './components/PWAInstallPrompt';
 
 // 3 SEPARATED DASHBOARD PORTALS (MODULARIZED FOLDER ARCHITECTURE)
 import UserDashboard from './components/dashboards/user/UserDashboard';
@@ -21,11 +23,47 @@ import BestValueMapSection from './components/BestValueMapSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 import { MOCK_PROPERTIES } from './data/mockData';
-import { Heart, Search, Sparkles, Building2, ArrowRight } from 'lucide-react';
+import { useAuth } from './contexts/AuthContext';
+import { getProperties } from './services/supabaseService';
+import { Heart, Search, Sparkles, Building2, ArrowRight, ShieldAlert, ArrowLeftRight } from 'lucide-react';
 
 export default function App() {
+  const { user, profile, role } = useAuth();
   const [properties, setProperties] = useState(MOCK_PROPERTIES);
-  const [currentPortal, setCurrentPortal] = useState('public'); // 'public' | 'user' | 'landlord' | 'admin'
+  
+  // Persistent portal view
+  const [currentPortal, setCurrentPortal] = useState(() => {
+    try {
+      return localStorage.getItem('godirect_portal') || 'public';
+    } catch {
+      return 'public';
+    }
+  });
+
+  // Sync portal changes to localStorage
+  useEffect(() => {
+    if (currentPortal) {
+      localStorage.setItem('godirect_portal', currentPortal);
+    }
+  }, [currentPortal]);
+
+  // Load properties from Supabase Postgres on mount
+  useEffect(() => {
+    getProperties().then((data) => {
+      if (data && data.length > 0) {
+        setProperties(data);
+      }
+    });
+  }, []);
+
+  // When user signs in, route them to their real portal if on public
+  useEffect(() => {
+    if (role === 'admin' && currentPortal === 'public') {
+      setCurrentPortal('admin');
+    } else if (role === 'landlord' && currentPortal === 'public') {
+      setCurrentPortal('landlord');
+    }
+  }, [role]);
   
   // Public View Filters
   const [activeView, setActiveView] = useState('public'); // 'public' | 'short-lets' | 'rentals' | 'wishlist'
@@ -37,11 +75,14 @@ export default function App() {
   const [wishlist, setWishlist] = useState(['gd-101']);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [bookingData, setBookingData] = useState(null);
+  const [tourProperty, setTourProperty] = useState(null);
+  const [isTourModalOpen, setIsTourModalOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [activeChatProperty, setActiveChatProperty] = useState(null);
   const [isHostPortalOpen, setIsHostPortalOpen] = useState(false);
   const [isVideoTourOpen, setIsVideoTourOpen] = useState(false);
-  const [isPortalSwitcherOpen, setIsPortalSwitcherOpen] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalMode, setAuthModalMode] = useState('signin');
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   // Dark mode effect
@@ -145,6 +186,7 @@ export default function App() {
         <AdminDashboard
           properties={properties}
           onReturnToPublic={() => setCurrentPortal('public')}
+          onSelectPortal={handleSelectPortal}
         />
       ) : (
 
@@ -159,11 +201,26 @@ export default function App() {
             }}
             wishlistCount={wishlist.length}
             unreadCount={1}
-            onOpenHostPortal={() => setIsHostPortalOpen(true)}
+            onOpenHostPortal={() => {
+              if (user) {
+                setIsHostPortalOpen(true);
+              } else {
+                setAuthModalMode('signup');
+                setIsAuthModalOpen(true);
+              }
+            }}
             onOpenChat={() => setIsChatOpen(true)}
             isDarkMode={isDarkMode}
             setIsDarkMode={setIsDarkMode}
-            onOpenPortalSwitcher={() => setIsPortalSwitcherOpen(true)}
+            onOpenAuthModal={(m) => {
+              setAuthModalMode(m || 'signin');
+              setIsAuthModalOpen(true);
+            }}
+            onGoToDashboard={(targetNav) => {
+              if (role === 'admin') setCurrentPortal('admin');
+              else if (role === 'landlord') setCurrentPortal('landlord');
+              else setCurrentPortal('user');
+            }}
           />
 
           {/* Hero Section */}
@@ -468,14 +525,6 @@ export default function App() {
 
       {/* OVERLAY MODALS & DRAWERS */}
 
-      {/* 3 Dashboards & Public Portal Switcher Modal */}
-      <PortalSwitcherModal
-        isOpen={isPortalSwitcherOpen}
-        onClose={() => setIsPortalSwitcherOpen(false)}
-        currentPortal={currentPortal}
-        onSelectPortal={handleSelectPortal}
-      />
-
       {/* Property Detail Modal */}
       {selectedProperty && (
         <PropertyDetailModal
@@ -491,6 +540,19 @@ export default function App() {
           isWishlisted={wishlist.includes(selectedProperty.id)}
           onToggleWishlist={handleToggleWishlist}
           onOpenVideoTour={() => setIsVideoTourOpen(true)}
+          onScheduleTour={(prop) => {
+            setTourProperty(prop);
+            setIsTourModalOpen(true);
+          }}
+        />
+      )}
+
+      {/* Schedule Tour / Agent Escort Modal */}
+      {isTourModalOpen && tourProperty && (
+        <ScheduleTourModal
+          isOpen={isTourModalOpen}
+          onClose={() => setIsTourModalOpen(false)}
+          property={tourProperty}
         />
       )}
 
@@ -524,6 +586,21 @@ export default function App() {
         onClose={() => setIsHostPortalOpen(false)}
         onAddProperty={handleAddProperty}
       />
+
+      {/* Authentication (Sign In & Sign Up) Modal */}
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        initialMode={authModalMode}
+        onAuthSuccess={(chosenRole) => {
+          if (chosenRole === 'admin') setCurrentPortal('admin');
+          else if (chosenRole === 'landlord') setCurrentPortal('landlord');
+          else setCurrentPortal('user');
+        }}
+      />
+
+      {/* PWA Mobile & Desktop Install Prompt */}
+      <PWAInstallPrompt />
 
     </div>
   );

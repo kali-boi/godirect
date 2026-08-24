@@ -25,7 +25,8 @@ export default function PropertyDetailModal({
   onStartBooking,
   isWishlisted,
   onToggleWishlist,
-  onOpenVideoTour
+  onOpenVideoTour,
+  onScheduleTour
 }) {
   if (!property) return null;
 
@@ -278,19 +279,33 @@ export default function PropertyDetailModal({
                   </div>
                 </div>
 
-                <button
-                  onClick={() => {
-                    onClose();
-                    onStartBooking(property, { stayNights, totalBase, serviceFee, grandTotal });
-                  }}
-                  className="btn-gold w-full py-4 text-base font-bold justify-center shadow-lg"
-                >
-                  <Calendar className="w-5 h-5" />
-                  <span>Reserve & Book Now</span>
-                </button>
+                {/* Action Buttons */}
+                <div className="space-y-2">
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onStartBooking(property, { stayNights, totalBase, serviceFee, grandTotal });
+                    }}
+                    className="btn-gold w-full py-3.5 text-sm font-bold justify-center shadow-lg"
+                  >
+                    <Calendar className="w-4 h-4" />
+                    <span>Reserve via 24h Escrow (₦{grandTotal.toLocaleString()})</span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      onClose();
+                      if (onScheduleTour) onScheduleTour(property);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 py-3 rounded-2xl bg-teal-50 hover:bg-teal-100 text-[#018F8B] border border-[#018F8B]/30 font-bold text-xs transition-all shadow-xs"
+                  >
+                    <ShieldCheck className="w-4 h-4" />
+                    <span>Book Agent-Escorted Inspection (Free)</span>
+                  </button>
+                </div>
 
                 <p className="text-center text-xs text-[var(--text-muted)] font-medium">
-                  Direct payment protection • Free cancellation within 48h
+                  Direct payment protection • GoDirect Field Agent Escort on all physical tours
                 </p>
 
               </div>

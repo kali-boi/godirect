@@ -1,5 +1,6 @@
 import React from 'react';
 import { Building2, DollarSign, Eye, Clock, Calendar, PlusCircle, ChevronRight } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function LandlordOverviewPage({ 
   properties = [], 
@@ -7,6 +8,9 @@ export default function LandlordOverviewPage({
   onOpenHostPortal, 
   setActiveNav 
 }) {
+  const { user, profile } = useAuth();
+  const displayName = user?.user_metadata?.full_name || profile?.full_name || user?.email?.split('@')[0] || 'Host';
+
   const recentActivities = [
     {
       id: 'act-1',
@@ -32,10 +36,10 @@ export default function LandlordOverviewPage({
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in font-['Host_Grotesk']">
       <div>
         <h1 className="text-3xl font-black text-slate-900 tracking-tight">
-          Welcome back, Eleanor
+          Welcome back, {displayName}
         </h1>
       </div>
 

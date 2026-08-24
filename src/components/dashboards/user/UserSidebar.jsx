@@ -79,12 +79,9 @@ export default function UserSidebar({ activeNav, setActiveNav, wishlistCount, on
       <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30 overflow-y-auto">
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Logo Header */}
-          <div className="flex items-center gap-2.5 px-2 pt-1 cursor-pointer" onClick={onReturnToPublic}>
-            <img src="/images/logo.png" alt="GoDirect" className="h-9 w-auto object-contain" />
-            <div>
-              <h1 className="font-black text-base tracking-tight text-slate-900 leading-none">GODIRECT</h1>
-              <span className="text-[11px] text-slate-400 font-medium">My Account</span>
-            </div>
+          <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={onReturnToPublic}>
+            <img src="/images/logo.png" alt="GoDirect" className="h-8 w-auto object-contain self-start" />
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pl-0.5">Guest Portal</span>
           </div>
 
           {/* Sectioned Navigation */}

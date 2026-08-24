@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   X, 
   PlusCircle, 
@@ -11,8 +11,12 @@ import {
   Bed, 
   Bath, 
   Maximize2,
-  Sparkles
+  Sparkles,
+  Zap,
+  Phone
 } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { createProperty } from '../services/supabaseService';
 
 export default function HostPortalModal({ 
   isOpen, 
@@ -21,30 +25,44 @@ export default function HostPortalModal({
 }) {
   if (!isOpen) return null;
 
+  const { user, profile } = useAuth();
   const [step, setStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     title: '',
-    location: '',
+    location: 'Ikoyi, Lagos',
     address: '',
-    price: 350,
+    price: 450000,
     pricePeriod: 'night',
     type: 'short-let',
     isShortLet: true,
-    beds: 2,
-    baths: 2,
-    sqft: 1200,
+    beds: 3,
+    baths: 3,
+    sqft: 2400,
     description: '',
-    amenities: ['High-Speed Wi-Fi', 'Air Conditioning', '24/7 Security', 'Private Parking'],
+    amenities: ['High-Speed Wi-Fi', 'Air Conditioning', '24/7 Security', 'Private Parking', 'Swimming Pool', 'Standby Generator'],
     imageUrl: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80',
-    hostName: 'Landlord Host',
-    hostEmail: 'host@godirect.com',
-    hostPhone: '+44 7700 900077'
+    hostName: '',
+    hostEmail: '',
+    hostPhone: ''
   });
+
+  useEffect(() => {
+    if (user || profile) {
+      setFormData(prev => ({
+        ...prev,
+        hostName: user?.user_metadata?.full_name || profile?.full_name || 'Verified Direct Landlord',
+        hostEmail: user?.email || profile?.email || '',
+        hostPhone: user?.user_metadata?.phone || profile?.phone || '+234 '
+      }));
+    }
+  }, [user, profile]);
 
   const availableAmenitiesList = [
     'Private Rooftop Pool', '24/7 Concierge', 'High-Speed Wi-Fi',
     'Underground Parking', 'Smart Home Automation', 'Chef Kitchen',
-    'Air Conditioning', 'EV Charger', 'Sauna & Spa', 'Private Garden'
+    'Air Conditioning', 'Standby Generator', 'Sauna & Spa', 'Private Garden'
   ];
 
   const handleToggleAmenity = (amenity) => {
@@ -55,21 +73,20 @@ export default function HostPortalModal({
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const newProperty = {
-      id: `gd-${Date.now().toString().slice(-4)}`,
-      title: formData.title || 'Executive Luxury Residence',
-      location: formData.location || 'Central City',
-      address: formData.address || `${formData.location || 'Central'}, Main Ave`,
+    setIsSubmitting(true);
+
+    const propertyPayload = {
+      title: formData.title || 'Luxury Residence in Ikoyi',
+      location: formData.location || 'Ikoyi, Lagos',
+      address: formData.address || `${formData.location || 'Ikoyi'}, Lagos State`,
+      pricePerNight: formData.isShortLet ? Number(formData.price) : Math.round(Number(formData.price) / 30),
+      pricePerYear: !formData.isShortLet ? Number(formData.price) * 12 : Number(formData.price) * 365,
       price: Number(formData.price),
-      pricePeriod: formData.isShortLet ? 'night' : 'month',
+      currency: 'NGN',
       type: formData.type,
       isShortLet: formData.isShortLet,
-      isVerified: true,
-      isSuperhost: true,
-      rating: 5.0,
-      reviewsCount: 1,
       beds: Number(formData.beds),
       baths: Number(formData.baths),
       maxGuests: Number(formData.beds) * 2,
@@ -78,23 +95,40 @@ export default function HostPortalModal({
         formData.imageUrl,
         'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80'
       ],
-      description: formData.description || 'Newly listed direct landlord property with top-tier finishes and modern smart amenities.',
-      amenities: formData.amenities,
-      host: {
-        id: `host-${Date.now().toString().slice(-4)}`,
-        name: formData.hostName,
-        role: 'Verified Property Owner',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
-        responseRate: '100%',
-        responseTime: 'within 10 minutes',
-        phone: formData.hostPhone,
-        email: formData.hostEmail,
-        joinedYear: '2026'
-      }
+      description: formData.description || 'Newly listed direct landlord property with top-tier finishes, standby generator, and modern smart amenities.',
+      amenities: formData.amenities
     };
 
-    onAddProperty(newProperty);
-    onClose();
+    try {
+      const result = await createProperty(propertyPayload, user?.id || 'usr-host-direct');
+      const finalProperty = {
+        id: result?.data?.id || `gd-${Date.now().toString().slice(-4)}`,
+        ...propertyPayload,
+        isVerified: true,
+        isSuperhost: true,
+        rating: 5.0,
+        reviewsCount: 1,
+        host: {
+          id: user?.id || 'usr-host-direct',
+          name: formData.hostName,
+          role: 'Verified Property Owner',
+          avatar: user?.avatar_url || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80',
+          responseRate: '100%',
+          responseTime: 'within 10 minutes',
+          phone: formData.hostPhone,
+          email: formData.hostEmail,
+          joinedYear: '2026'
+        }
+      };
+
+      if (onAddProperty) onAddProperty(finalProperty);
+      onClose();
+    } catch (err) {
+      console.warn('Listing error:', err);
+      onClose();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

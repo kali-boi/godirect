@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
   Home, Building2, Clock, DollarSign, Calendar, MessageSquare,
   Bell, User, PlusCircle, Globe, ArrowRight, Menu, X,
-  BarChart3, Star, Users, Wrench, FileText, Receipt
+  BarChart3, Star, Users, Wrench, FileText, Receipt, Wallet
 } from 'lucide-react';
 
 export default function LandlordSidebar({ activeNav, setActiveNav, propertiesCount, pendingRequestsCount, onOpenHostPortal, onReturnToPublic }) {
@@ -35,7 +35,7 @@ export default function LandlordSidebar({ activeNav, setActiveNav, propertiesCou
     {
       label: 'FINANCIALS',
       items: [
-        { id: 'earnings', label: 'Earnings & Escrow', icon: DollarSign },
+        { id: 'earnings', label: 'Wallet & Payouts', icon: Wallet },
         { id: 'tax', label: 'Tax & Statements', icon: Receipt }
       ]
     },
@@ -61,12 +61,9 @@ export default function LandlordSidebar({ activeNav, setActiveNav, propertiesCou
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
-          <img src="/images/logo.png" alt="GoDirect" className="h-9 w-auto object-contain" />
-          <div>
-            <h1 className="font-black text-base tracking-tight text-slate-900 leading-none">GODIRECT</h1>
-            <span className="text-[11px] text-slate-400 font-medium">Host Portal</span>
-          </div>
+        <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
+          <img src="/images/logo.png" alt="GoDirect" className="h-8 w-auto object-contain self-start" />
+          <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pl-0.5">Host Portal</span>
         </div>
 
         {/* Sectioned Nav */}

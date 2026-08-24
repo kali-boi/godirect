@@ -1,9 +1,25 @@
 import React from 'react';
 import { Search, Bell, Globe, LogOut } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function LandlordHeader({ searchQuery, setSearchQuery, setActiveNav, onReturnToPublic }) {
+  const { user, profile, signOut } = useAuth();
+
+  const fullName = user?.user_metadata?.full_name || profile?.full_name || user?.email?.split('@')[0] || 'Landlord';
+  const initials = fullName
+    .split(' ')
+    .map(n => n[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2) || 'LD';
+
+  const handleSignOut = async () => {
+    await signOut();
+    if (onReturnToPublic) onReturnToPublic();
+  };
+
   return (
-    <header className="sticky top-0 z-20 bg-white border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-20 bg-white border-b border-slate-200/80 px-4 sm:px-6 py-3 flex items-center justify-between gap-4 font-['Host_Grotesk']">
       {/* Search Bar */}
       <div className="flex items-center gap-3 flex-1 max-w-md">
         <div className="relative w-full">
@@ -40,15 +56,19 @@ export default function LandlordHeader({ searchQuery, setSearchQuery, setActiveN
 
         <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
           <div className="text-right hidden md:block">
-            <span className="text-xs font-extrabold text-slate-900 block leading-tight">Welcome Back</span>
-            <span className="text-[10px] text-slate-400 font-medium">Landlord Host</span>
+            <span className="text-xs font-extrabold text-slate-900 block leading-tight truncate max-w-[120px]">{fullName}</span>
+            <span className="text-[10px] text-slate-400 font-medium">Verified Landlord</span>
           </div>
-          <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-900 border border-amber-300 flex items-center justify-center font-bold text-xs">
-            EV
-          </div>
+          {user?.avatar_url ? (
+            <img src={user.avatar_url} alt="Profile" className="w-8 h-8 rounded-full object-cover border border-slate-200" />
+          ) : (
+            <div className="w-8 h-8 rounded-full bg-[#0B2545] text-white flex items-center justify-center font-bold text-xs">
+              {initials}
+            </div>
+          )}
           <button 
-            onClick={onReturnToPublic}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+            onClick={handleSignOut}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
             title="Log Out"
           >
             <LogOut className="w-4 h-4" />

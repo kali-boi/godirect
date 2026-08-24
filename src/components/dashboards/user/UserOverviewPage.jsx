@@ -1,5 +1,6 @@
 import React from 'react';
 import { Heart, Home, Eye, MessageSquare, Calendar, ChevronRight } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
 
 export default function UserOverviewPage({ 
   wishlistProperties = [], 
@@ -7,6 +8,9 @@ export default function UserOverviewPage({
   setActiveNav, 
   onReturnToPublic 
 }) {
+  const { user, profile } = useAuth();
+  const displayName = user?.user_metadata?.full_name || profile?.full_name || user?.email?.split('@')[0] || 'Guest';
+
   const recentActivities = [
     {
       id: 'act-1',
@@ -17,7 +21,7 @@ export default function UserOverviewPage({
     },
     {
       id: 'act-2',
-      title: 'Scheduled Viewing',
+      title: 'Schedule Viewing',
       subtitle: 'The Skyview Horizon Penthouse',
       time: 'less than a minute ago',
       status: 'completed'
@@ -32,10 +36,10 @@ export default function UserOverviewPage({
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8 animate-fade-in font-['Host_Grotesk']">
       <div>
         <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-          Welcome back, Alexander
+          Welcome back, {displayName}
         </h1>
         <p className="text-xs text-slate-500 mt-1">
           Track your luxury reservations, escrow payments, saved properties, and host inquiries.

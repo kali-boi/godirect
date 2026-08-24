@@ -9,6 +9,7 @@ import UserDisputePage from './pages/UserDisputePage';
 import UserDocumentsPage from './pages/UserDocumentsPage';
 import UserSupportPage from './pages/UserSupportPage';
 import UserVerificationPage from './pages/UserVerificationPage';
+import UserProfileSettingsPage from '../common/UserProfileSettingsPage';
 
 export default function UserDashboard({ 
   wishlistProperties = [], 
@@ -205,17 +206,9 @@ export default function UserDashboard({
             </div>
           )}
 
+          {/* ── LIVE USER PROFILE (CONNECTED TO SUPABASE) ── */}
           {activeNav === 'profile' && (
-            <div className="space-y-6 max-w-xl animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">User Profile</h2>
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 text-center space-y-3">
-                <div className="w-20 h-20 rounded-full bg-slate-100 border border-slate-200 mx-auto flex items-center justify-center font-bold text-xl text-slate-700">
-                  DA
-                </div>
-                <h3 className="font-extrabold text-lg text-slate-900">Alexander Wright</h3>
-                <p className="text-xs text-slate-500">Property Seeker • Tier 3 Verified Renter</p>
-              </div>
-            </div>
+            <UserProfileSettingsPage portalType="user" />
           )}
 
 

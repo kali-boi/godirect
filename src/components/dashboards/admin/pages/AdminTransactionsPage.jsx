@@ -41,11 +41,12 @@ export default function AdminTransactionsPage() {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
         {[
-          { label: 'Total Processed', value: '$148,500', icon: DollarSign, color: 'text-slate-900' },
-          { label: 'Currently Held', value: '$3,570', icon: Clock, color: 'text-amber-600' },
-          { label: 'Total Payouts', value: '$140,610', icon: CheckCircle2, color: 'text-emerald-600' },
+          { label: 'Total Volume', value: '$148,500', icon: DollarSign, color: 'text-slate-900' },
+          { label: 'Platform Cut (5%)', value: '$7,425', icon: CheckCircle2, color: 'text-[#018F8B]' },
+          { label: 'Currently in Escrow', value: '$3,570', icon: Clock, color: 'text-amber-600' },
+          { label: 'Host Payouts', value: '$140,610', icon: CheckCircle2, color: 'text-emerald-600' },
           { label: 'Total Refunded', value: '$4,320', icon: XCircle, color: 'text-rose-500' }
         ].map((s, i) => {
           const Icon = s.icon;

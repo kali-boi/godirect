@@ -5,7 +5,14 @@ import {
   Shield, RefreshCw, Map, Tag, User
 } from 'lucide-react';
 
-export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificationsCount, propertiesCount, onReturnToPublic }) {
+export default function AdminSidebar({ 
+  activeNav, 
+  setActiveNav, 
+  pendingVerificationsCount, 
+  propertiesCount, 
+  onReturnToPublic,
+  onSelectPortal 
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const navSections = [
@@ -49,6 +56,13 @@ export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificat
       ]
     },
     {
+      label: 'PORTAL INSPECTION',
+      items: [
+        { id: 'switch_landlord', label: 'Landlord Dashboard', icon: Building2, isPortalSwitch: true, portalTarget: 'landlord' },
+        { id: 'switch_user', label: 'Guest Dashboard', icon: User, isPortalSwitch: true, portalTarget: 'user' }
+      ]
+    },
+    {
       label: 'PLATFORM',
       items: [
         { id: 'regions', label: 'Regions & Jurisdictions', icon: Map },
@@ -59,8 +73,13 @@ export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificat
     }
   ];
 
-  const handleNavClick = (id) => {
-    setActiveNav(id);
+  const handleNavClick = (item) => {
+    if (item.isPortalSwitch && onSelectPortal) {
+      onSelectPortal(item.portalTarget);
+      setMobileOpen(false);
+      return;
+    }
+    setActiveNav(item.id);
     setMobileOpen(false);
   };
 
@@ -68,12 +87,9 @@ export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificat
     <div className="flex flex-col h-full">
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {/* Logo Header */}
-        <div className="flex items-center gap-2.5 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
-          <img src="/images/logo.png" alt="GoDirect" className="h-9 w-auto object-contain" />
-          <div>
-            <h1 className="font-black text-base tracking-tight text-slate-900 leading-none">GODIRECT</h1>
-            <span className="text-[11px] text-slate-400 font-medium">Admin Portal</span>
-          </div>
+        <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
+          <img src="/images/logo.png" alt="GoDirect" className="h-8 w-auto object-contain self-start" />
+          <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest pl-0.5">Admin Control</span>
         </div>
 
         {/* Sectioned Navigation */}
@@ -89,7 +105,7 @@ export default function AdminSidebar({ activeNav, setActiveNav, pendingVerificat
                 return (
                   <button
                     key={item.id}
-                    onClick={() => handleNavClick(item.id)}
+                    onClick={() => handleNavClick(item)}
                     className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
                       isActive
                         ? 'bg-[#0B2545] text-white shadow-sm'

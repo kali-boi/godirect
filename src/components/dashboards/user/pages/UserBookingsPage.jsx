@@ -1,68 +1,29 @@
-import React, { useState } from 'react';
-import { Calendar, Clock, CheckCircle2, XCircle, ChevronRight, MapPin } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Calendar, Clock, CheckCircle2, XCircle, ChevronRight, MapPin, ShieldCheck } from 'lucide-react';
+import { useAuth } from '../../../../contexts/AuthContext';
+import { getUserBookings } from '../../../../services/supabaseService';
 
 export default function UserBookingsPage() {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('upcoming');
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const bookings = [
-    {
-      id: 'BKG-001',
-      property: 'The Skyview Horizon Penthouse',
-      location: 'Mayfair, London, UK',
-      host: 'Eleanor Vance',
-      hostAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80',
-      image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=400&q=80',
-      checkIn: 'Oct 12, 2026',
-      checkOut: 'Oct 16, 2026',
-      nights: 4,
-      guests: 2,
-      total: 3570,
-      escrowStatus: 'held',
-      status: 'upcoming',
-      confirmationCode: 'GD-7291-MFR',
-      checkInTime: '3:00 PM GMT',
-      checkOutTime: '11:00 AM GMT',
-      accessCode: '4821'
-    },
-    {
-      id: 'BKG-002',
-      property: 'The Azure Waterfront Villa',
-      location: 'Jersey, Channel Islands',
-      host: 'Eleanor Vance',
-      hostAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80',
-      image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=400&q=80',
-      checkIn: 'Nov 01, 2026',
-      checkOut: 'Nov 07, 2026',
-      nights: 6,
-      guests: 8,
-      total: 8820,
-      escrowStatus: 'pending',
-      status: 'upcoming',
-      confirmationCode: 'GD-7288-JRS',
-      checkInTime: '4:00 PM GMT',
-      checkOutTime: '11:00 AM GMT',
-      accessCode: null
-    },
-    {
-      id: 'BKG-003',
-      property: 'Eiffel View Executive Suite',
-      location: '7th Arrondissement, Paris, France',
-      host: 'Pierre Dupont',
-      hostAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&q=80',
-      image: 'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=400&q=80',
-      checkIn: 'Jul 14, 2026',
-      checkOut: 'Jul 19, 2026',
-      nights: 5,
-      guests: 2,
-      total: 4250,
-      escrowStatus: 'released',
-      status: 'completed',
-      confirmationCode: 'GD-7110-PAR',
-      checkInTime: '3:00 PM CET',
-      checkOutTime: '11:00 AM CET',
-      accessCode: null
+  useEffect(() => {
+    if (user?.id) {
+      getUserBookings(user.id).then((data) => {
+        if (data && data.length > 0) {
+          setBookings(data);
+        } else {
+          setBookings([]);
+        }
+        setLoading(false);
+      });
+    } else {
+      setBookings([]);
+      setLoading(false);
     }
-  ];
+  }, [user]);
 
   const tabs = [
     { id: 'upcoming', label: 'Upcoming', count: bookings.filter(b => b.status === 'upcoming').length },

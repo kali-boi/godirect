@@ -12,10 +12,12 @@ import AdminAuditPage from './pages/AdminAuditPage';
 import AdminRefundsPage from './pages/AdminRefundsPage';
 import AdminRegionsPage from './pages/AdminRegionsPage';
 import AdminPromotionsPage from './pages/AdminPromotionsPage';
+import UserProfileSettingsPage from '../common/UserProfileSettingsPage';
 
 export default function AdminDashboard({ 
   properties = [], 
-  onReturnToPublic 
+  onReturnToPublic,
+  onSelectPortal 
 }) {
   const [activeNav, setActiveNav] = useState('dashboard');
   const [searchQuery, setSearchQuery] = useState('');
@@ -69,7 +71,8 @@ export default function AdminDashboard({
         setActiveNav={setActiveNav} 
         pendingVerificationsCount={pendingCount} 
         propertiesCount={properties.length} 
-        onReturnToPublic={onReturnToPublic} 
+        onReturnToPublic={onReturnToPublic}
+        onSelectPortal={onSelectPortal} 
       />
 
       {/* MAIN CONTENT */}
@@ -82,7 +85,8 @@ export default function AdminDashboard({
             setSearchQuery={setSearchQuery} 
             pendingCount={pendingCount} 
             setActiveNav={setActiveNav} 
-            onReturnToPublic={onReturnToPublic} 
+            onReturnToPublic={onReturnToPublic}
+            onSelectPortal={onSelectPortal} 
           />
         </div>
 
@@ -283,19 +287,9 @@ export default function AdminDashboard({
             </div>
           )}
 
-          {/* ADMIN PROFILE */}
+          {/* ── LIVE ADMIN PROFILE (CONNECTED TO SUPABASE) ── */}
           {activeNav === 'profile' && (
-            <div className="space-y-6 max-w-xl animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Admin Profile</h2>
-              <div className="p-6 rounded-2xl bg-white border border-slate-200 text-center space-y-3">
-                <div className="w-20 h-20 rounded-full bg-slate-900 text-white mx-auto flex items-center justify-center font-bold text-xl">
-                  SA
-                </div>
-                <h3 className="font-extrabold text-lg text-slate-900">Super Administrator</h3>
-                <p className="text-xs text-slate-500">God Mode Access • All Permissions</p>
-                <p className="text-xs text-slate-400 font-mono">admin@godirect.co</p>
-              </div>
-            </div>
+            <UserProfileSettingsPage portalType="admin" />
           )}
 
         </main>

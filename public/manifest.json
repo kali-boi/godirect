@@ -1,0 +1,49 @@
+{
+  "name": "GoDirect | Luxury Escrow Marketplace",
+  "short_name": "GoDirect",
+  "description": "Direct luxury real estate, short-lets, and 24h escrow protection in Nigeria.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#0B2545",
+  "theme_color": "#0B2545",
+  "orientation": "portrait",
+  "categories": ["lifestyle", "travel", "business", "finance"],
+  "icons": [
+    {
+      "src": "/images/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/images/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Explore Properties",
+      "short_name": "Explore",
+      "description": "Browse luxury short-lets and rentals in Lagos & Abuja",
+      "url": "/",
+      "icons": [{ "src": "/images/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "My Dashboard",
+      "short_name": "Dashboard",
+      "description": "View active bookings, escrows, and wallet",
+      "url": "/",
+      "icons": [{ "src": "/images/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "List Property",
+      "short_name": "List",
+      "description": "List your verified property directly",
+      "url": "/",
+      "icons": [{ "src": "/images/logo.png", "sizes": "192x192" }]
+    }
+  ]
+}

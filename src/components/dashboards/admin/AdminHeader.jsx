@@ -30,6 +30,24 @@ export default function AdminHeader({ searchQuery, setSearchQuery, pendingCount,
           </span>
         </button>
 
+        {/* Quick Portal Switchers */}
+        <div className="hidden lg:flex items-center gap-1.5 bg-slate-100 p-1 rounded-xl border border-slate-200">
+          <button 
+            onClick={() => onSelectPortal && onSelectPortal('landlord')}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white text-slate-800 hover:bg-slate-50 text-[11px] font-black border border-slate-200/60 shadow-xs transition-all"
+            title="Inspect Landlord / Host Dashboard"
+          >
+            <span>Host Portal</span>
+          </button>
+          <button 
+            onClick={() => onSelectPortal && onSelectPortal('user')}
+            className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-white text-slate-800 hover:bg-slate-50 text-[11px] font-black border border-slate-200/60 shadow-xs transition-all"
+            title="Inspect Guest / User Dashboard"
+          >
+            <span>Guest Portal</span>
+          </button>
+        </div>
+
         <button 
           onClick={onReturnToPublic}
           className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-xs font-bold text-slate-700 transition-all"
