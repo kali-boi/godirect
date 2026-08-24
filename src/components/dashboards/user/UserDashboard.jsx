@@ -235,16 +235,25 @@ export default function UserDashboard({
           )}
 
           {activeNav === 'notifications' && (
-            <div className="space-y-6 animate-fade-in">
-              <h2 className="text-2xl font-black text-slate-900">Notifications</h2>
+            <div className="space-y-6 animate-fade-in font-['Host_Grotesk']">
+              <div>
+                <h2 className="text-2xl font-black text-slate-900">Notifications & Alerts</h2>
+                <p className="text-xs text-slate-500 mt-1">Escrow payment receipts, viewing confirmations, and message alerts.</p>
+              </div>
               <div className="space-y-3">
-                {notificationsList.map((n) => (
-                  <div key={n.id} className="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
-                    <h4 className="font-bold text-xs text-slate-900">{n.title}</h4>
-                    <p className="text-xs text-slate-500">{n.desc}</p>
-                    <span className="text-[10px] text-slate-400">{n.time}</span>
+                {notificationsList.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-xs text-slate-400">
+                    No new notifications. When your bookings or tour inspections update, alerts will appear here.
                   </div>
-                ))}
+                ) : (
+                  notificationsList.map((n) => (
+                    <div key={n.id} className="p-4 rounded-2xl bg-white border border-slate-200 space-y-1">
+                      <h4 className="font-bold text-xs text-slate-900">{n.title}</h4>
+                      <p className="text-xs text-slate-500">{n.desc}</p>
+                      <span className="text-[10px] text-slate-400">{n.time}</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

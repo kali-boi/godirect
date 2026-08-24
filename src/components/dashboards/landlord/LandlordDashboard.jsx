@@ -298,24 +298,35 @@ export default function LandlordDashboard({
           )}
 
           {activeNav === 'notifications' && (
-            <div className="space-y-5 animate-fade-in">
+            <div className="space-y-5 animate-fade-in font-['Host_Grotesk']">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-slate-900">Host Notifications</h2>
-                <button onClick={markAllRead} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
-                  <CheckCheck className="w-3.5 h-3.5" /> Mark all read
-                </button>
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900">Host Notifications</h2>
+                  <p className="text-xs text-slate-500 mt-1">Escrow deposit alerts, booking requests, and inspection completion notices.</p>
+                </div>
+                {hostNotifs.length > 0 && (
+                  <button onClick={markAllRead} className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-colors">
+                    <CheckCheck className="w-3.5 h-3.5" /> Mark all read
+                  </button>
+                )}
               </div>
               <div className="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-50 overflow-hidden">
-                {hostNotifs.map(n => (
-                  <div key={n.id} onClick={() => setHostNotifs(prev => prev.map(x => x.id === n.id ? { ...x, unread: false } : x))} className={`flex items-start gap-3 px-5 py-4 cursor-pointer transition-colors ${ n.unread ? 'bg-teal-50/40 hover:bg-teal-50' : 'hover:bg-slate-50' }`}>
-                    <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.unread ? 'bg-teal-500' : 'bg-slate-200'}`} />
-                    <div className="min-w-0">
-                      <p className={`text-xs ${n.unread ? 'font-extrabold text-slate-900' : 'font-bold text-slate-700'}`}>{n.title}</p>
-                      <p className="text-[11px] text-slate-500 mt-0.5">{n.desc}</p>
-                      <span className="text-[10px] text-slate-400">{n.time}</span>
-                    </div>
+                {hostNotifs.length === 0 ? (
+                  <div className="p-12 text-center text-xs text-slate-400">
+                    No new notifications. When guests book or send inquiries, updates will appear here.
                   </div>
-                ))}
+                ) : (
+                  hostNotifs.map(n => (
+                    <div key={n.id} onClick={() => setHostNotifs(prev => prev.map(x => x.id === n.id ? { ...x, unread: false } : x))} className={`flex items-start gap-3 px-5 py-4 cursor-pointer transition-colors ${ n.unread ? 'bg-teal-50/40 hover:bg-teal-50' : 'hover:bg-slate-50' }`}>
+                      <div className={`mt-0.5 w-2 h-2 rounded-full shrink-0 ${n.unread ? 'bg-teal-500' : 'bg-slate-200'}`} />
+                      <div className="min-w-0">
+                        <p className={`text-xs ${n.unread ? 'font-extrabold text-slate-900' : 'font-bold text-slate-700'}`}>{n.title}</p>
+                        <p className="text-[11px] text-slate-500 mt-0.5">{n.desc}</p>
+                        <span className="text-[10px] text-slate-400">{n.time}</span>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

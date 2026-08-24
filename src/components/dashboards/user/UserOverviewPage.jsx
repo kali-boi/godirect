@@ -1,5 +1,5 @@
 import React from 'react';
-import { Heart, Home, Eye, MessageSquare, Calendar, ChevronRight } from 'lucide-react';
+import { Heart, Home, Eye, MessageSquare, Calendar, ChevronRight, Bookmark } from 'lucide-react';
 import { useAuth } from '../../../contexts/AuthContext';
 
 export default function UserOverviewPage({ 
@@ -11,29 +11,7 @@ export default function UserOverviewPage({
   const { user, profile } = useAuth();
   const displayName = user?.user_metadata?.full_name || profile?.full_name || user?.email?.split('@')[0] || 'Guest';
 
-  const recentActivities = [
-    {
-      id: 'act-1',
-      title: 'Sent Inquiry',
-      subtitle: 'The Skyview Horizon Penthouse',
-      time: 'less than a minute ago',
-      status: 'completed'
-    },
-    {
-      id: 'act-2',
-      title: 'Schedule Viewing',
-      subtitle: 'The Skyview Horizon Penthouse',
-      time: 'less than a minute ago',
-      status: 'completed'
-    },
-    {
-      id: 'act-3',
-      title: 'Viewed Property',
-      subtitle: 'The Skyview Horizon Penthouse',
-      time: 'less than a minute ago',
-      status: 'completed'
-    }
-  ];
+  const recentActivities = [];
 
   return (
     <div className="space-y-8 animate-fade-in font-['Host_Grotesk']">
@@ -42,7 +20,7 @@ export default function UserOverviewPage({
           Welcome back, {displayName}
         </h1>
         <p className="text-xs text-slate-500 mt-1">
-          Track your luxury reservations, escrow payments, saved properties, and host inquiries.
+          Track your reservations, escrow payments, saved properties, and host inquiries.
         </p>
       </div>
 
@@ -54,7 +32,7 @@ export default function UserOverviewPage({
             <span className="text-xs font-bold text-slate-700">Saved Properties</span>
             <Heart className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-3xl font-black text-slate-900">{wishlistProperties.length > 0 ? wishlistProperties.length : 1}</div>
+          <div className="text-3xl font-black text-slate-900">{wishlistProperties.length}</div>
           <p className="text-[11px] text-slate-400 font-medium">Properties you've saved</p>
         </div>
 
@@ -63,7 +41,7 @@ export default function UserOverviewPage({
             <span className="text-xs font-bold text-slate-700">Active Bookings</span>
             <Home className="w-4 h-4 text-emerald-600" />
           </div>
-          <div className="text-3xl font-black text-slate-900">2</div>
+          <div className="text-3xl font-black text-slate-900">0</div>
           <p className="text-[11px] text-slate-400 font-medium">Upcoming verified stays</p>
         </div>
 
@@ -72,8 +50,8 @@ export default function UserOverviewPage({
             <span className="text-xs font-bold text-slate-700">Property Views</span>
             <Eye className="w-4 h-4 text-slate-500" />
           </div>
-          <div className="text-3xl font-black text-slate-900">1</div>
-          <p className="text-[11px] text-slate-400 font-medium">Properties you've viewed</p>
+          <div className="text-3xl font-black text-slate-900">{wishlistProperties.length > 0 ? wishlistProperties.length : 0}</div>
+          <p className="text-[11px] text-slate-400 font-medium">Properties explored</p>
         </div>
 
         <div onClick={() => setActiveNav('messages')} className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-sm hover:border-slate-400 transition-all cursor-pointer space-y-3">
@@ -81,7 +59,7 @@ export default function UserOverviewPage({
             <span className="text-xs font-bold text-slate-700">Inquiries Sent</span>
             <MessageSquare className="w-4 h-4 text-slate-500" />
           </div>
-          <div className="text-3xl font-black text-slate-900">1</div>
+          <div className="text-3xl font-black text-slate-900">0</div>
           <p className="text-[11px] text-slate-400 font-medium">Inquiries you've sent</p>
         </div>
 
@@ -90,7 +68,7 @@ export default function UserOverviewPage({
             <span className="text-xs font-bold text-slate-700">Scheduled Tours</span>
             <Calendar className="w-4 h-4 text-slate-500" />
           </div>
-          <div className="text-3xl font-black text-slate-900">1</div>
+          <div className="text-3xl font-black text-slate-900">0</div>
           <p className="text-[11px] text-slate-400 font-medium">Scheduled property tours</p>
         </div>
 
@@ -121,13 +99,12 @@ export default function UserOverviewPage({
                 </div>
               ))
             ) : (
-              <div className="flex items-center gap-4 p-3 rounded-xl border border-slate-100 hover:border-slate-300 transition-all cursor-pointer" onClick={onReturnToPublic}>
-                <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=300&q=80" alt="Luxury 5-Bedroom Villa" className="w-16 h-16 rounded-xl object-cover" />
-                <div className="flex-1">
-                  <h4 className="font-extrabold text-sm text-slate-900">Luxury 5-Bedroom Villa</h4>
-                  <p className="text-xs text-slate-400 mt-0.5">Saved on 23/08/2026</p>
-                </div>
-                <ChevronRight className="w-4 h-4 text-slate-400" />
+              <div className="p-8 text-center text-xs text-slate-400 space-y-3">
+                <Bookmark className="w-6 h-6 text-slate-300 mx-auto" />
+                <p>No saved properties yet. Heart any listing on the marketplace to save it here.</p>
+                <button onClick={onReturnToPublic} className="px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
+                  Browse Properties
+                </button>
               </div>
             )}
           </div>
@@ -140,18 +117,24 @@ export default function UserOverviewPage({
           </div>
 
           <div className="space-y-4">
-            {recentActivities.map((act) => (
-              <div key={act.id} className="flex items-start justify-between gap-3 text-xs">
-                <div className="space-y-0.5">
-                  <h5 className="font-bold text-slate-900">{act.title}</h5>
-                  <p className="text-slate-500 font-medium">{act.subtitle}</p>
-                  <span className="text-[10px] text-slate-400">{act.time}</span>
-                </div>
-                <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full shrink-0">
-                  {act.status}
-                </span>
+            {recentActivities.length === 0 ? (
+              <div className="p-8 text-center text-xs text-slate-400">
+                No recent activity recorded. Your inquiries, viewing tours, and bookings will appear here.
               </div>
-            ))}
+            ) : (
+              recentActivities.map((act) => (
+                <div key={act.id} className="flex items-start justify-between gap-3 text-xs">
+                  <div className="space-y-0.5">
+                    <h5 className="font-bold text-slate-900">{act.title}</h5>
+                    <p className="text-slate-500 font-medium">{act.subtitle}</p>
+                    <span className="text-[10px] text-slate-400">{act.time}</span>
+                  </div>
+                  <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-full shrink-0">
+                    {act.status}
+                  </span>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

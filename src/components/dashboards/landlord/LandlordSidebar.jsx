@@ -65,8 +65,9 @@ export default function LandlordSidebar({
     setMobileOpen(false);
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+  const renderNavList = () => (
+    <div className="flex flex-col h-full overflow-hidden">
+      {/* Scrollable nav section */}
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {/* Logo */}
         <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
@@ -105,7 +106,7 @@ export default function LandlordSidebar({
       </div>
 
       {/* Bottom Actions */}
-      <div className="p-5 border-t border-slate-100 space-y-2 shrink-0">
+      <div className="p-5 border-t border-slate-100 space-y-2 shrink-0 bg-white">
         <button onClick={() => { onOpenHostPortal && onOpenHostPortal(); setMobileOpen(false); }}
           className="w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black flex items-center justify-center gap-2">
           <PlusCircle className="w-4 h-4" />
@@ -126,8 +127,8 @@ export default function LandlordSidebar({
   return (
     <>
       {/* ─── DESKTOP SIDEBAR ─── */}
-      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30 overflow-y-auto">
-        <SidebarContent />
+      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30">
+        {renderNavList()}
       </aside>
 
       {/* ─── MOBILE: Fixed top bar ─── */}
@@ -154,14 +155,16 @@ export default function LandlordSidebar({
       )}
 
       {/* Drawer */}
-      <div className={`md:hidden fixed top-0 left-0 bottom-0 z-[70] w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+      <div className={`md:hidden fixed top-0 left-0 bottom-0 z-[70] w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
           <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Navigation</span>
           <button onClick={() => setMobileOpen(false)} className="w-8 h-8 rounded-lg bg-slate-100 flex items-center justify-center">
             <X className="w-4 h-4 text-slate-600" />
           </button>
         </div>
-        <SidebarContent />
+        <div className="flex-1 overflow-hidden">
+          {renderNavList()}
+        </div>
       </div>
     </>
   );

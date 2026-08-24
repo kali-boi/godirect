@@ -199,7 +199,7 @@ export default function AdminDashboard({
           )}
 
           {/* ANALYTICS */}
-          {activeNav === 'analytics' && <AdminAnalyticsPage />}
+          {activeNav === 'analytics' && <AdminAnalyticsPage properties={properties} />}
 
           {/* DEED VERIFICATIONS */}
           {activeNav === 'verifications' && (
@@ -438,28 +438,37 @@ export default function AdminDashboard({
 
           {/* ANNOUNCEMENTS / NOTIFICATIONS */}
           {activeNav === 'notifications' && (
-            <div className="space-y-6 animate-fade-in">
+            <div className="space-y-6 animate-fade-in font-['Host_Grotesk']">
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-slate-900">Platform Announcements</h2>
+                <div>
+                  <h2 className="text-2xl font-black text-slate-900">Platform Announcements</h2>
+                  <p className="text-xs text-slate-500 mt-1">Broadcast system-wide notices or SMS/Email alerts to users and hosts.</p>
+                </div>
                 <button className="px-4 py-2 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
                   + New Announcement
                 </button>
               </div>
               <div className="space-y-4">
-                {notificationsList.map((n) => (
-                  <div key={n.id} className="bg-white p-5 rounded-2xl border border-slate-200 space-y-2">
-                    <div className="flex items-center justify-between">
-                      <h4 className="font-extrabold text-sm text-slate-900">{n.title}</h4>
-                      <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                        n.status === 'sent' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
-                      }`}>
-                        {n.status}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-600 leading-relaxed">{n.body}</p>
-                    <p className="text-[10px] text-slate-400">Sent to: {n.sentTo} • {n.date}</p>
+                {notificationsList.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center text-xs text-slate-400">
+                    No active announcements broadcasted yet. Create a notice to notify all registered landlords and renters.
                   </div>
-                ))}
+                ) : (
+                  notificationsList.map((n) => (
+                    <div key={n.id} className="bg-white p-5 rounded-2xl border border-slate-200 space-y-2">
+                      <div className="flex items-center justify-between">
+                        <h4 className="font-extrabold text-sm text-slate-900">{n.title}</h4>
+                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                          n.status === 'sent' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
+                        }`}>
+                          {n.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-600 leading-relaxed">{n.body}</p>
+                      <p className="text-[10px] text-slate-400">Sent to: {n.sentTo} • {n.date}</p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}
@@ -468,7 +477,7 @@ export default function AdminDashboard({
           {activeNav === 'audit' && <AdminAuditPage />}
 
           {/* REGIONS */}
-          {activeNav === 'regions' && <AdminRegionsPage />}
+          {activeNav === 'regions' && <AdminRegionsPage properties={properties} />}
 
           {/* PROMOTIONS */}
           {activeNav === 'promotions' && <AdminPromotionsPage />}

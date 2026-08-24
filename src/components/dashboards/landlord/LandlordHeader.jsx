@@ -48,7 +48,7 @@ export default function LandlordHeader({
         >
           <Bell className="w-4 h-4" />
           <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-amber-500 text-white text-[9px] font-black flex items-center justify-center">
-            2
+            0
           </span>
         </button>
 

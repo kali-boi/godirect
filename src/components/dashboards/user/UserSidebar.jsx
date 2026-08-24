@@ -12,10 +12,10 @@ export default function UserSidebar({ activeNav, setActiveNav, wishlistCount, on
   // 5 primary items featured on the floating mobile dock
   const bottomBarItems = [
     { id: 'dashboard', label: 'Home', icon: Home },
-    { id: 'bookings', label: 'Bookings', icon: BookOpen, badge: 2 },
-    { id: 'saved', label: 'Saved', icon: Heart, badge: wishlistCount },
-    { id: 'messages', label: 'Messages', icon: MessageSquare, badge: 2 },
-    { id: 'appointments', label: 'Tours', icon: Calendar, badge: 1 }
+    { id: 'bookings', label: 'Bookings', icon: BookOpen },
+    { id: 'saved', label: 'Saved', icon: Heart, badge: wishlistCount > 0 ? wishlistCount : undefined },
+    { id: 'messages', label: 'Messages', icon: MessageSquare },
+    { id: 'appointments', label: 'Tours', icon: Calendar }
   ];
 
   // All organized sections for desktop & the mobile "More" sheet
@@ -24,16 +24,16 @@ export default function UserSidebar({ activeNav, setActiveNav, wishlistCount, on
       label: 'OVERVIEW',
       items: [
         { id: 'dashboard', label: 'Dashboard', icon: Home },
-        { id: 'bookings', label: 'My Bookings', icon: BookOpen, badge: 2 }
+        { id: 'bookings', label: 'My Bookings', icon: BookOpen }
       ]
     },
     {
       label: 'DISCOVER',
       items: [
         { id: 'properties', label: 'Browse Properties', icon: Building2 },
-        { id: 'saved', label: 'Saved Properties', icon: Heart, badge: wishlistCount },
+        { id: 'saved', label: 'Saved Properties', icon: Heart, badge: wishlistCount > 0 ? wishlistCount : undefined },
         { id: 'searches', label: 'Saved Searches', icon: Search },
-        { id: 'appointments', label: 'Tours & Viewings', icon: Calendar, badge: 1 }
+        { id: 'appointments', label: 'Tours & Viewings', icon: Calendar }
       ]
     },
     {
@@ -49,7 +49,7 @@ export default function UserSidebar({ activeNav, setActiveNav, wishlistCount, on
       items: [
         { id: 'reviews', label: 'My Reviews', icon: Star },
         { id: 'disputes', label: 'Dispute Center', icon: AlertOctagon },
-        { id: 'messages', label: 'Messages', icon: MessageSquare, badge: 2 },
+        { id: 'messages', label: 'Messages', icon: MessageSquare },
         { id: 'notifications', label: 'Notifications', icon: Bell }
       ]
     },
@@ -76,7 +76,7 @@ export default function UserSidebar({ activeNav, setActiveNav, wishlistCount, on
   return (
     <>
       {/* ─── DESKTOP SIDEBAR (md+) ─── */}
-      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30 overflow-y-auto">
+      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30 overflow-hidden">
         <div className="flex-1 overflow-y-auto p-5 space-y-5">
           {/* Logo Header */}
           <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={onReturnToPublic}>

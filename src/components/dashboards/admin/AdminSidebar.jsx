@@ -83,8 +83,8 @@ export default function AdminSidebar({
     setMobileOpen(false);
   };
 
-  const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+  const renderNavList = () => (
+    <div className="flex flex-col h-full overflow-hidden">
       <div className="flex-1 overflow-y-auto p-5 space-y-5">
         {/* Logo Header */}
         <div className="flex flex-col gap-1 px-2 pt-1 cursor-pointer" onClick={() => { onReturnToPublic(); setMobileOpen(false); }}>
@@ -132,7 +132,7 @@ export default function AdminSidebar({
       </div>
 
       {/* Bottom Action */}
-      <div className="p-5 border-t border-slate-100 shrink-0">
+      <div className="p-5 border-t border-slate-100 shrink-0 bg-white">
         <button
           onClick={() => { onReturnToPublic(); setMobileOpen(false); }}
           className="w-full flex items-center justify-between p-3 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold transition-all border border-slate-200"
@@ -150,8 +150,8 @@ export default function AdminSidebar({
   return (
     <>
       {/* ─── DESKTOP SIDEBAR (always visible md+) ─── */}
-      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col justify-between shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30 overflow-y-auto">
-        <SidebarContent />
+      <aside className="hidden md:flex w-64 bg-white text-slate-800 flex-col shrink-0 border-r border-slate-200/80 shadow-sm h-screen sticky top-0 z-30">
+        {renderNavList()}
       </aside>
 
       {/* ─── MOBILE: Top bar with hamburger ─── */}
@@ -190,12 +190,12 @@ export default function AdminSidebar({
 
       {/* Drawer panel */}
       <div
-        className={`md:hidden fixed top-0 left-0 bottom-0 z-[70] w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-0 left-0 bottom-0 z-[70] w-72 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out flex flex-col ${
           mobileOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         {/* Drawer header with close button */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
           <span className="text-xs font-extrabold text-slate-400 uppercase tracking-widest">Navigation</span>
           <button
             onClick={() => setMobileOpen(false)}
@@ -205,7 +205,9 @@ export default function AdminSidebar({
           </button>
         </div>
 
-        <SidebarContent />
+        <div className="flex-1 overflow-hidden">
+          {renderNavList()}
+        </div>
       </div>
     </>
   );
