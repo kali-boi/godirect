@@ -1,78 +1,69 @@
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle, MessageSquare } from 'lucide-react';
+import { ChevronDown, ArrowRight } from 'lucide-react';
 
 export default function FAQSection({ onOpenHostPortal }) {
   const [openIdx, setOpenIdx] = useState(0);
 
   const faqs = [
     {
-      q: 'What kind of properties do you sell and rent on GoDirect?',
-      a: 'We list verified luxury penthouses, residential apartments, modern townhouses, and short-let vacation suites directly from owners and verified hosts.',
+      q: 'What types of properties are listed on GoDirect?',
+      a: 'We list serviced short-let apartments, detached homes, penthouses, and long-term residential leases directly from verified landlords and hosts across Lagos, Abuja, and Port Harcourt.',
     },
     {
-      q: 'How does booking work without agency commission?',
-      a: 'GoDirect connects tenants and guests directly with property owners. There are no middleman brokers or 10-15% commission markups.',
+      q: 'How do bookings work without agency fees?',
+      a: 'You communicate and book directly with the property owner on the platform. There are no middleman brokers or standard 10% agency commission markups added to your rent.',
     },
     {
-      q: 'Can I message and negotiate directly with the landlord?',
-      a: 'Yes! Every property card includes a "Chat Host" feature so you can send direct inquiries, ask about lease terms, or request live viewings.',
+      q: 'How does the 24-hour check-in escrow work?',
+      a: 'For short-let bookings, your payment is held in escrow until 24 hours after check-in. If the property does not match the listing when you arrive, you can raise a dispute before funds are released to the host.',
     },
     {
-      q: 'Are the 4K video walkthroughs verified for actual properties?',
-      a: 'All 4K video tours are recorded on site and verified by our inspection team to guarantee accurate layouts before you book.',
+      q: 'Can I message the landlord and inspect before paying for an annual lease?',
+      a: 'Yes. Every listing lets you message the landlord directly to discuss lease terms and schedule an in-person inspection before committing.',
     },
     {
-      q: 'How can I post my property as a landlord or host?',
-      a: 'Click the "Post Property" button in the navigation or dashboard to open the Landlord Portal and list your property in under 3 minutes.',
+      q: 'How do I list my property as a landlord or host?',
+      a: 'Click "List property" in the navigation bar to open the Host Portal, submit your property details and ownership verification documents, and publish once approved.',
     },
   ];
 
   return (
-    <section className="py-16 bg-[var(--bg-primary)] border-t border-[var(--border-light)]">
+    <section className="py-16 bg-[#FAFAFA] border-t border-neutral-200/80">
       <div className="container">
-        
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-          
-          {/* Left Column: FAQ Headline & Accordion */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+          {/* Left Column: Accordion */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[var(--bg-surface)] border border-[var(--border-light)] text-[var(--teal-blue)] text-xs font-bold">
-              <HelpCircle className="w-3.5 h-3.5" />
-              <span>Got Questions?</span>
+            <div className="space-y-2">
+              <h2 className="text-2xl sm:text-3xl font-bold text-[#122525] tracking-tight">
+                Frequently asked questions
+              </h2>
+              <p className="text-sm text-neutral-600">
+                Common questions about direct leases, short-let escrow, and listing on GoDirect.
+              </p>
             </div>
 
-            <h2 className="text-3xl sm:text-4xl font-black text-[var(--text-primary)] leading-tight">
-              Frequently asked questions
-            </h2>
-
-            <p className="text-sm text-[var(--text-secondary)]">
-              Everything you need to know about booking short-lets, direct leases, and listing properties on GoDirect.
-            </p>
-
-            {/* Accordion List */}
-            <div className="space-y-3 pt-4">
+            <div className="divide-y divide-neutral-200 border-y border-neutral-200 bg-white rounded-2xl px-6">
               {faqs.map((faq, idx) => {
                 const isOpen = openIdx === idx;
                 return (
-                  <div
-                    key={idx}
-                    className="bg-[var(--bg-surface)] rounded-2xl border border-[var(--border-light)] overflow-hidden transition-all shadow-sm"
-                  >
+                  <div key={idx} className="py-4">
                     <button
+                      type="button"
                       onClick={() => setOpenIdx(isOpen ? null : idx)}
-                      className="w-full px-6 py-4 text-left flex items-center justify-between gap-4 font-bold text-sm sm:text-base text-[var(--text-primary)] hover:text-[var(--teal-blue)] transition-colors"
+                      className="w-full text-left flex items-center justify-between gap-4 font-semibold text-sm sm:text-[15px] text-[#122525] hover:text-[#018F8B] transition-colors"
                     >
                       <span>{faq.q}</span>
                       <ChevronDown
-                        className={`w-5 h-5 shrink-0 transition-transform duration-300 ${
-                          isOpen ? 'rotate-180 text-[var(--teal-blue)]' : 'text-[var(--text-muted)]'
+                        className={`w-4 h-4 shrink-0 text-neutral-400 transition-transform duration-200 ${
+                          isOpen ? 'rotate-180 text-[#018F8B]' : ''
                         }`}
                       />
                     </button>
 
                     {isOpen && (
-                      <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-[var(--text-secondary)] leading-relaxed border-t border-[var(--border-light)]/40 animate-fade-in">
+                      <p className="pt-2.5 text-sm text-neutral-600 leading-relaxed pr-6">
                         {faq.a}
-                      </div>
+                      </p>
                     )}
                   </div>
                 );
@@ -80,35 +71,35 @@ export default function FAQSection({ onOpenHostPortal }) {
             </div>
           </div>
 
-          {/* Right Column: Info & Landlord Host CTA Card */}
-          <div className="lg:col-span-5 flex flex-col justify-between bg-slate-900 text-white p-8 rounded-3xl border border-slate-800 shadow-xl min-h-[360px]">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
-                <MessageSquare className="w-6 h-6" />
-              </div>
-              <h3 className="text-2xl font-bold leading-tight">
-                Are you a landlord or property host?
+          {/* Right Column: Landlord CTA */}
+          <div className="lg:col-span-5 bg-[#122525] text-white p-7 sm:p-8 rounded-2xl space-y-6">
+            <div className="space-y-2.5">
+              <p className="text-xs font-semibold uppercase tracking-wider text-[#CC9955]">
+                For Landlords & Hosts
+              </p>
+              <h3 className="text-2xl font-bold text-white leading-snug">
+                Own a property in Lagos, Abuja, or Port Harcourt?
               </h3>
-              <p className="text-xs sm:text-sm text-gray-300 leading-relaxed">
-                List your property for free, connect with verified renters and short-let guests, and manage bookings effortlessly with zero agent commissions.
+              <p className="text-sm text-white/75 leading-relaxed">
+                List directly on GoDirect, connect with verified tenants and short-let guests, and receive payouts straight to your bank account.
               </p>
             </div>
 
-            <div className="pt-6 space-y-3">
+            <div className="space-y-2.5 pt-2">
               <button
+                type="button"
                 onClick={onOpenHostPortal}
-                className="w-full py-3.5 px-6 rounded-full bg-emerald-400 hover:bg-emerald-300 text-slate-950 font-extrabold text-xs sm:text-sm transition-all shadow-lg text-center"
+                className="w-full inline-flex items-center justify-center gap-2 py-3 px-5 rounded-xl bg-[#018F8B] hover:bg-[#017774] text-white font-semibold text-sm transition-colors"
               >
-                Post Property as Landlord
+                <span>List your property</span>
+                <ArrowRight className="w-4 h-4" />
               </button>
-              <p className="text-center text-[11px] text-gray-400">
-                Instant approval • 100% Owner Verified
+              <p className="text-center text-xs text-white/55">
+                Free to list · Ownership verification required
               </p>
             </div>
           </div>
-
         </div>
-
       </div>
     </section>
   );

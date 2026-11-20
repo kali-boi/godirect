@@ -63,7 +63,7 @@ export default function UserDashboard({
       />
 
       {/* MAIN CONTAINER */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen overflow-y-auto">
         
         {/* HEADER COMPONENT — desktop only */}
         <div className="hidden md:block">
@@ -90,12 +90,12 @@ export default function UserDashboard({
 
           {activeNav === 'properties' && (
             <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h2 className="text-2xl font-black text-slate-900">Marketplace Properties</h2>
+                  <h2 className="text-xl sm:text-2xl font-black text-slate-900">Marketplace Properties</h2>
                   <p className="text-xs text-slate-500">Browse verified shortlets and long-term rental leases.</p>
                 </div>
-                <button onClick={onReturnToPublic} className="px-5 py-2.5 rounded-xl bg-[#0B2545] text-white text-xs font-bold">
+                <button onClick={onReturnToPublic} className="px-5 py-2.5 rounded-xl bg-[#122525] text-white text-xs font-bold self-start sm:self-auto shrink-0">
                   Explore Full Marketplace
                 </button>
               </div>

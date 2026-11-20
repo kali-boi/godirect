@@ -52,43 +52,46 @@ export default function PropertyDetailModal({
   const displayReviewCount = property.reviewCount || property.reviewsCount || 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 overflow-y-auto bg-black/75 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-5xl bg-[var(--bg-surface)] rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-medium)] max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 md:p-6 overflow-y-auto bg-black/75 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-5xl bg-[var(--bg-surface)] rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl border border-[var(--border-medium)] max-h-[95dvh] sm:max-h-[90vh] flex flex-col">
         
         {/* Sticky Header Bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[var(--glass-bg)] backdrop-blur-md border-b border-[var(--border-light)]">
-          <div className="flex items-center gap-3">
-            <span className="badge-gold">
-              <ShieldCheck className="w-3.5 h-3.5" /> Direct Verified Listing
+        <div className="sticky top-0 z-20 flex items-center justify-between gap-2 px-4 sm:px-6 py-3 sm:py-4 bg-[var(--glass-bg)] backdrop-blur-md border-b border-[var(--border-light)]">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <span className="badge-gold shrink-0">
+              <ShieldCheck className="w-3.5 h-3.5" /> Verified
             </span>
-            <span className="text-xs text-[var(--text-muted)] font-mono">ID: {property.id}</span>
+            <span className="hidden sm:inline text-xs text-[var(--text-muted)] font-mono truncate">ID: {property.id}</span>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <button
               onClick={onOpenVideoTour}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[var(--teal-blue)] text-white text-xs font-bold transition-all hover:brightness-110 shadow-sm"
             >
               <Film className="w-3.5 h-3.5 text-[var(--mellow-gold)]" />
-              <span>Watch 4K Tour</span>
+              <span className="hidden sm:inline">Watch 4K Tour</span>
+              <span className="sm:hidden">Tour</span>
             </button>
             <button 
               onClick={() => onToggleWishlist(property)}
-              className="p-2.5 rounded-full bg-[var(--bg-elevated)] hover:bg-red-50 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
+              className="p-2 sm:p-2.5 rounded-full bg-[var(--bg-elevated)] hover:bg-red-50 text-[var(--text-secondary)] hover:text-red-500 transition-colors"
+              aria-label="Save property"
             >
-              <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
+              <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : ''}`} />
             </button>
             <button 
               onClick={onClose}
-              className="p-2.5 rounded-full bg-[var(--bg-elevated)] hover:bg-[var(--border-light)] text-[var(--text-primary)] transition-colors"
+              className="p-2 sm:p-2.5 rounded-full bg-[var(--bg-elevated)] hover:bg-[var(--border-light)] text-[var(--text-primary)] transition-colors"
+              aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
           </div>
         </div>
 
         {/* Modal Scrollable Body */}
-        <div className="overflow-y-auto p-6 space-y-8">
+        <div className="overflow-y-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
           
           {/* Main Title & Address */}
           <div>
@@ -161,7 +164,7 @@ export default function PropertyDetailModal({
             <div className="lg:col-span-7 space-y-6">
               
               {/* Quick Key Specs Bar */}
-              <div className="grid grid-cols-4 gap-3 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-light)] text-center">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-[var(--bg-elevated)] border border-[var(--border-light)] text-center">
                 <div>
                   <Bed className="w-5 h-5 mx-auto text-[var(--teal-blue)] mb-1" />
                   <div className="text-xs text-[var(--text-muted)]">Bedrooms</div>
@@ -193,8 +196,8 @@ export default function PropertyDetailModal({
               </div>
 
               {/* Landlord / Host Profile Card */}
-              <div className="p-5 rounded-2xl bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-surface)] border border-[var(--border-medium)] space-y-4">
-                <div className="flex items-center justify-between">
+              <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-br from-[var(--bg-elevated)] to-[var(--bg-surface)] border border-[var(--border-medium)] space-y-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-3">
                     <img 
                       src={hostAvatar} 
@@ -245,7 +248,7 @@ export default function PropertyDetailModal({
 
             {/* Right Column (Booking Widget) */}
             <div className="lg:col-span-5">
-              <div className="sticky top-20 p-6 rounded-3xl bg-[var(--bg-card)] border border-[var(--border-medium)] shadow-xl space-y-6">
+              <div className="lg:sticky lg:top-20 p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-[var(--bg-card)] border border-[var(--border-medium)] shadow-xl space-y-5 sm:space-y-6">
                 
                 <div className="flex items-baseline justify-between">
                   <div>

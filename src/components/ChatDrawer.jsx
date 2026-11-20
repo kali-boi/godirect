@@ -167,53 +167,78 @@ export default function ChatDrawer({
       <div className="w-full max-w-xl h-full bg-white flex flex-col shadow-2xl relative">
         
         {/* ─── DRAWER HEADER ─── */}
-        <div className="flex items-center justify-between p-4 px-6 bg-gradient-to-r from-[#0B2545] to-[#122525] text-white border-b border-slate-800">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-2xl bg-[#018F8B] text-white">
+        <div className="flex items-center justify-between gap-3 p-4 sm:px-6 bg-[#122525] text-white border-b border-white/10">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="p-2 rounded-xl bg-[#018F8B] text-white shrink-0">
               <MessageSquare className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-extrabold text-base">Direct Landlord Messenger</h3>
-                <span className="flex items-center gap-1 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" /> Realtime
-                </span>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold text-sm sm:text-base truncate">Direct Messenger</h3>
               </div>
-              <p className="text-xs text-slate-300">Protected by GoDirect Escrow & Anti-Fraud Shield</p>
+              <p className="text-[11px] sm:text-xs text-white/70 truncate">Protected by GoDirect Escrow</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-white/10 text-white/80 transition-colors"
+            className="p-2 rounded-full hover:bg-white/10 text-white/80 transition-colors shrink-0"
+            aria-label="Close messenger"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* ─── ESCROW PROTECTION GUARANTEE BANNER ─── */}
-        <div className="bg-gradient-to-r from-amber-500/10 via-teal-500/10 to-emerald-500/10 border-b border-slate-200 px-6 py-2.5 flex items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 text-slate-800 font-bold">
+        <div className="bg-neutral-50 border-b border-neutral-200 px-4 sm:px-6 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2 text-neutral-700 font-medium">
             <ShieldCheck className="w-4 h-4 text-[#018F8B] shrink-0" />
             <span>24h Stay Guarantee: Pay strictly via Escrow to protect your funds.</span>
           </div>
-          <span className="text-[10px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full shrink-0">
-            Escrow Secured
-          </span>
         </div>
 
         {/* ─── SECURITY ALERT TOAST IF CONTACT DETECTED ─── */}
         {securityAlert && (
-          <div className="bg-rose-50 border-b border-rose-200 p-3 px-6 text-xs text-rose-800 flex items-center gap-2.5 animate-fade-in">
+          <div className="bg-rose-50 border-b border-rose-200 p-3 px-4 sm:px-6 text-xs text-rose-800 flex items-center gap-2.5 animate-fade-in">
             <PhoneOff className="w-4 h-4 text-rose-600 shrink-0" />
             <p className="font-bold flex-1">{securityAlert}</p>
           </div>
         )}
 
         {/* ─── MAIN CHAT AREA ─── */}
-        <div className="flex-1 flex flex-col md:flex-row overflow-hidden">
+        {!activeThread ? (
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center space-y-3 bg-white">
+            <div className="w-12 h-12 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400">
+              <MessageSquare className="w-6 h-6" />
+            </div>
+            <h4 className="font-semibold text-sm text-[#122525]">No conversations yet</h4>
+            <p className="text-xs text-neutral-500 max-w-xs">
+              Open any property listing and tap Message to start a direct chat with the landlord.
+            </p>
+          </div>
+        ) : (
+        <div className="flex-1 flex flex-col sm:flex-row overflow-hidden">
           
-          {/* Thread List (Mobile collapsible / Desktop 1/3) */}
-          <div className="hidden sm:block w-48 border-r border-slate-200 bg-slate-50/60 overflow-y-auto p-2 space-y-1">
+          {/* Mobile horizontal thread switcher */}
+          {conversations.length > 1 && (
+            <div className="sm:hidden flex items-center gap-2 overflow-x-auto no-scrollbar px-4 py-2 border-b border-neutral-200 bg-neutral-50 shrink-0">
+              {conversations.map(c => (
+                <button
+                  key={c.id}
+                  onClick={() => setActiveThreadId(c.id)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap border ${
+                    c.id === activeThreadId
+                      ? 'bg-[#122525] text-white border-[#122525]'
+                      : 'bg-white text-neutral-700 border-neutral-200'
+                  }`}
+                >
+                  {c.propertyTitle}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Thread List (Desktop sidebar) */}
+          <div className="hidden sm:block w-48 border-r border-slate-200 bg-slate-50/60 overflow-y-auto p-2 space-y-1 shrink-0">
             <span className="text-[10px] font-extrabold uppercase text-slate-400 px-2 py-1 block">Conversations</span>
             {conversations.map(c => (
               <button
@@ -232,20 +257,21 @@ export default function ChatDrawer({
           </div>
 
           {/* Active Conversation Feed */}
-          <div className="flex-1 flex flex-col justify-between bg-white overflow-hidden">
+          <div className="flex-1 min-w-0 flex flex-col justify-between bg-white overflow-hidden">
             
             {/* Thread Property Header Card */}
-            <div className="p-3 px-6 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
-              <div className="flex items-center gap-3">
+            <div className="p-3 px-4 sm:px-6 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-3 min-w-0">
                 <img 
                   src={activeThread.hostAvatar} 
                   alt={activeThread.hostName} 
-                  className="w-10 h-10 rounded-full object-cover border border-white shadow-xs" 
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-full object-cover border border-white shadow-xs shrink-0" 
                 />
-                <div>
-                  <h4 className="font-black text-xs text-slate-900">{activeThread.hostName}</h4>
-                  <p className="text-[10px] text-slate-500 font-bold flex items-center gap-1">
-                    <Building2 className="w-3 h-3 text-[#018F8B]" /> {activeThread.propertyTitle}
+                <div className="min-w-0">
+                  <h4 className="font-bold text-xs text-slate-900 truncate">{activeThread.hostName}</h4>
+                  <p className="text-[10px] text-slate-500 font-medium flex items-center gap-1 truncate">
+                    <Building2 className="w-3 h-3 text-[#018F8B] shrink-0" />
+                    <span className="truncate">{activeThread.propertyTitle}</span>
                   </p>
                 </div>
               </div>
@@ -256,7 +282,7 @@ export default function ChatDrawer({
                   onClose();
                   if (onOpenBookingModal) onOpenBookingModal(activeThread);
                 }}
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#0B2545] hover:bg-[#018F8B] text-white text-[11px] font-black transition-all shadow-xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#122525] hover:bg-[#018F8B] text-white text-[11px] font-semibold transition-colors shrink-0"
               >
                 <Lock className="w-3 h-3 text-[#CC9955]" />
                 <span>Reserve via Escrow</span>
@@ -264,7 +290,7 @@ export default function ChatDrawer({
             </div>
 
             {/* Messages Scroll Area */}
-            <div className="flex-1 overflow-y-auto p-4 px-6 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 sm:px-6 space-y-4">
               {activeThread.history.map((msg, idx) => {
                 const isMe = msg.sender === 'guest';
                 return (
@@ -275,7 +301,7 @@ export default function ChatDrawer({
                     <div 
                       className={`max-w-[85%] p-3.5 rounded-2xl text-xs leading-relaxed shadow-xs ${
                         isMe 
-                          ? 'bg-[#0B2545] text-white rounded-br-none' 
+                          ? 'bg-[#122525] text-white rounded-br-none' 
                           : 'bg-slate-100 text-slate-900 border border-slate-200/80 rounded-bl-none'
                       }`}
                     >
@@ -304,29 +330,30 @@ export default function ChatDrawer({
 
             {/* Input Footer */}
             <form onSubmit={handleSendMessage} className="p-3 px-4 bg-slate-50 border-t border-slate-200">
-              <div className="flex items-center gap-2 bg-white p-1.5 pl-3.5 rounded-2xl border border-slate-200 focus-within:border-[#018F8B] shadow-xs">
+              <div className="flex items-center gap-2 bg-white p-1.5 pl-3.5 rounded-xl border border-slate-200 focus-within:border-[#018F8B]">
                 <input
                   type="text"
-                  placeholder="Ask the landlord about dates, amenities, discounts..."
+                  placeholder="Ask the landlord about dates, amenities..."
                   value={inputMessage}
                   onChange={(e) => setInputMessage(e.target.value)}
-                  className="flex-1 bg-transparent text-xs text-slate-900 outline-none"
+                  className="flex-1 min-w-0 bg-transparent text-xs text-slate-900 outline-none"
                 />
                 <button
                   type="submit"
                   disabled={!inputMessage.trim()}
-                  className="p-2.5 rounded-xl bg-gradient-to-r from-[#018F8B] to-[#0B2545] hover:opacity-95 text-white disabled:opacity-40 transition-all shadow-xs"
+                  className="p-2.5 rounded-lg bg-[#018F8B] hover:bg-[#017774] text-white disabled:opacity-40 transition-colors shrink-0"
                 >
                   <Send className="w-4 h-4" />
                 </button>
               </div>
               <p className="text-[10px] text-slate-400 text-center mt-2 flex items-center justify-center gap-1 font-medium">
-                <Lock className="w-3 h-3 text-emerald-600" /> All messages and transactions are encrypted and protected by GoDirect Escrow.
+                <Lock className="w-3 h-3 text-[#018F8B] shrink-0" /> Messages and transactions are protected by GoDirect Escrow.
               </p>
             </form>
 
           </div>
         </div>
+        )}
 
       </div>
     </div>

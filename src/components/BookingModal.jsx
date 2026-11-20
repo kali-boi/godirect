@@ -87,25 +87,26 @@ export default function BookingModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in font-['Host_Grotesk']">
-      <div className="relative w-full max-w-xl bg-white rounded-3xl overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-xl bg-white rounded-t-3xl sm:rounded-3xl overflow-hidden shadow-2xl border border-slate-200 flex flex-col max-h-[95dvh] sm:max-h-[90vh]">
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 bg-[#0B2545] text-white">
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#CC9955]" />
-            <h3 className="font-black text-sm tracking-tight">Direct 24h Escrow Reservation</h3>
+        <div className="flex items-center justify-between px-4 sm:px-6 py-4 bg-[#122525] text-white shrink-0">
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldCheck className="w-5 h-5 text-[#CC9955] shrink-0" />
+            <h3 className="font-bold text-sm tracking-tight truncate">Direct 24h Escrow Reservation</h3>
           </div>
           <button 
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-white/10 text-white transition-colors"
+            className="p-1.5 rounded-full hover:bg-white/10 text-white transition-colors shrink-0"
+            aria-label="Close booking modal"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {!isConfirmed ? (
-          <form onSubmit={handleConfirm} className="p-6 space-y-5 overflow-y-auto">
+          <form onSubmit={handleConfirm} className="p-4 sm:p-6 space-y-5 overflow-y-auto">
 
             {/* Booking Error Banner */}
             {bookingError && (

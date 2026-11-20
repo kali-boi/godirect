@@ -81,7 +81,7 @@ export default function LandlordDashboard({
       />
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen overflow-y-auto">
         
         {/* HEADER COMPONENT — desktop only */}
         <div className="hidden md:block">
@@ -95,7 +95,7 @@ export default function LandlordDashboard({
         </div>
 
         {/* BODY PAGES */}
-        <main className="pt-16 md:pt-0 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        <main className="px-4 sm:px-6 lg:px-8 pb-6 lg:pb-8 pt-20 md:pt-6 lg:pt-8 space-y-6 max-w-7xl mx-auto w-full">
           
           {activeNav === 'dashboard' && (
             <LandlordOverviewPage 
@@ -108,9 +108,9 @@ export default function LandlordDashboard({
 
           {activeNav === 'properties' && (
             <div className="space-y-6 animate-fade-in">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-black text-slate-900">Your Property Portfolio</h2>
-                <button onClick={onOpenHostPortal} className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1.5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <h2 className="text-xl sm:text-2xl font-black text-slate-900">Your Property Portfolio</h2>
+                <button onClick={onOpenHostPortal} className="px-4 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold text-xs flex items-center gap-1.5 self-start sm:self-auto shrink-0">
                   <PlusCircle className="w-4 h-4" /> Add Property
                 </button>
               </div>
@@ -173,16 +173,16 @@ export default function LandlordDashboard({
                   </div>
                 ) : (
                   requests.map((req) => (
-                    <div key={req.id} className="p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <img src={req.guestAvatar} alt={req.guestName} className="w-12 h-12 rounded-full object-cover" />
-                          <div>
-                            <h4 className="font-bold text-sm text-slate-900">{req.guestName}</h4>
-                            <p className="text-xs text-slate-500">{req.propertyName} • {req.dates}</p>
+                    <div key={req.id} className="p-4 sm:p-6 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-4">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div className="flex items-center gap-3 min-w-0">
+                          <img src={req.guestAvatar} alt={req.guestName} className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover shrink-0" />
+                          <div className="min-w-0">
+                            <h4 className="font-bold text-sm text-slate-900 truncate">{req.guestName}</h4>
+                            <p className="text-xs text-slate-500 truncate">{req.propertyName} • {req.dates}</p>
                           </div>
                         </div>
-                        <div className="text-right">
+                        <div className="sm:text-right">
                           <span className="text-lg font-black text-slate-900">₦{Number(req.totalAmount || 0).toLocaleString()}</span>
                           <span className="block text-[10px] text-slate-400">Total Escrow Value</span>
                         </div>

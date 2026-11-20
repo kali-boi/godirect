@@ -326,7 +326,7 @@ export default function HostPortalModal({
         </div>
 
         {/* 4-Step Progress Indicator */}
-        <div className="grid grid-cols-4 px-6 py-3 bg-slate-100 border-b border-slate-200 text-[11px] font-extrabold shrink-0 gap-2">
+        <div className="grid grid-cols-4 px-4 sm:px-6 py-3 bg-slate-100 border-b border-slate-200 text-[11px] font-extrabold shrink-0 gap-2">
           <div className={`flex items-center gap-1.5 ${step >= 1 ? 'text-[#018F8B]' : 'text-slate-500'}`}>
             <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-black ${
               step >= 1 ? 'bg-[#018F8B] text-white' : 'bg-slate-200 text-slate-600'
@@ -354,7 +354,7 @@ export default function HostPortalModal({
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="p-6 overflow-y-auto space-y-5 flex-1 text-slate-900 bg-white">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 overflow-y-auto space-y-5 flex-1 text-slate-900 bg-white">
           
           {/* STEP 1: RENTAL MODE & BASIC DETAILS */}
           {step === 1 && (

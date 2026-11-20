@@ -168,7 +168,7 @@ export default function AdminDashboard({
       />
 
       {/* MAIN CONTENT */}
-      <div className="flex-1 flex flex-col min-h-screen overflow-y-auto">
+      <div className="flex-1 min-w-0 flex flex-col min-h-screen overflow-y-auto">
         
         {/* HEADER — desktop only (mobile uses sidebar top bar) */}
         <div className="hidden md:block">
@@ -182,8 +182,8 @@ export default function AdminDashboard({
           />
         </div>
 
-        {/* PAGE BODY — pt-16 on mobile clears the fixed top bar */}
-        <main className="pt-16 md:pt-0 p-4 sm:p-6 lg:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        {/* PAGE BODY — pt-20 on mobile clears the fixed top bar across all < md widths */}
+        <main className="px-4 sm:px-6 lg:px-8 pb-6 lg:pb-8 pt-20 md:pt-6 lg:pt-8 space-y-6 max-w-7xl mx-auto w-full">
           
           {/* OVERVIEW */}
           {activeNav === 'dashboard' && (
@@ -314,48 +314,47 @@ export default function AdminDashboard({
                   {filteredUsers.map((u, i) => {
                     const isBanned = bannedUsers.includes(u.id);
                     return (
-                      <div key={u.id} className={`grid grid-cols-12 gap-4 px-6 py-4 items-center transition-colors ${isBanned ? 'opacity-50 bg-rose-50/40' : 'hover:bg-slate-50/80'}`}>
+                      <div key={u.id} className={`flex flex-col md:grid md:grid-cols-12 gap-3 md:gap-4 px-4 sm:px-6 py-4 md:items-center transition-colors ${isBanned ? 'opacity-50 bg-rose-50/40' : 'hover:bg-slate-50/80'}`}>
                         {/* Avatar + name */}
-                        <div className="col-span-4 flex items-center gap-3">
+                        <div className="md:col-span-4 flex items-center gap-3 min-w-0">
                           <div className={`w-9 h-9 rounded-full ${avatarColors[i % avatarColors.length]} flex items-center justify-center text-white text-xs font-black shrink-0`}>
                             {getInitials(u.name)}
                           </div>
-                          <div className="min-w-0">
+                          <div className="min-w-0 flex-1">
                             <p className="text-xs font-bold text-slate-900 truncate">{u.name}</p>
                             <p className="text-[10px] text-slate-400 truncate">{u.email}</p>
                           </div>
                         </div>
-                        {/* Role badge */}
-                        <div className="col-span-2">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize ${
-                            u.role === 'admin' ? 'bg-violet-50 text-violet-800 border-violet-200'
-                            : u.role === 'landlord' ? 'bg-blue-50 text-blue-800 border-blue-200'
-                            : 'bg-slate-100 text-slate-700 border-slate-200'
-                          }`}>{u.role}</span>
-                        </div>
-                        {/* KYC status */}
-                        <div className="col-span-2">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
-                            u.kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                            : u.kycStatus === 'rejected' ? 'bg-rose-50 text-rose-800 border-rose-200'
-                            : 'bg-amber-50 text-amber-800 border-amber-200'
-                          }`}>{u.kycStatus}</span>
-                        </div>
-                        {/* Join date */}
-                        <div className="col-span-2 text-xs text-slate-500">{u.joinDate}</div>
-                        {/* Actions */}
-                        <div className="col-span-2 flex items-center justify-end gap-1.5">
-                          <button title="View Profile" className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            title={isBanned ? 'Unban User' : 'Ban User'}
-                            onClick={() => setBannedUsers(prev => isBanned ? prev.filter(id => id !== u.id) : [...prev, u.id])}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              isBanned ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700' : 'bg-rose-100 hover:bg-rose-200 text-rose-700'
-                            }`}>
-                            {isBanned ? <Check className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
-                          </button>
+                        {/* Mobile metadata row / Desktop grid columns */}
+                        <div className="flex flex-wrap items-center gap-2 md:contents">
+                          <div className="md:col-span-2">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border capitalize ${
+                              u.role === 'admin' ? 'bg-violet-50 text-violet-800 border-violet-200'
+                              : u.role === 'landlord' ? 'bg-blue-50 text-blue-800 border-blue-200'
+                              : 'bg-slate-100 text-slate-700 border-slate-200'
+                            }`}>{u.role}</span>
+                          </div>
+                          <div className="md:col-span-2">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
+                              u.kycStatus === 'verified' ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                              : u.kycStatus === 'rejected' ? 'bg-rose-50 text-rose-800 border-rose-200'
+                              : 'bg-amber-50 text-amber-800 border-amber-200'
+                            }`}>{u.kycStatus}</span>
+                          </div>
+                          <div className="md:col-span-2 text-xs text-slate-500">{u.joinDate}</div>
+                          <div className="md:col-span-2 flex items-center justify-end gap-1.5 ml-auto md:ml-0">
+                            <button title="View Profile" className="p-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-600 transition-colors">
+                              <Eye className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              title={isBanned ? 'Unban User' : 'Ban User'}
+                              onClick={() => setBannedUsers(prev => isBanned ? prev.filter(id => id !== u.id) : [...prev, u.id])}
+                              className={`p-1.5 rounded-lg transition-colors ${
+                                isBanned ? 'bg-emerald-100 hover:bg-emerald-200 text-emerald-700' : 'bg-rose-100 hover:bg-rose-200 text-rose-700'
+                              }`}>
+                              {isBanned ? <Check className="w-3.5 h-3.5" /> : <Ban className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
                         </div>
                       </div>
                     );

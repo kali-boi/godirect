@@ -75,11 +75,12 @@
     color: var(--text-primary);
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
+    overflow-x: clip;
   }
 
   body {
     min-height: 100vh;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1,
@@ -117,7 +118,13 @@
 .container {
   max-width: 1320px;
   margin: 0 auto;
-  padding: 0 24px;
+  padding: 0 16px;
+}
+
+@media (min-width: 640px) {
+  .container {
+    padding: 0 24px;
+  }
 }
 
 .btn-primary {

@@ -1,87 +1,89 @@
 import React from 'react';
-import { 
-  Building2, 
-  Palmtree, 
-  Sparkles, 
-  Building, 
-  Home, 
-  Briefcase, 
-  SlidersHorizontal,
-  Zap,
-  ShieldCheck
+import {
+  Building2,
+  Palmtree,
+  Building,
+  Home,
+  Briefcase,
+  SlidersHorizontal
 } from 'lucide-react';
 import { CATEGORIES, SHORTLET_CATEGORIES, RENTAL_CATEGORIES } from '../data/mockData';
 
-export default function FilterBar({ 
-  selectedCategory, 
+export default function FilterBar({
+  selectedCategory,
   setSelectedCategory,
   stayTypeFilter = 'all',
   onOpenFilterDrawer,
   totalResultsCount
 }) {
-  const currentCategories = stayTypeFilter === 'short-let'
-    ? SHORTLET_CATEGORIES
-    : stayTypeFilter === 'rentals'
-    ? RENTAL_CATEGORIES
-    : CATEGORIES;
+  const currentCategories =
+    stayTypeFilter === 'short-let'
+      ? SHORTLET_CATEGORIES
+      : stayTypeFilter === 'rentals'
+      ? RENTAL_CATEGORIES
+      : CATEGORIES;
 
-  const getCategoryIcon = (iconName) => {
+  const getCategoryIcon = (iconName, isSelected) => {
+    const cls = `w-3.5 h-3.5 ${isSelected ? 'text-white' : 'text-neutral-500'}`;
     switch (iconName) {
-      case 'Palmtree': return <Palmtree className="w-3.5 h-3.5 text-emerald-600" />;
-      case 'Sparkles': return <Sparkles className="w-3.5 h-3.5 text-[#CC9955]" />;
-      case 'Building': return <Building className="w-3.5 h-3.5 text-sky-600" />;
-      case 'Home': return <Home className="w-3.5 h-3.5 text-indigo-600" />;
-      case 'Briefcase': return <Briefcase className="w-3.5 h-3.5 text-amber-600" />;
-      default: return <Building2 className="w-3.5 h-3.5 text-[#018F8B]" />;
+      case 'Palmtree':
+        return <Palmtree className={cls} />;
+      case 'Building':
+        return <Building className={cls} />;
+      case 'Home':
+        return <Home className={cls} />;
+      case 'Briefcase':
+        return <Briefcase className={cls} />;
+      default:
+        return <Building2 className={cls} />;
     }
   };
 
   return (
-    <div className="bg-white border-y border-slate-200/80 py-3 my-4 sticky top-16 z-30 shadow-2xs backdrop-blur-md font-['Host_Grotesk']">
+    <div className="bg-white/95 border-y border-neutral-200/80 py-3 my-4 sticky top-16 z-30 backdrop-blur-md">
       <div className="container flex flex-wrap items-center justify-between gap-3">
-        
-        {/* Category Pills Slider */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 max-w-full">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 max-w-full">
           {currentCategories.map((cat) => {
             const isSelected = selectedCategory === cat.id;
             return (
               <button
                 key={cat.id}
+                type="button"
                 onClick={() => setSelectedCategory(cat.id)}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all whitespace-nowrap border ${
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-colors whitespace-nowrap border ${
                   isSelected
-                    ? 'bg-[#0B2545] text-white border-[#0B2545] shadow-xs'
-                    : 'bg-slate-100/80 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-200/70 hover:text-slate-900'
+                    ? 'bg-[#122525] text-white border-[#122525]'
+                    : 'bg-white text-neutral-700 border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
                 }`}
               >
-                {getCategoryIcon(cat.icon)}
+                {getCategoryIcon(cat.icon, isSelected)}
                 <span>{cat.name}</span>
               </button>
             );
           })}
         </div>
 
-        {/* Filter Trigger & Dynamic Counter */}
         <div className="flex items-center gap-3 ml-auto shrink-0">
-          <span className="text-xs font-semibold text-slate-500 hidden md:inline">
-            Showing <strong className="text-slate-900">{totalResultsCount}</strong> {
-              stayTypeFilter === 'short-let'
-                ? 'verified short-lets (₦/night)'
-                : stayTypeFilter === 'rentals'
-                ? 'direct landlord leases (₦/year)'
-                : 'luxury properties'
-            }
+          <span className="text-xs text-neutral-500 hidden md:inline">
+            <strong className="font-semibold text-[#122525]">{totalResultsCount}</strong>{' '}
+            {stayTypeFilter === 'short-let'
+              ? 'short-lets'
+              : stayTypeFilter === 'rentals'
+              ? 'annual rentals'
+              : 'properties'}
           </span>
 
-          <button
-            onClick={onOpenFilterDrawer}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200 text-xs font-bold transition-all"
-          >
-            <SlidersHorizontal className="w-3.5 h-3.5 text-[#018F8B]" />
-            <span>Filters</span>
-          </button>
+          {onOpenFilterDrawer && (
+            <button
+              type="button"
+              onClick={onOpenFilterDrawer}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white hover:bg-neutral-50 text-[#122525] border border-neutral-200 text-xs font-medium transition-colors"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-neutral-500" />
+              <span>All filters</span>
+            </button>
+          )}
         </div>
-
       </div>
     </div>
   );

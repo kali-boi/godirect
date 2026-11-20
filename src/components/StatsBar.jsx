@@ -1,55 +1,42 @@
 import React from 'react';
-import { Award, Building2, MapPin, Star } from 'lucide-react';
 
 export default function StatsBar() {
-  const stats = [
+  const items = [
     {
       value: '0%',
-      label: 'Zero Broker Commission Fee',
-      icon: Award,
+      label: 'Agency commission on direct leases',
     },
     {
-      value: '24 Hours',
-      label: 'Direct Escrow Protection Window',
-      icon: Building2,
+      value: '24 hrs',
+      label: 'Check-in escrow hold before host payout',
     },
     {
-      value: '100%',
-      label: 'Title Deed Verified Listings',
-      icon: MapPin,
+      value: 'Verified',
+      label: 'Ownership & ID checked before publishing',
     },
     {
-      value: 'Free',
-      label: 'Agent-Escorted In-Person Tours',
-      icon: Star,
+      value: 'Direct',
+      label: 'Message landlords and schedule inspections',
     },
   ];
 
   return (
-    <section className="bg-[var(--bg-surface)] border-y border-[var(--border-light)] py-8 shadow-sm">
+    <section className="bg-white border-b border-neutral-200/80 py-7">
       <div className="container">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8 divide-x-0 md:divide-x divide-[var(--border-light)]">
-          {stats.map((stat, idx) => {
-            const Icon = stat.icon;
-            return (
-              <div
-                key={idx}
-                className="flex items-center justify-center md:justify-start gap-4 px-2 md:px-6 first:pl-0"
-              >
-                <div className="w-12 h-12 rounded-2xl bg-[var(--bg-elevated)] flex items-center justify-center text-[var(--teal-blue)] shrink-0">
-                  <Icon className="w-6 h-6" />
-                </div>
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-[var(--text-primary)] tracking-tight">
-                    {stat.value}
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium text-[var(--text-secondary)]">
-                    {stat.label}
-                  </div>
-                </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-y-6 gap-x-6 md:divide-x md:divide-neutral-200">
+          {items.map((item, idx) => (
+            <div
+              key={idx}
+              className="md:px-6 first:md:pl-0 last:md:pr-0 space-y-1"
+            >
+              <div className="text-xl sm:text-2xl font-bold text-[#122525] tracking-tight">
+                {item.value}
               </div>
-            );
-          })}
+              <p className="text-xs sm:text-sm text-neutral-600 leading-snug">
+                {item.label}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

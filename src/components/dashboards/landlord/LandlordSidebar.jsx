@@ -51,7 +51,7 @@ export default function LandlordSidebar({
       label: 'ACCOUNT',
       items: [
         { id: 'documents', label: 'Document Vault', icon: FileText },
-        { id: 'messages', label: 'Messages', icon: MessageSquare, badge: 1 },
+        { id: 'messages', label: 'Messages', icon: MessageSquare },
         { id: 'notifications', label: 'Notifications', icon: Bell },
         { id: 'profile', label: 'Profile', icon: User }
       ]
@@ -88,7 +88,7 @@ export default function LandlordSidebar({
                   return (
                     <button key={item.id} onClick={() => handleNavClick(item.id)}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                        isActive ? 'bg-[#0B2545] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        isActive ? 'bg-[#122525] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                       }`}>
                       <div className="flex items-center gap-2.5">
                         <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
@@ -174,7 +174,7 @@ export default function LandlordSidebar({
                   return (
                     <button key={item.id} onClick={() => handleNavClick(item.id)}
                       className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                        isActive ? 'bg-[#0B2545] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
+                        isActive ? 'bg-[#122525] text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                       }`}>
                       <div className="flex items-center gap-2.5">
                         <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-400'}`} />
